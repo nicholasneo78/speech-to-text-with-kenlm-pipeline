@@ -6,14 +6,14 @@ services:
   local: 
     build: ./ #Uncomment this to rebuild
     #image:  pythonfiles_model
-    image: w2v2_kenlm:v0.2.8
+    image: w2v2_kenlm_pipeline:v0.1.0
     ports:
       - 8888:8888
     #Let code run
     stdin_open: true
     tty: true
     volumes:
-      - ./:/w2v2_kenlm
+      - ./:/w2v2_kenlm_pipeline
     ulimits:
       memlock: -1 # set upper limit for how much memory is locked for the container (-1 means lock as much as the container uses)
     shm_size: 32gb # set upper limit for how much shared memory container can use

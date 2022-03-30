@@ -55,5 +55,5 @@ EXPOSE 8888
 # set default command for jupyterlab
 CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
 
-WORKDIR /w2v2_kenlm
+WORKDIR /w2v2_kenlm_pipeline
 RUN ["bash"]
