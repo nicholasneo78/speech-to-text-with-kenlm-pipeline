@@ -1,0 +1,8 @@
+ctc-segmentation
+transformers
+datasets
+librosa
+jiwer
+Levenshtein
+six
+ipywidgets
