@@ -8,9 +8,11 @@ import librosa
 from pathlib import Path
 import yaml
 from tqdm import tqdm
+import pickle
+from datasets import Dataset, DatasetDict
 
 # generate the csv with all the data required to build the DatasetDict for the finetuning step 
-class GenerateCSV():
+class GeneratePickle():
     
     def __init__(self, root_folder, csv_filename, audio_format):
         self.root_folder = root_folder
@@ -38,7 +40,7 @@ class GenerateCSV():
         return df_new 
     
     # generate the csv to prepare the dataset for the finetuning step
-    def build_csv(self):
+    def build_pickle(self):
         # list to append all the data in
         data_list = []
         
@@ -77,23 +79,22 @@ class GenerateCSV():
         df_final = pd.DataFrame(data_list)
         
         # export the dataframe to csv
-        df_final.to_csv(self.csv_filename, index=False)
+        df_final.to_pickle(self.csv_filename)
         
-        # return statement to debug the csv file if needed
         return df_final  
         
     def __call__(self):
-        return self.build_csv()
+        return self.build_pickle()
 
 if __name__ == "__main__":
-    # get the .csv dataset
-    generate_csv_train = GenerateCSV(root_folder='./datasets/magister_data_flac_16000_finetune/train/', 
-                                    csv_filename='./csv/magister_data_flac_16000_train.csv', 
+    # get the pkl dataset
+    generate_pkl_train = GeneratePickle(root_folder='./datasets/magister_data_flac_16000_finetune/train/', 
+                                        csv_filename='./pkl/magister_data_flac_16000_train.pkl', 
+                                        audio_format='.flac')
+
+    generate_pkl_dev = GeneratePickle(root_folder='./datasets/magister_data_flac_16000_finetune/dev/', 
+                                    csv_filename='./pkl/magister_data_flac_16000_dev.pkl', 
                                     audio_format='.flac')
 
-    generate_csv_dev = GenerateCSV(root_folder='./datasets/magister_data_flac_16000_finetune/dev/', 
-                                    csv_filename='./csv/magister_data_flac_16000_dev.csv', 
-                                    audio_format='.flac')
-
-    df_train = generate_csv_train()
-    df_dev = generate_csv_dev()
+    df_train = generate_pkl_train()
+    df_dev = generate_pkl_dev()
