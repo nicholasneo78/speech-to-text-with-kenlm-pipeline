@@ -138,3 +138,8 @@ lm/*
 sample_audio/*
 sample_json/*
 jupyter_notebooks/*
+datasets/*
+
+# csv files
+*.csv
+./jupyter_notebooks/info.txt
