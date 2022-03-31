@@ -142,4 +142,5 @@ datasets/*
 
 # csv files
 *.pkl
+*.csv
 ./jupyter_notebooks/info.txt
