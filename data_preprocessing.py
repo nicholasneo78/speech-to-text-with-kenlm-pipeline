@@ -63,7 +63,7 @@ class GeneratePickle():
                         # the sub dictionary for the audio component 
                         # the main dictionary which comprises the file, audio and text component
                     
-                    # more text preprocessing
+                    # text preprocessing
                     clean_text = df_new.loc[df_new['id'] == base_path, 'annotations'].to_numpy()[0].replace('#', ' ').replace('<FIL>', '#').replace('<FILL>', '#')
                     clean_text = re.sub(r'[^A-Za-z0-9#-\' ]+', ' ', clean_text)
                     # convert multiple spaces into only one space

@@ -6,9 +6,9 @@ services:
   local: 
     build: ./ #Uncomment this to rebuild
     #image:  pythonfiles_model
-    image: w2v2_kenlm_pipeline:v0.1.1
+    image: w2v2_kenlm_pipeline:v0.1.2
     ports:
-      - 8888:8888
+      - 8888:8889
     #Let code run
     stdin_open: true
     tty: true
