@@ -6,3 +6,4 @@ jiwer
 Levenshtein
 six
 ipywidgets
+num2words

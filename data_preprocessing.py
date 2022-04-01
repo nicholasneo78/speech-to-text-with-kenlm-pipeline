@@ -10,6 +10,7 @@ import yaml
 from tqdm import tqdm
 import pickle
 from datasets import Dataset, DatasetDict
+import re
 
 # generate the csv with all the data required to build the DatasetDict for the finetuning step 
 class GeneratePickle():
@@ -62,6 +63,12 @@ class GeneratePickle():
                         # the sub dictionary for the audio component 
                         # the main dictionary which comprises the file, audio and text component
                     
+                    # more text preprocessing
+                    clean_text = df_new.loc[df_new['id'] == base_path, 'annotations'].to_numpy()[0].replace('#', ' ').replace('<FIL>', '#').replace('<FILL>', '#')
+                    clean_text = re.sub(r'[^A-Za-z0-9#-\' ]+', ' ', clean_text)
+                    # convert multiple spaces into only one space
+                    clean_text = ' '.join(clean_text.split())
+
                     # creating the dictionary
                     data = {
                         'file': os.path.join(root, file),
@@ -70,7 +77,7 @@ class GeneratePickle():
                             'path': os.path.join(root, file), 
                             'sampling_rate': 16000
                         },
-                        'text': df_new.loc[df_new['id'] == base_path, 'annotations'].to_numpy()[0].replace('<FIL>', '&').replace('<FILL>', '&').replace('  ', ' ')
+                        'text': clean_text
                     }
                     
                     data_list.append(data)
