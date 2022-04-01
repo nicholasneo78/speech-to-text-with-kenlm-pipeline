@@ -50,10 +50,11 @@ RUN git clone --recursive https://github.com/parlance/ctcdecode.git \
 RUN pip install jupyterlab
 
 # declare port used by jupyterlab
-EXPOSE 8889
+EXPOSE 8888
 
 # set default command for jupyterlab
-CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
+CMD ["jupyter" ,"lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
+#CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
 
 WORKDIR /w2v2_kenlm_pipeline
 RUN ["bash"]
