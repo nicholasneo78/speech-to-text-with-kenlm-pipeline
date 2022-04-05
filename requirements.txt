@@ -8,3 +8,4 @@ six
 ipywidgets
 num2words
 nltk
+matplotlib
