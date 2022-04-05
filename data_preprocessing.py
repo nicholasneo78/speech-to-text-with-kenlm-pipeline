@@ -166,13 +166,18 @@ class GeneratePickle():
 
 if __name__ == "__main__":
     # get the pkl dataset
-    generate_pkl_train = GeneratePickle(root_folder='./datasets/magister_data_flac_16000_finetune/train/', 
+    generate_pkl_train = GeneratePickle(root_folder='./datasets/magister_data_flac_16000/train/', 
                                         csv_filename='./pkl/magister_data_flac_16000_train.pkl', 
                                         audio_format='.flac')
 
-    generate_pkl_dev = GeneratePickle(root_folder='./datasets/magister_data_flac_16000_finetune/dev/', 
+    generate_pkl_dev = GeneratePickle(root_folder='./datasets/magister_data_flac_16000/dev/', 
                                     csv_filename='./pkl/magister_data_flac_16000_dev.pkl', 
                                     audio_format='.flac')
 
+    generate_pkl_test = GeneratePickle(root_folder='./datasets/magister_data_flac_16000/test/', 
+                                csv_filename='./pkl/magister_data_flac_16000_test.pkl', 
+                                audio_format='.flac')
+
     df_train = generate_pkl_train()
     df_dev = generate_pkl_dev()
+    df_test = generate_pkl_test()

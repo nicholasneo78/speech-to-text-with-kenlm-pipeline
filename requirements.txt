@@ -9,3 +9,5 @@ ipywidgets
 num2words
 nltk
 matplotlib
+dataclasses
+typing

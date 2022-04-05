@@ -144,3 +144,6 @@ datasets/*
 *.pkl
 *.csv
 ./jupyter_notebooks/info.txt
+ckpt/*
+processor/*
+saved_model/*
