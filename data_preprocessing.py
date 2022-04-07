@@ -133,6 +133,9 @@ class GeneratePickle():
                     
                     # keep only certain characters
                     clean_text = re.sub(r'[^A-Za-z0-9#\' ]+', ' ', clean_text)
+                    
+                    # replace hyphen with space because hyphen cannot be heard
+                    clean_text = clean_text.replace('-', ' ')
 
                     # convert all the digits to its text equivalent
                     clean_text = self.get_text_from_number(clean_text)
