@@ -128,7 +128,7 @@ class GeneratePickle():
                     
                     ## TEXT-PREPROCESSING ##
 
-                    # replace filler words with one symbol: #
+                    # replace filler words with one symbol: 
                     clean_text = df_new.loc[df_new['id'] == base_path, 'annotations'].to_numpy()[0].replace('#', ' ').replace('<FIL>', '#').replace('<FILL>', '#')
                     
                     # keep only certain characters
@@ -184,3 +184,9 @@ if __name__ == "__main__":
     df_train = generate_pkl_train()
     df_dev = generate_pkl_dev()
     df_test = generate_pkl_test()
+
+    # for daniel
+    # generate_pkl = GeneratePickle(root_folder='./data/', 
+    #                             csv_filename='data.pkl', 
+    #                             audio_format='.wav')
+    # df = generate_pkl()

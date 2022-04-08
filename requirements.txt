@@ -1,4 +1,4 @@
-ctc-segmentation
+#ctc-segmentation
 transformers
 datasets
 librosa
@@ -11,3 +11,6 @@ nltk
 matplotlib
 dataclasses
 typing
+pyctcdecode
+pypi-kenlm
+soundfile

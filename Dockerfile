@@ -20,13 +20,14 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
 && apt-get upgrade -y \
 && apt-get install -y \
-&& apt-get -y install apt-utils gcc jupyter libpq-dev libsndfile1 ffmpeg cython wget git vim\
+&& apt-get -y install apt-utils gcc jupyter libpq-dev libsndfile1 ffmpeg cython wget git vim \
 && apt-get -y install build-essential cmake libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev libeigen3-dev zlib1g-dev libbz2-dev liblzma-dev
 
-RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz
+# kenlm
+# RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz
 
-# build kenlm from source
-RUN mkdir kenlm/build && cd kenlm/build && cmake .. && make -j2
+# # build kenlm from source
+# RUN mkdir kenlm/build && cd kenlm/build && cmake .. && make -j2
 
 # build ctc-segmentation from source
 # RUN git clone https://github.com/lumaku/ctc-segmentation \
@@ -41,16 +42,16 @@ RUN pip install numpy==1.15.1 --no-binary numpy
 # installing dependencies
 RUN pip install -r requirements.txt
 
-# build ctcdecode from source
-RUN git clone --recursive https://github.com/parlance/ctcdecode.git \
-&& cd ctcdecode \ 
-&& pip install .
+# # build ctcdecode from source
+# RUN git clone --recursive https://github.com/parlance/ctcdecode.git \
+# && cd ctcdecode \ 
+# && pip install .
 
 # installing jupyter lab inside
 RUN pip install jupyterlab
 
 # declare port used by jupyterlab
-EXPOSE 8888
+EXPOSE 8889
 
 # set default command for jupyterlab
 CMD ["jupyter" ,"lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
