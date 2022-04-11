@@ -1,10 +1,10 @@
 #!/bin/bash
 n_gram=5
-input_txt=lm_model_prep.txt
-output_arpa=lm/magister_lm.arpa
+txtfile_loc=lm/lm_model_prep.txt
+output_arpa_loc=lm/magister_lm.arpa
 
 # script execution
-/workspace/kenlm/build/bin/lmplz -o $n_gram <$input_txt >$output_arpa
+/workspace/kenlm/build/bin/lmplz -o $n_gram <$txtfile_loc >$output_arpa_loc
 
 
 # script execution
