@@ -102,6 +102,25 @@ class GeneratePickle():
         text_list_flat = flatten(preprocessed_text_list)
         return ' '.join(text_list_flat).upper()
 
+    # all the text preprocessing
+    def preprocess_text(self, df, base_path):
+
+        # replace filler words with one symbol: 
+        clean_text = df.loc[df['id'] == base_path, 'annotations'].to_numpy()[0].replace('#', ' ').replace('<FIL>', '#').replace('<FILL>', '#')
+        
+        # keep only certain characters
+        clean_text = re.sub(r'[^A-Za-z0-9#\' ]+', ' ', clean_text)
+        
+        # replace hyphen with space because hyphen cannot be heard
+        clean_text = clean_text.replace('-', ' ')
+
+        # convert all the digits to its text equivalent
+        clean_text = self.get_text_from_number(clean_text)
+
+        # convert multiple spaces into only one space
+        clean_text = ' '.join(clean_text.split())
+
+        return clean_text
 
     # generate the csv to prepare the dataset for the finetuning step
     def build_pickle(self):
@@ -126,22 +145,8 @@ class GeneratePickle():
                         # the sub dictionary for the audio component 
                         # the main dictionary which comprises the file, audio and text component
                     
-                    ## TEXT-PREPROCESSING ##
-
-                    # replace filler words with one symbol: 
-                    clean_text = df_new.loc[df_new['id'] == base_path, 'annotations'].to_numpy()[0].replace('#', ' ').replace('<FIL>', '#').replace('<FILL>', '#')
-                    
-                    # keep only certain characters
-                    clean_text = re.sub(r'[^A-Za-z0-9#\' ]+', ' ', clean_text)
-                    
-                    # replace hyphen with space because hyphen cannot be heard
-                    clean_text = clean_text.replace('-', ' ')
-
-                    # convert all the digits to its text equivalent
-                    clean_text = self.get_text_from_number(clean_text)
-
-                    # convert multiple spaces into only one space
-                    clean_text = ' '.join(clean_text.split())
+                    # text preprocessing
+                    clean_text = self.preprocess_text(df_new, base_path)
 
                     # creating the final data dictionary that is to be saved to a pkl file
                     data = {
