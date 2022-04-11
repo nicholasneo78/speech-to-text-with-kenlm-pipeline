@@ -22,12 +22,18 @@ RUN apt-get update \
 && apt-get install -y \
 && apt-get -y install apt-utils gcc jupyter libpq-dev libsndfile1 ffmpeg cython wget git vim \
 && apt-get -y install build-essential cmake libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev libeigen3-dev zlib1g-dev libbz2-dev liblzma-dev
-
-# kenlm
-# RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz
+# && apt-get -y install build-essential libboost-all-dev cmake zlib1g-dev libbz2-dev liblzma-dev
 
 # # build kenlm from source
-# RUN mkdir kenlm/build && cd kenlm/build && cmake .. && make -j2
+# RUN wget -O - https://kheafield.com/code/kenlm.tar.gz | tar xz \
+# && mkdir kenlm/build && cd kenlm/build && cmake .. && make -j2
+
+# build kenlm from source
+RUN git clone https://github.com/kpu/kenlm.git \
+&& mkdir -p kenlm/build \
+&& cd kenlm/build \
+&& cmake .. \
+&& make -j 4
 
 # build ctc-segmentation from source
 # RUN git clone https://github.com/lumaku/ctc-segmentation \
