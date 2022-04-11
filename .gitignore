@@ -18,9 +18,6 @@ wav2vec2_base_model/*
 saved_model/*
 processor/*
 ckpt/*
-test_model/*
-wav2vec2_large_xlsr_53_english/*
-wav2vec2_base_10k_voxpopuli_ft_en/*
 
 
 failed/*
