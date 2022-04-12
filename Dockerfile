@@ -57,7 +57,7 @@ RUN pip install -r requirements.txt
 RUN pip install jupyterlab
 
 # declare port used by jupyterlab
-EXPOSE 8889
+EXPOSE 8888
 
 # set default command for jupyterlab
 CMD ["jupyter" ,"lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
