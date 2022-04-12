@@ -1,7 +1,7 @@
 #!/bin/bash
 n_gram="5"
-dataset_name="magister"
-txtfile_loc="lm/magister_annotations.txt"
+dataset_name="magister_v2"
+txtfile_loc="lm/magister_v2_annotations.txt"
 
 output_arpa_loc="lm/${n_gram}_gram_${dataset_name}.arpa"
 

@@ -117,10 +117,20 @@ class EvaluationWithLM():
         return self.get_wer()
 
 if __name__ == "__main__":
+    # # magister v1
+    # evaluation = EvaluationWithLM(finetuned_model_path='./saved_model/',
+    #                               processor_path='./processor/',
+    #                               lm_path='lm/5_gram_magister.arpa', 
+    #                               test_data_path='./pkl/magister_data_flac_16000_test.pkl', 
+    #                               alpha=0.6, beta=1.0)
+
+    # greedy, beam = evaluation()
+
+    # magister v2
     evaluation = EvaluationWithLM(finetuned_model_path='./saved_model/',
                                   processor_path='./processor/',
-                                  lm_path='lm/5_gram_magister.arpa', 
-                                  test_data_path='./pkl/magister_data_flac_16000_test.pkl', 
+                                  lm_path='lm/5_gram_magister_v2.arpa', 
+                                  test_data_path='./pkl/magister_data_v2_wav_16000_test.pkl', 
                                   alpha=0.6, beta=1.0)
 
     greedy, beam = evaluation()

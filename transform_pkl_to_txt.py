@@ -38,8 +38,8 @@ class GetTxtFromPkl():
         return self.generate_text_file()
 
 if __name__ == "__main__":
-    get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./pkl/magister_data_flac_16000_train.pkl',
-                                     df_dev_filepath='./pkl/magister_data_flac_16000_dev.pkl',
-                                     txt_filepath='lm/magister_annotations.txt')
+    get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./pkl/magister_data_v2_wav_16000_train.pkl',
+                                     df_dev_filepath='./pkl/magister_data_v2_wav_16000_dev.pkl',
+                                     txt_filepath='lm/magister_v2_annotations.txt')
 
     get_txt_from_pkl()
