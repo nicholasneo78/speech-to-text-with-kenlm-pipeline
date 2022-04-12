@@ -40,6 +40,6 @@ class GetTxtFromPkl():
 if __name__ == "__main__":
     get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./pkl/magister_data_flac_16000_train.pkl',
                                      df_dev_filepath='./pkl/magister_data_flac_16000_dev.pkl',
-                                     txt_filepath='lm/magister_text_build_lm.txt')
+                                     txt_filepath='lm/magister_annotations.txt')
 
     get_txt_from_pkl()
