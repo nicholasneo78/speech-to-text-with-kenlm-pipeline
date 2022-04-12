@@ -103,12 +103,12 @@ class EvaluationWithLM():
 
         # print the final evaluation
         if obtain_n:
-            print(f'\nWER (greedy search) | {n_grams}-gram | alpha = {self.alpha} | beta = {self.beta}: {wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list):.5f}')
-            print(f'\nWER (beam search) | {n_grams}-gram | alpha = {self.alpha} | beta = {self.beta}: {wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list):.5f}')
+            print(f'\n{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list):.5f}')
+            print(f'{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list):.5f}\n')
 
         else:
-            print(f'\nWER (greedy search) | alpha = {self.alpha} | beta = {self.beta}: {wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list):.5f}')
-            print(f'\nWER (beam search) | alpha = {self.alpha} | beta = {self.beta}: {wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list):.5f}')
+            print(f'\nalpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list):.5f}')
+            print(f'alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list):.5f}\n')
 
         # return the values for debugging
         return round(wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list), 5), round(wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list), 5)
