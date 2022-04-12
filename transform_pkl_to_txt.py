@@ -4,6 +4,7 @@ import nltk
 import pickle
 from tqdm import tqdm
 
+# loads the train and the dev pkl files to get the annotations and produce a text file with their combined annotations  
 class GetTxtFromPkl():
     def __init__(self, df_train_filepath, df_dev_filepath, txt_filepath):
         self.df_train_filepath = df_train_filepath
@@ -39,6 +40,6 @@ class GetTxtFromPkl():
 if __name__ == "__main__":
     get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./pkl/magister_data_flac_16000_train.pkl',
                                      df_dev_filepath='./pkl/magister_data_flac_16000_dev.pkl',
-                                     txt_filepath='lm/lm_model_prep.txt')
+                                     txt_filepath='lm/magister_text_build_lm.txt')
 
     get_txt_from_pkl()

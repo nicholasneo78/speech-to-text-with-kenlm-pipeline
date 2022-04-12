@@ -18,9 +18,9 @@ from nltk import flatten
 # generate the csv with all the data required to build the DatasetDict for the finetuning step 
 class GeneratePickle():
     
-    def __init__(self, root_folder, csv_filename, audio_format):
+    def __init__(self, root_folder, pkl_filename, audio_format):
         self.root_folder = root_folder
-        self.csv_filename = csv_filename
+        self.pkl_filename = pkl_filename
         self.audio_format = audio_format
         
     # helper function to build the lookup table for the id and annotations from all the text files and return the table
@@ -164,8 +164,8 @@ class GeneratePickle():
         # form the dataframe
         df_final = pd.DataFrame(data_list)
         
-        # export the dataframe to csv
-        df_final.to_pickle(self.csv_filename)
+        # export the dataframe to pickle
+        df_final.to_pickle(self.pkl_filename)
         
         return df_final  
         
@@ -175,15 +175,15 @@ class GeneratePickle():
 if __name__ == "__main__":
     # get the pkl dataset
     generate_pkl_train = GeneratePickle(root_folder='./datasets/magister_data_flac_16000/train/', 
-                                        csv_filename='./pkl/magister_data_flac_16000_train.pkl', 
+                                        pkl_filename='./pkl/magister_data_flac_16000_train.pkl', 
                                         audio_format='.flac')
 
     generate_pkl_dev = GeneratePickle(root_folder='./datasets/magister_data_flac_16000/dev/', 
-                                    csv_filename='./pkl/magister_data_flac_16000_dev.pkl', 
+                                    pkl_filename='./pkl/magister_data_flac_16000_dev.pkl', 
                                     audio_format='.flac')
 
     generate_pkl_test = GeneratePickle(root_folder='./datasets/magister_data_flac_16000/test/', 
-                                csv_filename='./pkl/magister_data_flac_16000_test.pkl', 
+                                pkl_filename='./pkl/magister_data_flac_16000_test.pkl', 
                                 audio_format='.flac')
 
     df_train = generate_pkl_train()
@@ -192,6 +192,6 @@ if __name__ == "__main__":
 
     # for daniel
     # generate_pkl = GeneratePickle(root_folder='./data/', 
-    #                             csv_filename='data.pkl', 
+    #                             pkl_filename='data.pkl', 
     #                             audio_format='.wav')
     # df = generate_pkl()
