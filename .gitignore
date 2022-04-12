@@ -18,6 +18,4 @@ wav2vec2_base_model/*
 saved_model/*
 processor/*
 ckpt/*
-
-
 failed/*
