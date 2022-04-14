@@ -9,6 +9,7 @@ ipywidgets
 num2words
 nltk
 matplotlib
+plotext
 dataclasses
 typing
 pyctcdecode

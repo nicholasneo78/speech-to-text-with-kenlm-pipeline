@@ -8,7 +8,7 @@ import torch
 import os
 import re
 import pickle
-from datasets import Dataset, DatasetDict, load_metric
+from datasets import Dataset, load_metric
 from tqdm import tqdm
 
 device = 'cuda' if torch.cuda.is_available else 'cpu'
@@ -29,8 +29,9 @@ class EvaluationWithLM():
         prev_c = None
         out = []
         for n in logits.argmax(axis=1):
-            c = label_dict.get(n, "")  # if not in labels, then assume it's ctc blank char
-            if c != prev_c:
+            c = label_dict.get(n, "")  
+            # if not in labels, then assume it's ctc blank char
+            if c != prev_c: 
                 out.append(c)
             prev_c = c
         return "".join(out)
@@ -45,7 +46,7 @@ class EvaluationWithLM():
         # get the vocab list from the dictionary
         vocab = list(asr_processor.tokenizer.get_vocab().keys())
 
-        # convert some vocabs
+        # convert some vocab tokens to see the text clearer when decoding
         vocab[vocab.index('[PAD]')] = '_'
         vocab[vocab.index('|')] = ' '
 
@@ -76,7 +77,7 @@ class EvaluationWithLM():
             input_values = asr_processor(audio_array, return_tensors="pt", sampling_rate=16000).input_values  
             logits = asr_model(input_values).logits.cpu().detach().numpy()[0]
 
-            # beam search decoding 
+            # beam search decoding - can add hotwords and its weights too if needed
             beam_text = decoder.decode(logits)
 
             # greedy search decoding
