@@ -3,19 +3,19 @@
 jupyter_notebooks/*
 
 # language models folder for evaluation
-lm/*
+tasks/lm/*
 
 # audio files
 *.flac
 *.wav
 
 # datasets
-datasets/*
-pkl/*
+tasks/datasets/*
+tasks/pkl/*
 
 # transformers
-wav2vec2_base_model/*
-saved_model/*
-processor/*
-ckpt/*
+tasks/wav2vec2_base_model/*
+tasks/saved_model/*
+tasks/processor/*
+tasks/ckpt/*
 failed/*
