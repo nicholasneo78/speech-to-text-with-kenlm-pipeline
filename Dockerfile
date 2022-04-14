@@ -43,7 +43,7 @@ RUN git clone https://github.com/kpu/kenlm.git \
 # && python setup.py install --optimize=1 --skip-build
 
 # numpy problems
-RUN pip install numpy==1.15.1 --no-binary numpy
+RUN pip install numpy==1.21.1 --no-binary numpy
 
 # installing dependencies
 RUN pip install -r requirements.txt
