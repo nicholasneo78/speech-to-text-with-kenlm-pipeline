@@ -7,7 +7,7 @@ import yaml
 from tqdm import tqdm
 import pickle
 import librosa
-import matplotlib.pyplot as plt
+import plotext as plt
 from IPython.display import display, HTML
 import random
 import os
@@ -147,13 +147,15 @@ class FinetuningPreparation():
             audio_length_list.append(dataset['train'][idx]['input_length'])
 
         # get the distribution of the audio sample
-        data_dist = pd.Series(audio_length_list)
+        #data_dist = pd.Series(audio_length_list)
+        #data_dist.plot.hist(grid=True, bins=20, rwidth=0.9, color='#607c8e')
+        
+        # change to plotext implementation instead of matplotlib
+        plt.hist(audio_length_list, bins=50, label='train data')
 
-        data_dist.plot.hist(grid=True, bins=20, rwidth=0.9, color='#607c8e')
         plt.title('Distribution')
         plt.xlabel('Samples')
         plt.ylabel('Number of inputs')
-        plt.grid(axis='y', alpha=0.75)
         plt.show()
 
     # filter the audio length to prevent OOM issue due to lengthy audio files
@@ -217,21 +219,21 @@ if __name__ == "__main__":
                                          dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
                                          test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl',
                                          processor_path='./processor/', 
-                                         max_sample_length=450000, 
+                                         max_sample_length=None, 
                                          mode='get_audio_length_distribution')
 
     distribution()
 
     # get the prepared dataset for the finetuning task
 
-    print('Getting the prepared dataset for the finetuning task\n')
-    data_preparation = FinetuningPreparation(train_pkl='./pkl/magister_data_v2_wav_16000_train.pkl',
-                                         dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-                                         test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl',
-                                         processor_path='./processor/', 
-                                         max_sample_length=450000, 
-                                         mode='finetuning_prep')
+    # print('Getting the prepared dataset for the finetuning task\n')
+    # data_preparation = FinetuningPreparation(train_pkl='./pkl/magister_data_v2_wav_16000_train.pkl',
+    #                                      dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                                      test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl',
+    #                                      processor_path='./processor/', 
+    #                                      max_sample_length=450000, 
+    #                                      mode='finetuning_prep')
 
-    dataset = data_preparation()
+    # dataset = data_preparation()
 
 
