@@ -17,7 +17,7 @@ from nltk import flatten
 # generate the pkl from scatch with all the data required to build the DatasetDict for the finetuning step 
 class GeneratePickleFromScratch():
     
-    def __init__(self, root_folder, pkl_filename, audio_format, additional_preprocessing='magister'):
+    def __init__(self, root_folder, pkl_filename, audio_format, additional_preprocessing='general'):
         self.root_folder = root_folder
         self.pkl_filename = pkl_filename
         self.audio_format = audio_format
@@ -116,7 +116,7 @@ class GeneratePickleFromScratch():
         clean_text = df.loc[df['id'] == base_path, 'annotations'].to_numpy()[0]
         
         # additional preprocessing to replace the filler words with one symbol
-        if self.additional_preprocessing == 'magister':
+        if self.additional_preprocessing == 'general':
             clean_text = clean_text.replace('#', ' ').replace('<FIL>', '#').replace('<FILL>', '#')
         
         # add more here for other filler word or additional preprocessing needed for other data
@@ -197,7 +197,7 @@ class GeneratePickleFromScratch():
 
 # generate the pkl from manifest with all the data required to build the DatasetDict for the finetuning step 
 class GeneratePickleFromManifest():
-    def __init__(self, manifest_path, pkl_filename, additional_preprocessing='magister_v2'):
+    def __init__(self, manifest_path, pkl_filename, additional_preprocessing='general'):
         self.manifest_path = manifest_path
         self.pkl_filename = pkl_filename
         self.additional_preprocessing = additional_preprocessing
@@ -269,7 +269,7 @@ class GeneratePickleFromManifest():
     def preprocess_text(self, text):
 
         # additional preprocessing to replace the filler words with one symbol
-        if self.additional_preprocessing == 'magister_v2':
+        if self.additional_preprocessing == 'general':
             clean_text = text.replace('#', ' ').replace('<unk>', '#')
         
         # add more here for other filler word or additional preprocessing needed for other data
@@ -348,18 +348,15 @@ if __name__ == "__main__":
     # # magister dataset v1
     # magister_train_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/train/', 
     #                                                pkl_filename='./pkl/magister_data_flac_16000_train.pkl', 
-    #                                                audio_format='.flac',
-    #                                                additional_preprocessing='magister')
+    #                                                audio_format='.flac')
 
     # magister_dev_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/dev/', 
     #                                              pkl_filename='./pkl/magister_data_flac_16000_dev.pkl', 
-    #                                              audio_format='.flac',
-    #                                              additional_preprocessing='magister')
+    #                                              audio_format='.flac')
 
     # magister_test_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/test/', 
     #                                               pkl_filename='./pkl/magister_data_flac_16000_test.pkl', 
-    #                                               audio_format='.flac',
-    #                                               additional_preprocessing='magister')
+    #                                               audio_format='.flac')
 
     # df_train = magister_train_pkl()
     # df_dev = magister_dev_pkl()
@@ -367,16 +364,13 @@ if __name__ == "__main__":
 
     # # magister dataset v2
     # magister_v2_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/train_manifest.json', 
-    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                                                    additional_preprocessing='magister_v2')
+    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_train.pkl')
 
     # magister_v2_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/dev_manifest.json', 
-    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                                                    additional_preprocessing='magister_v2')
+    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_dev.pkl')
 
     # magister_v2_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/test_manifest.json', 
-    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                                                    additional_preprocessing='magister_v2')
+    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_test.pkl')
 
     # df_train = magister_v2_train_pkl()
     # df_dev = magister_v2_dev_pkl()
@@ -384,16 +378,13 @@ if __name__ == "__main__":
 
     # librispeech dataset
     librispeech_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/train/train_manifest.json', 
-                                                       pkl_filename='./pkl/librispeech_train.pkl', 
-                                                       additional_preprocessing='magister_v2')
+                                                       pkl_filename='./pkl/librispeech_train.pkl')
 
     librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/dev/dev_manifest.json', 
-                                                       pkl_filename='./pkl/librispeech_dev.pkl', 
-                                                       additional_preprocessing='magister_v2')
+                                                       pkl_filename='./pkl/librispeech_dev.pkl')
 
     librispeech_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/test/test_manifest.json', 
-                                                       pkl_filename='./pkl/librispeech_test.pkl', 
-                                                       additional_preprocessing='magister_v2')
+                                                       pkl_filename='./pkl/librispeech_test.pkl')
 
     df_train, _ = librispeech_train_pkl()
     df_dev, _ = librispeech_dev_pkl()

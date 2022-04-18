@@ -382,6 +382,8 @@ class Finetuning():
         trainer.save_state()
         trainer.save_model(self.saved_model_path)
 
+        return  self.checkpoint_path, self.processor_path, self.pretrained_model_path, self.saved_model_path
+
     def __call__(self):
         return self.finetune()
 
@@ -566,6 +568,6 @@ if __name__ == "__main__":
                                 warmup_steps=1000, 
                                 finetune_from_scratch=True)
 
-    finetune_model()
+    _, _, _, _ = finetune_model()
  
     ####################################################

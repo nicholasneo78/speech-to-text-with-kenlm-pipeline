@@ -22,6 +22,12 @@ task.set_base_docker(
 # get the args for data preprocessing
 args = {
     'dataset_task_id': config['dataset_task_id'],
+    'manifest_path_train': config['manifest_path_train'],
+    'pkl_train': config['pkl_train'],
+    'manifest_path_dev': config['manifest_path_dev'],
+    'pkl_dev': config['pkl_dev'],
+    'manifest_path_test': config['manifest_path_test'],
+    'pkl_test': config['pkl_test'],
     'additional_preprocessing': config['additional_preprocessing']
 }
 
@@ -43,17 +49,17 @@ dataset = Dataset.create(
 dataset_path = dataset.get_local_copy()
 
 # process
-librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/train/train_manifest.json', 
-                                                   pkl_filename=f'./pkl/librispeech_train.pkl', 
+librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/{args["manifest_path_train"]}', 
+                                                   pkl_filename=args["pkl_train"], 
                                                    additional_preprocessing=args['additional_preprocessing'])
 
-librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/dev/dev_manifest.json', 
-                                                    pkl_filename=f'./pkl/librispeech_dev.pkl', 
-                                                    additional_preprocessing=args['additional_preprocessing'])
+librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/{args["manifest_path_dev"]}', 
+                                                 pkl_filename=args["pkl_dev"], 
+                                                 additional_preprocessing=args['additional_preprocessing'])
 
-librispeech_test_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/test/test_manifest.json', 
-                                                    pkl_filename=f'./pkl/librispeech_test.pkl', 
-                                                    additional_preprocessing=args['additional_preprocessing'])
+librispeech_test_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/{args["manifest_path_test"]}', 
+                                                  pkl_filename=args["pkl_test"], 
+                                                  additional_preprocessing=args['additional_preprocessing'])
 
 df_train, path_train = librispeech_train_pkl()
 df_dev, path_dev = librispeech_dev_pkl()
