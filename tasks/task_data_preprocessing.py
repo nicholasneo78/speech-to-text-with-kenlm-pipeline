@@ -44,24 +44,24 @@ dataset_path = dataset.get_local_copy()
 
 # process
 librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/train/train_manifest.json', 
-                                                   pkl_filename=f'{dataset_path}/pkl/librispeech_train.pkl', 
+                                                   pkl_filename=f'./pkl/librispeech_train.pkl', 
                                                    additional_preprocessing=args['additional_preprocessing'])
 
 librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/dev/dev_manifest.json', 
-                                                    pkl_filename=f'{dataset_path}/pkl/librispeech_dev.pkl', 
+                                                    pkl_filename=f'./pkl/librispeech_dev.pkl', 
                                                     additional_preprocessing=args['additional_preprocessing'])
 
 librispeech_test_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/test/test_manifest.json', 
-                                                    pkl_filename=f'{dataset_path}/pkl/librispeech_test.pkl', 
+                                                    pkl_filename=f'./pkl/librispeech_test.pkl', 
                                                     additional_preprocessing=args['additional_preprocessing'])
 
-df_train = librispeech_train_pkl()
-df_dev = librispeech_dev_pkl()
-df_test = librispeech_test_pkl()
+df_train, path_train = librispeech_train_pkl()
+df_dev, path_dev = librispeech_dev_pkl()
+df_test, path_test = librispeech_test_pkl()
 
-dataset.add_files(df_train)
-dataset.add_files(df_dev)
-dataset.add_files(df_test)
+dataset.add_files(path_train)
+dataset.add_files(path_dev)
+dataset.add_files(path_test)
 
 dataset.upload(output_url=OUTPUT_URL)
 dataset.finalize()

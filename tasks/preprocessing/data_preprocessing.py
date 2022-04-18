@@ -336,7 +336,7 @@ class GeneratePickleFromManifest():
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
 
-        return df_final
+        return df_final, self.pkl_filename
     
 
     def __call__(self):
@@ -395,6 +395,6 @@ if __name__ == "__main__":
                                                        pkl_filename='./pkl/librispeech_test.pkl', 
                                                        additional_preprocessing='magister_v2')
 
-    df_train = librispeech_train_pkl()
-    df_dev = librispeech_dev_pkl()
-    df_test = librispeech_test_pkl()
+    df_train, _ = librispeech_train_pkl()
+    df_dev, _ = librispeech_dev_pkl()
+    df_test, _ = librispeech_test_pkl()
