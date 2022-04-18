@@ -346,19 +346,36 @@ if __name__ == "__main__":
     # df_dev = magister_dev_pkl()
     # df_test = magister_test_pkl()
 
-    # magister dataset v2
-    magister_v2_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/train_manifest.json', 
-                                                       pkl_filename='./pkl/magister_data_v2_wav_16000_train.pkl', 
+    # # magister dataset v2
+    # magister_v2_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/train_manifest.json', 
+    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_train.pkl', 
+    #                                                    additional_preprocessing='magister_v2')
+
+    # magister_v2_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/dev_manifest.json', 
+    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                                                    additional_preprocessing='magister_v2')
+
+    # magister_v2_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/test_manifest.json', 
+    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                                                    additional_preprocessing='magister_v2')
+
+    # df_train = magister_v2_train_pkl()
+    # df_dev = magister_v2_dev_pkl()
+    # df_test = magister_v2_test_pkl()
+
+    # librispeech dataset
+    librispeech_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/train/train_manifest.json', 
+                                                       pkl_filename='./pkl/librispeech_train.pkl', 
                                                        additional_preprocessing='magister_v2')
 
-    magister_v2_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/dev_manifest.json', 
-                                                       pkl_filename='./pkl/magister_data_v2_wav_16000_dev.pkl', 
+    librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/dev/dev_manifest.json', 
+                                                       pkl_filename='./pkl/librispeech_dev.pkl', 
                                                        additional_preprocessing='magister_v2')
 
-    magister_v2_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/test_manifest.json', 
-                                                       pkl_filename='./pkl/magister_data_v2_wav_16000_test.pkl', 
+    librispeech_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/test/test_manifest.json', 
+                                                       pkl_filename='./pkl/librispeech_test.pkl', 
                                                        additional_preprocessing='magister_v2')
 
-    df_train = magister_v2_train_pkl()
-    df_dev = magister_v2_dev_pkl()
-    df_test = magister_v2_test_pkl()
+    df_train = librispeech_train_pkl()
+    df_dev = librispeech_dev_pkl()
+    df_test = librispeech_test_pkl()
