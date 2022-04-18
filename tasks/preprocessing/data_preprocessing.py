@@ -1,5 +1,4 @@
 # imports
-from distutils.command.clean import clean
 import os
 from os.path import join
 import numpy as np
