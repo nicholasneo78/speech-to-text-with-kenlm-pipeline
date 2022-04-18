@@ -540,11 +540,32 @@ if __name__ == "__main__":
 
     ########## EVALUATION OF THE FINETUNED MODEL ##########
     
-    evaluation = Evaluation(dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-                            test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl', 
-                            processor_path='./processor/', 
-                            saved_model_path='./saved_model/')
+    # evaluation = Evaluation(dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                         test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                         processor_path='./processor/', 
+    #                         saved_model_path='./saved_model/')
 
-    evaluation()
+    # evaluation()
 
+    ####################################################
+
+    ########## LIBRISPEECH CONFIG ##########
+
+    finetune_model = Finetuning(train_pkl='./pkl/librispeech_train.pkl', 
+                                dev_pkl='./pkl/librispeech_dev.pkl', 
+                                test_pkl='./pkl/librispeech_test.pkl', 
+                                processor_path='./processor/', 
+                                checkpoint_path='./ckpt/', 
+                                pretrained_model_path='./wav2vec2_base_model/', 
+                                saved_model_path='./saved_model/', 
+                                max_sample_length=450000, 
+                                batch_size=8, 
+                                epochs=10, 
+                                lr=1e-4, 
+                                weight_decay=0.005, 
+                                warmup_steps=1000, 
+                                finetune_from_scratch=True)
+
+    finetune_model()
+ 
     ####################################################

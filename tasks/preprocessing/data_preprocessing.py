@@ -24,6 +24,13 @@ class GeneratePickleFromScratch():
         self.audio_format = audio_format
         self.additional_preprocessing = additional_preprocessing
 
+    # create new directory and ignore already created ones
+    def create_new_dir(self, directory):
+        try:
+            os.mkdir(directory)
+        except OSError as error:
+            pass # directory already exists!
+
     # helper function to build the lookup table for the id and annotations from all the text files and return the table
     def build_lookup_table(self):
         #initiate list to store the id and annotations lookup
@@ -176,6 +183,9 @@ class GeneratePickleFromScratch():
                     
         # form the dataframe
         df_final = pd.DataFrame(data_list)
+
+        # create pickle folder if it does not exist
+        self.create_new_dir('./pkl/')
         
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
@@ -192,6 +202,13 @@ class GeneratePickleFromManifest():
         self.manifest_path = manifest_path
         self.pkl_filename = pkl_filename
         self.additional_preprocessing = additional_preprocessing
+
+    # create new directory and ignore already created ones
+    def create_new_dir(self, directory):
+        try:
+            os.mkdir(directory)
+        except OSError as error:
+            pass # directory already exists!
 
     # to input the text and detect if any digits exists, if there is, will convert the numbers into its word representation
     def get_text_from_number(self, text):
@@ -313,6 +330,9 @@ class GeneratePickleFromManifest():
 
         # form the dataframe
         df_final = pd.DataFrame(data_list)
+
+        # create pickle folder if it does not exist
+        self.create_new_dir('./pkl/')
 
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
