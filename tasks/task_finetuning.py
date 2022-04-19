@@ -47,6 +47,7 @@ task.execute_remotely(queue_name=config['queue'], exit_process=True)
 from preprocessing.finetuning import Finetuning
 
 # register clearml dataset
+# USE DATASET.GET INSTEAD AND SEE IF IT WORKS!
 
 # obtain the pkl file
 dataset = Dataset.create(
@@ -67,9 +68,9 @@ dataset_path = dataset.get_local_copy()
 dataset_w2v2_base_path = dataset_w2v2_base.get_local_copy()
 
 # process
-finetune_model = Finetuning(train_pkl=f'{dataset_path}/{args["train_pkl"]}', 
-                                dev_pkl=f'{dataset_path}/{args["dev_pkl"]}', 
-                                test_pkl=f'{dataset_path}/{args["test_pkl"]}', 
+finetune_model = Finetuning(train_pkl=f'{args["train_pkl"]}', 
+                                dev_pkl=f'{args["dev_pkl"]}', 
+                                test_pkl=f'{args["test_pkl"]}', 
                                 processor_path=args["processor_path"], 
                                 checkpoint_path=args["checkpoint_path"], 
                                 pretrained_model_path=f'{dataset_w2v2_base_path}/{args["pretrained_model_path"]}', 

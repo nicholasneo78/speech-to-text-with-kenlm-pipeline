@@ -3,7 +3,7 @@
 # task initialisation
 project_name: 'wav2vec2_kenlm_pipeline'
 task_name: 'finetuning'
-dataset_name: 'librispeech_v2'
+dataset_name: 'librispeech_v2_finetuning'
 output_url: 's3://experiment-logging' #/storage'
 dataset_project: 'datasets/librispeech'
 

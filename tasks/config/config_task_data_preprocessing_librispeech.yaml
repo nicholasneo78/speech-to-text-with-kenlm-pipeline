@@ -3,12 +3,12 @@
 # task initialisation
 project_name: 'wav2vec2_kenlm_pipeline'
 task_name: 'data_preprocessing'
-dataset_name: 'librispeech_v2'
+dataset_name: 'librispeech_v2_data_preprocessing'
 output_url: 's3://experiment-logging' #/storage'
 dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the data_preprocessing.py
-dataset_task_id: '11de2ae139e641ff94d15a5f730c6421'
+dataset_task_id: '0d7c03aeb2b546b0813fb85dc20ace65'
 manifest_path_train: 'train/train_manifest.json'
 pkl_train: './pkl/librispeech_train.pkl'
 manifest_path_dev: 'dev/dev_manifest.json'
