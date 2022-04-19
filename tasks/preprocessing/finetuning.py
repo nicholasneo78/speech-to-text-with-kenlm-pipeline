@@ -1,4 +1,5 @@
 # imports
+from platform import architecture
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -14,7 +15,7 @@ import os
 
 import torch
 from datasets import Dataset, DatasetDict, load_metric
-from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, TrainingArguments, Trainer
+from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, WavLMForCTC, TrainingArguments, Trainer
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
@@ -270,7 +271,7 @@ class DataCollatorCTCWithPadding:
 
 # set up trainer class to proceed with finetuning
 class Finetuning():
-    def __init__(self, train_pkl, dev_pkl, test_pkl, processor_path, checkpoint_path, pretrained_model_path, saved_model_path, max_sample_length, batch_size, epochs, lr, weight_decay, warmup_steps, finetune_from_scratch=False):
+    def __init__(self, train_pkl, dev_pkl, test_pkl, processor_path, checkpoint_path, pretrained_model_path, saved_model_path, max_sample_length, batch_size, epochs, lr, weight_decay, warmup_steps, architecture, finetune_from_scratch=False):
         self.train_pkl = train_pkl
         self.dev_pkl = dev_pkl
         self.test_pkl = test_pkl
@@ -284,6 +285,7 @@ class Finetuning():
         self.lr = lr
         self.weight_decay = weight_decay
         self.warmup_steps = warmup_steps
+        self.architecture = architecture
         self.finetune_from_scratch = finetune_from_scratch
     
     # defining evaluation metric during finetuning process
@@ -324,19 +326,31 @@ class Finetuning():
         if self.finetune_from_scratch:
             # obtain the preprocessed dataset and the processor
             dataset, processor = data_preparation()
-
-            # load the pretrained model, and finetune from scratch (using wav2vec2_base_model from huggingface)
-            model = Wav2Vec2ForCTC.from_pretrained(
-                self.pretrained_model_path,
-                ctc_loss_reduction="mean", 
-                pad_token_id=processor.tokenizer.pad_token_id,
-            )
+            
+            if self.architecture == 'wav2vec2':
+                # load the pretrained model, and finetune from scratch (using wav2vec2_base_model from huggingface)
+                model = Wav2Vec2ForCTC.from_pretrained(
+                    self.pretrained_model_path,
+                    ctc_loss_reduction="mean", 
+                    pad_token_id=processor.tokenizer.pad_token_id,
+                )
+            elif self.architecture == 'wavlm':
+                # load the pretrained model, and finetune from scratch (using wavlm_base_model from huggingface)
+                model = WavLMForCTC.from_pretrained(
+                    self.pretrained_model_path,
+                    ctc_loss_reduction="mean", 
+                    pad_token_id=processor.tokenizer.pad_token_id,
+                )
         else:
             # obtain only the preprocessed dataset and not the processor as it has already been built before, hence just load it
             dataset, _ = data_preparation()
 
             # to resume finetuning from checkpoints
-            model = Wav2Vec2ForCTC.from_pretrained(self.pretrained_model_path)
+            if self.architecture == 'wav2vec2':
+                model = Wav2Vec2ForCTC.from_pretrained(self.pretrained_model_path)
+            elif self.architecture == 'wavlm':
+                model = WavLMForCTC.from_pretrained(self.pretrained_model_path)
+
             processor = Wav2Vec2Processor.from_pretrained(self.processor_path)
 
         # load the data collator that uses CTC with padding
@@ -351,9 +365,9 @@ class Finetuning():
             num_train_epochs=self.epochs,
             fp16=True,
             gradient_checkpointing=True,
-            save_steps=200,
-            eval_steps=200,
-            logging_steps=200,
+            save_steps=500,
+            eval_steps=500,
+            logging_steps=500,
             learning_rate=self.lr,
             weight_decay=self.weight_decay,
             warmup_steps=self.warmup_steps,
@@ -390,11 +404,12 @@ class Finetuning():
 
 # set up evaluation code
 class Evaluation():
-    def __init__(self, dev_pkl, test_pkl, processor_path, saved_model_path):
+    def __init__(self, dev_pkl, test_pkl, processor_path, saved_model_path, architecture):
         self.dev_pkl = dev_pkl
         self.test_pkl = test_pkl
         self.processor_path = processor_path
         self.saved_model_path = saved_model_path
+        self.architecture = architecture
 
     # load the pickle data file - train data not required here
     def load_pickle_data(self):
@@ -444,7 +459,11 @@ class Evaluation():
     def evaluate(self):
 
         # load the saved model and processor from local
-        model = Wav2Vec2ForCTC.from_pretrained(self.saved_model_path)
+        if self.architecture == 'wav2vec2':
+            model = Wav2Vec2ForCTC.from_pretrained(self.saved_model_path)
+        elif self.architecture == 'wavlm':
+            model = WavLMForCTC.from_pretrained(self.saved_model_path)
+            
         processor = Wav2Vec2Processor.from_pretrained(self.processor_path)
         
         # load the dev and test dataset

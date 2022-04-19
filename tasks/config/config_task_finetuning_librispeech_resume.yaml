@@ -8,23 +8,23 @@ output_url: 's3://experiment-logging' #/storage'
 dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the data_preprocessing.py
-dataset_task_id: '008d58167e9248e48f9433e43fc30671'
-dataset_task_id_w2v2_base: 'bf5a0962b65946ec92b67ddc690532b1'
+dataset_task_id: '91e306c3352a4602839e22d734e2a1bf' 
+dataset_task_id_w2v2_base: '74b3db7d9cb64a09b5eb55dab7505aa8' # resume finetuning
 
-train_pkl: 'pkl/librispeech_train.pkl'
-dev_pkl: 'pkl/librispeech_dev.pkl'
-test_pkl: 'pkl/librispeech_test.pkl'
-processor_path: './processor/'
-checkpoint_path: './ckpt/'
-pretrained_model_path: 'wav2vec2_base_model/'
-saved_model_path: './saved_model/'
+train_pkl: 'librispeech_train.pkl'
+dev_pkl: 'librispeech_dev.pkl'
+test_pkl: 'librispeech_test.pkl'
+processor_path: 'processor/'
+checkpoint_path: 'ckpt/'
+# pretrained_model_path: 'wav2vec2_base_model/'
+saved_model_path: 'saved_model/'
 max_sample_length: 450000
 batch_size: 8
-epochs: 10
+epochs: 5
 lr: 1e-4
 weight_decay: 0.005
 warmup_steps: 1000
-finetune_from_scratch: True 
+finetune_from_scratch: False 
 
 # queue name
 queue: 'compute'

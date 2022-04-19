@@ -184,7 +184,8 @@ class GeneratePickleFromScratch():
         df_final = pd.DataFrame(data_list)
 
         # create pickle folder if it does not exist
-        self.create_new_dir('./pkl/')
+        self.create_new_dir('./root/')
+        self.create_new_dir('./root/pkl/')
         
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
@@ -331,7 +332,8 @@ class GeneratePickleFromManifest():
         df_final = pd.DataFrame(data_list)
 
         # create pickle folder if it does not exist
-        self.create_new_dir('./pkl/')
+        self.create_new_dir('./root/')
+        self.create_new_dir('./root/pkl/')
 
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
@@ -378,13 +380,13 @@ if __name__ == "__main__":
 
     # librispeech dataset
     librispeech_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/train/train_manifest.json', 
-                                                       pkl_filename='./pkl/librispeech_train.pkl')
+                                                       pkl_filename='./root/pkl/librispeech_train.pkl')
 
     librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/dev/dev_manifest.json', 
-                                                       pkl_filename='./pkl/librispeech_dev.pkl')
+                                                       pkl_filename='./root/pkl/librispeech_dev.pkl')
 
     librispeech_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/test/test_manifest.json', 
-                                                       pkl_filename='./pkl/librispeech_test.pkl')
+                                                       pkl_filename='./root/pkl/librispeech_test.pkl')
 
     df_train, _ = librispeech_train_pkl()
     df_dev, _ = librispeech_dev_pkl()
