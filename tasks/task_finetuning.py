@@ -2,7 +2,8 @@ from clearml import Task, Dataset
 import yaml
 
 # get task configs - ONLY THING NEEDED TO CHANGE
-CONFIG_FILE = './config/config_task_finetuning_librispeech_from_scratch.yaml'
+# CONFIG_FILE = './config/config_task_finetuning_librispeech_from_scratch.yaml' # from scratch
+CONFIG_FILE = './config/config_task_finetuning_librispeech_resume.yaml' # resume training
 
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
@@ -36,6 +37,7 @@ args = {
     'lr': config['lr'],
     'weight_decay': config['weight_decay'],
     'warmup_steps': config['warmup_steps'],
+    'architecture': config['architecture'],
     'finetune_from_scratch': config['finetune_from_scratch']
 }
 
@@ -52,8 +54,8 @@ dataset_pkl = Dataset.get(dataset_id=args['dataset_task_id'])
 dataset_pkl_path = dataset_pkl.get_local_copy()
 
 # obtaining the wav2vec2_base_pretrained model or resume finetuning
-dataset_w2v2_base = Dataset.get(dataset_id=args['dataset_task_id_w2v2_base'])
-dataset_w2v2_base_path = dataset_w2v2_base.get_local_copy()
+dataset_pretrained = Dataset.get(dataset_id=args['dataset_task_id_w2v2_base'])
+dataset_pretrained_path = dataset_pretrained.get_local_copy()
 
 # create new dataset object to store the checkpoint, processor, and saved model
 dataset = Dataset.create(
@@ -67,9 +69,9 @@ dataset = Dataset.create(
 finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{args["train_pkl"]}', 
                                 dev_pkl=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
                                 test_pkl=f'{dataset_pkl_path}/{args["test_pkl"]}', 
-                                processor_path=args["processor_path"], 
-                                checkpoint_path=args["checkpoint_path"], 
-                                pretrained_model_path=f'{dataset_w2v2_base_path}', 
+                                processor_path= f'{dataset_pretrained_path}/{args["processor_path"]}', #args["processor_path"], 
+                                checkpoint_path= f'{dataset_pretrained_path}/{args["checkpoint_path"]}', #args["checkpoint_path"], 
+                                pretrained_model_path=f'{dataset_pretrained_path}/saved_model/', # dataset_pretrained_path,
                                 saved_model_path=args["saved_model_path"], 
                                 max_sample_length=args["max_sample_length"], 
                                 batch_size=args["batch_size"], 
@@ -77,7 +79,8 @@ finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{args["train_pkl"]}',
                                 lr=float(args["lr"]), 
                                 weight_decay=args["weight_decay"], 
                                 warmup_steps=args["warmup_steps"], 
-                                finetune_from_scratch=args["finetune_from_scratch"])
+                                finetune_from_scratch=args["finetune_from_scratch"],
+                                architecture=args["architecture"])
 
 checkpoint_path, processor_path, pretrained_model_path, saved_model_path = finetune_model()
 
