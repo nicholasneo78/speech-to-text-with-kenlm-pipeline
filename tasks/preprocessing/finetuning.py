@@ -575,16 +575,17 @@ if __name__ == "__main__":
     finetune_model = Finetuning(train_pkl='./pkl/librispeech_train.pkl', 
                                 dev_pkl='./pkl/librispeech_dev.pkl', 
                                 test_pkl='./pkl/librispeech_test.pkl', 
-                                processor_path='./processor/', 
-                                checkpoint_path='./ckpt/', 
-                                pretrained_model_path='./wav2vec2_base_model/', 
-                                saved_model_path='./saved_model/', 
+                                processor_path='./wavlm/processor/', 
+                                checkpoint_path='./wavlm/ckpt/', 
+                                pretrained_model_path='./wavlm_base_model/', 
+                                saved_model_path='./wavlm/saved_model/', 
                                 max_sample_length=450000, 
                                 batch_size=8, 
-                                epochs=10, 
+                                epochs=5, 
                                 lr=1e-4, 
                                 weight_decay=0.005, 
                                 warmup_steps=1000, 
+                                architecture='wavlm',
                                 finetune_from_scratch=True)
 
     _, _, _, _ = finetune_model()

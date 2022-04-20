@@ -63,5 +63,5 @@ EXPOSE 8888
 CMD ["jupyter" ,"lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
 #CMD ["jupyter", "lab", "--port=8888", "--no-browser", "--ip='*'", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
 
-WORKDIR /w2v2_kenlm_pipeline
+WORKDIR /stt_with_kenlm_pipeline
 RUN ["bash"]

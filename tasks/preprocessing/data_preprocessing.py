@@ -190,7 +190,7 @@ class GeneratePickleFromScratch():
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
         
-        return df_final  
+        return df_final, self.pkl_filename
         
     def __call__(self):
         return self.build_pickle_from_scratch()
@@ -347,36 +347,36 @@ class GeneratePickleFromManifest():
 
 if __name__ == "__main__":
 
-    # # magister dataset v1
-    # magister_train_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/train/', 
-    #                                                pkl_filename='./pkl/magister_data_flac_16000_train.pkl', 
-    #                                                audio_format='.flac')
+    # magister dataset v1
+    magister_train_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/train/', 
+                                                   pkl_filename='./root/pkl/magister_data_flac_16000_train.pkl', 
+                                                   audio_format='.flac')
 
-    # magister_dev_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/dev/', 
-    #                                              pkl_filename='./pkl/magister_data_flac_16000_dev.pkl', 
-    #                                              audio_format='.flac')
+    magister_dev_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/dev/', 
+                                                 pkl_filename='./root/pkl/magister_data_flac_16000_dev.pkl', 
+                                                 audio_format='.flac')
 
-    # magister_test_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/test/', 
-    #                                               pkl_filename='./pkl/magister_data_flac_16000_test.pkl', 
-    #                                               audio_format='.flac')
+    magister_test_pkl = GeneratePickleFromScratch(root_folder='./datasets/magister_data_flac_16000/test/', 
+                                                  pkl_filename='./root/pkl/magister_data_flac_16000_test.pkl', 
+                                                  audio_format='.flac')
 
-    # df_train = magister_train_pkl()
-    # df_dev = magister_dev_pkl()
-    # df_test = magister_test_pkl()
+    df_train, _ = magister_train_pkl()
+    df_dev, _ = magister_dev_pkl()
+    df_test, _ = magister_test_pkl()
 
-    # # magister dataset v2
-    # magister_v2_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/train_manifest.json', 
-    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_train.pkl')
+    # magister dataset v2
+    magister_v2_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/train_manifest.json', 
+                                                       pkl_filename='./root/pkl/magister_data_v2_wav_16000_train.pkl')
 
-    # magister_v2_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/dev_manifest.json', 
-    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_dev.pkl')
+    magister_v2_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/dev_manifest.json', 
+                                                       pkl_filename='./root/pkl/magister_data_v2_wav_16000_dev.pkl')
 
-    # magister_v2_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/test_manifest.json', 
-    #                                                    pkl_filename='./pkl/magister_data_v2_wav_16000_test.pkl')
+    magister_v2_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/test_manifest.json', 
+                                                       pkl_filename='./root/pkl/magister_data_v2_wav_16000_test.pkl')
 
-    # df_train = magister_v2_train_pkl()
-    # df_dev = magister_v2_dev_pkl()
-    # df_test = magister_v2_test_pkl()
+    df_train, _ = magister_v2_train_pkl()
+    df_dev, _ = magister_v2_dev_pkl()
+    df_test, _ = magister_v2_test_pkl()
 
     # librispeech dataset
     librispeech_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/train/train_manifest.json', 

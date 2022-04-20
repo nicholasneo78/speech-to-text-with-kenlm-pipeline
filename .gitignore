@@ -16,6 +16,8 @@ tasks/preprocessing/pkl/*
 # transformers
 tasks/preprocessing/wav2vec2_base_model/*
 tasks/preprocessing/wavlm_base_model/*
+tasks/preprocessing/wavlm/*
+tasks/preprocessing/wav2vec2/*
 tasks/preprocessing/saved_model/*
 tasks/preprocessing/processor/*
 tasks/preprocessing/ckpt/*
