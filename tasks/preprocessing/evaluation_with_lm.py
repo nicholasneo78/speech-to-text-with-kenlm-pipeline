@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from pyctcdecode import build_ctcdecoder
 import soundfile as sf
-from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
+from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC, WavLMForCTC
 import torch
 import os
 import re
@@ -15,13 +15,14 @@ device = 'cuda' if torch.cuda.is_available else 'cpu'
 print(f'Device: {device}\n')
 
 class EvaluationWithLM():
-    def __init__(self, finetuned_model_path, processor_path, lm_path, test_data_path, alpha, beta):
+    def __init__(self, finetuned_model_path, processor_path, lm_path, test_data_path, alpha, beta, architecture):
         self.finetuned_model_path = finetuned_model_path
         self.processor_path = processor_path
         self.lm_path = lm_path
         self.test_data_path = test_data_path
         self.alpha = alpha
         self.beta = beta
+        self.architecture = architecture
 
     # greedy decode algorithm - decodes argmax of logits and squash in CTC fashion
     def greedy_decode(self, logits, labels):
@@ -40,7 +41,10 @@ class EvaluationWithLM():
     def get_wer(self):
         
         # load the finetuned model and the processor that is produced from finetuning.py script
-        asr_model = Wav2Vec2ForCTC.from_pretrained(self.finetuned_model_path)
+        if self.architecture == 'wav2vec2':
+            asr_model = Wav2Vec2ForCTC.from_pretrained(self.finetuned_model_path)
+        elif self.architecture == 'wavlm':
+            asr_model = WavLMForCTC.from_pretrained(self.finetuned_model_path)
         asr_processor = Wav2Vec2Processor.from_pretrained(self.processor_path)
 
         # get the vocab list from the dictionary
@@ -123,15 +127,25 @@ if __name__ == "__main__":
     #                               processor_path='./processor/',
     #                               lm_path='lm/5_gram_magister.arpa', 
     #                               test_data_path='./pkl/magister_data_flac_16000_test.pkl', 
-    #                               alpha=0.6, beta=1.0)
+    #                               alpha=0.6, beta=1.0, architecture='wav2vec2')
 
     # greedy, beam = evaluation()
 
-    # magister v2
-    evaluation = EvaluationWithLM(finetuned_model_path='./saved_model/',
-                                  processor_path='./processor/',
+    # # magister v2 wav2vec2
+    # evaluation = EvaluationWithLM(finetuned_model_path='./root/magister_v2/wav2vec2/saved_model/',
+    #                               processor_path='./root/magister_v2/wav2vec2/processor/',
+    #                               lm_path='lm/5_gram_magister_v2.arpa', 
+    #                               test_data_path='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                               alpha=0.6, beta=1.0, architecture='wav2vec2')
+
+    # greedy, beam = evaluation()
+
+    # magister v2 wavlm
+    evaluation = EvaluationWithLM(finetuned_model_path='./root/magister_v2/wavlm/saved_model/',
+                                  processor_path='./root/magister_v2/wavlm/processor/',
                                   lm_path='lm/5_gram_magister_v2.arpa', 
-                                  test_data_path='./pkl/magister_data_v2_wav_16000_test.pkl', 
-                                  alpha=0.6, beta=1.0)
+                                  test_data_path='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+                                  alpha=0.6, beta=1.0,
+                                  architecture='wavlm')
 
     greedy, beam = evaluation()

@@ -14,13 +14,18 @@ dataset_task_id_w2v2_base: '33a973d1ec394fe689435314275b33b7' # resume finetunin
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
 test_pkl: 'pkl/librispeech_test.pkl'
-processor_path: 'processor/'
-checkpoint_path: 'ckpt/'
-# pretrained_model_path: 'wav2vec2_base_model/'
-saved_model_path: 'saved_model/'
+
+input_processor_path: 'processor/'
+input_checkpoint_path: 'ckpt/'
+input_pretrained_model_path: 'saved_model/' #'wav2vec2_base_model/'
+
+output_processor_path: 'root/processor/'
+output_checkpoint_path: 'root/ckpt/'
+output_saved_model_path: 'root/saved_model/'
+
 max_sample_length: 450000
-batch_size: 32
-epochs: 15
+batch_size: 16
+epochs: 8
 lr: 1e-4
 weight_decay: 0.005
 warmup_steps: 1000

@@ -52,8 +52,8 @@ if __name__ == "__main__":
 
     ########## MAGISTER CONFIG ##########
 
-    # get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./pkl/magister_data_v2_wav_16000_train.pkl',
-    #                                  df_dev_filepath='./pkl/magister_data_v2_wav_16000_dev.pkl',
+    # get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./root/pkl/magister_data_v2_wav_16000_train.pkl',
+    #                                  df_dev_filepath='./root/pkl/magister_data_v2_wav_16000_dev.pkl',
     #                                  txt_filepath='lm/magister_v2_annotations.txt')
 
     # get_txt_from_pkl()
@@ -62,8 +62,8 @@ if __name__ == "__main__":
 
     ########## LIBRISPEECH CONFIG ##########
 
-    get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./pkl/librispeech_train.pkl',
-                                     df_dev_filepath='./pkl/librispeech_dev.pkl',
+    get_txt_from_pkl = GetTxtFromPkl(df_train_filepath='./root/pkl/librispeech_train.pkl',
+                                     df_dev_filepath='./root/pkl/librispeech_dev.pkl',
                                      txt_filepath='lm/librispeech.txt')
 
     get_txt_from_pkl()

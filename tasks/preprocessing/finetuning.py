@@ -1,5 +1,5 @@
 # imports
-from platform import architecture
+from gc import callbacks
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -12,10 +12,12 @@ import plotext as plt
 from IPython.display import display, HTML
 import random
 import os
+import shutil
 
 import torch
 from datasets import Dataset, DatasetDict, load_metric
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, WavLMForCTC, TrainingArguments, Trainer
+from transformers.integrations import TensorBoardCallback
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
@@ -271,14 +273,19 @@ class DataCollatorCTCWithPadding:
 
 # set up trainer class to proceed with finetuning
 class Finetuning():
-    def __init__(self, train_pkl, dev_pkl, test_pkl, processor_path, checkpoint_path, pretrained_model_path, saved_model_path, max_sample_length, batch_size, epochs, lr, weight_decay, warmup_steps, architecture, finetune_from_scratch=False):
+    def __init__(self, train_pkl, dev_pkl, test_pkl, input_processor_path, input_checkpoint_path, input_pretrained_model_path, output_processor_path, output_checkpoint_path, output_saved_model_path, max_sample_length, batch_size, epochs, lr, weight_decay, warmup_steps, architecture, finetune_from_scratch=False):
         self.train_pkl = train_pkl
         self.dev_pkl = dev_pkl
         self.test_pkl = test_pkl
-        self.processor_path = processor_path
-        self.checkpoint_path = checkpoint_path
-        self.pretrained_model_path = pretrained_model_path
-        self.saved_model_path = saved_model_path
+
+        self.input_processor_path = input_processor_path
+        self.input_checkpoint_path = input_checkpoint_path
+        self.input_pretrained_model_path = input_pretrained_model_path
+
+        self.output_processor_path = output_processor_path
+        self.output_checkpoint_path = output_checkpoint_path
+        self.output_saved_model_path = output_saved_model_path
+
         self.max_sample_length = max_sample_length
         self.batch_size = batch_size
         self.epochs = epochs
@@ -319,7 +326,7 @@ class Finetuning():
         data_preparation = FinetuningPreparation(train_pkl=self.train_pkl,
                                                  dev_pkl=self.dev_pkl, 
                                                  test_pkl=self.test_pkl,
-                                                 processor_path=self.processor_path, 
+                                                 processor_path=self.input_processor_path, 
                                                  max_sample_length=self.max_sample_length, 
                                                  mode='finetuning_prep')
         
@@ -330,14 +337,14 @@ class Finetuning():
             if self.architecture == 'wav2vec2':
                 # load the pretrained model, and finetune from scratch (using wav2vec2_base_model from huggingface)
                 model = Wav2Vec2ForCTC.from_pretrained(
-                    self.pretrained_model_path,
+                    self.input_pretrained_model_path,
                     ctc_loss_reduction="mean", 
                     pad_token_id=processor.tokenizer.pad_token_id,
                 )
             elif self.architecture == 'wavlm':
                 # load the pretrained model, and finetune from scratch (using wavlm_base_model from huggingface)
                 model = WavLMForCTC.from_pretrained(
-                    self.pretrained_model_path,
+                    self.input_pretrained_model_path,
                     ctc_loss_reduction="mean", 
                     pad_token_id=processor.tokenizer.pad_token_id,
                 )
@@ -347,18 +354,18 @@ class Finetuning():
 
             # to resume finetuning from checkpoints
             if self.architecture == 'wav2vec2':
-                model = Wav2Vec2ForCTC.from_pretrained(self.pretrained_model_path)
+                model = Wav2Vec2ForCTC.from_pretrained(self.input_pretrained_model_path)
             elif self.architecture == 'wavlm':
-                model = WavLMForCTC.from_pretrained(self.pretrained_model_path)
+                model = WavLMForCTC.from_pretrained(self.input_pretrained_model_path)
 
-            processor = Wav2Vec2Processor.from_pretrained(self.processor_path)
+            processor = Wav2Vec2Processor.from_pretrained(self.input_processor_path)
 
         # load the data collator that uses CTC with padding
         data_collator = DataCollatorCTCWithPadding(processor=processor, padding=True)
 
         # setup training arguments
         training_args = TrainingArguments(
-            output_dir=self.checkpoint_path,
+            output_dir=self.input_checkpoint_path,
             group_by_length=True,
             per_device_train_batch_size=self.batch_size,
             evaluation_strategy="steps",
@@ -366,12 +373,12 @@ class Finetuning():
             fp16=True,
             gradient_checkpointing=True,
             save_steps=500,
-            eval_steps=500,
-            logging_steps=500,
+            eval_steps=50,
+            logging_steps=50,
             learning_rate=self.lr,
             weight_decay=self.weight_decay,
             warmup_steps=self.warmup_steps,
-            save_total_limit=2,
+            save_total_limit=1,
             push_to_hub=False,
         )
 
@@ -384,6 +391,7 @@ class Finetuning():
             train_dataset=dataset["train"],
             eval_dataset=dataset["dev"],
             tokenizer=processor.feature_extractor,
+            callbacks=[TensorBoardCallback(),]
         )
 
         # start the finetuning - either finetuning from scratch or resume from checkpoint
@@ -392,15 +400,24 @@ class Finetuning():
         else:
             trainer.train(resume_from_checkpoint=True)
 
-        # save the model to local directory
-        trainer.save_state()
-        trainer.save_model(self.saved_model_path)
+        # for clearml: make a copy of the folder from input checkpoint to output checkpoint destination
+        # if local then just ignore
+        if self.input_checkpoint_path == self.output_checkpoint_path:
+            pass
+        else:
+            shutil.copytree(self.input_checkpoint_path, self.output_checkpoint_path) #+'root/')
 
-        return  self.checkpoint_path, self.processor_path, self.pretrained_model_path, self.saved_model_path
+        # save the model to local directory
+        trainer.save_model(self.output_saved_model_path)
+        trainer.save_state()
+
+        # save the processor
+        processor.save_pretrained(self.output_processor_path)
+
+        return  self.output_checkpoint_path, self.output_processor_path, self.input_pretrained_model_path, self.output_saved_model_path
 
     def __call__(self):
         return self.finetune()
-
 
 # set up evaluation code
 class Evaluation():
@@ -480,114 +497,200 @@ class Evaluation():
         wer_metric = load_metric("wer")
 
         # get the wer of the dev and the test set
-        print("Validation WER: {:.5f}".format(wer_metric.compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
+        print("\nValidation WER: {:.5f}".format(wer_metric.compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
         print("Test WER: {:.5f}".format(wer_metric.compute(predictions=results_test["pred_str"], references=results_test["text"])))
+        print()
 
     def __call__(self):
         return self.evaluate()
 
+
+
 if __name__ == "__main__":
     
-    ########## GET AUDIO LENGTH DISTRIBUTION ##########
+    # ########## MAGISTER: GET AUDIO LENGTH DISTRIBUTION ##########
 
     # print('Getting the audio length distribution of the train dataset\n')
-    # distribution = FinetuningPreparation(train_pkl='./pkl/magister_data_v2_wav_16000_train.pkl',
-    #                                      dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                                      test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl',
-    #                                      processor_path='./processor/', 
+    # distribution = FinetuningPreparation(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl',
+    #                                      dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                                      test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl',
+    #                                      processor_path='./root/wav2vec2/processor/', 
     #                                      max_sample_length=None, 
     #                                      mode='get_audio_length_distribution')
 
     # distribution()
 
-    ####################################################
+    ###################################################
 
-    ########## GET THE PREPARED DATASET FOR THE FINETUNING TASK ##########
 
-    # print('Getting the prepared dataset for the finetuning task\n')
-    # data_preparation = FinetuningPreparation(train_pkl='./pkl/magister_data_v2_wav_16000_train.pkl',
-    #                                      dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                                      test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl',
-    #                                      processor_path='./processor/', 
-    #                                      max_sample_length=450000, 
-    #                                      mode='finetuning_prep')
 
-    # dataset, _ = data_preparation()
-    # print(dataset)
 
-    ####################################################
 
-    ########## FINETUNING THE MODEL - FROM SCRATCH ##########
+    ########## MAGISTER: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
 
-    # finetune_model = Finetuning(train_pkl='./pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                             dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                             test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                             processor_path='./processor/', 
-    #                             checkpoint_path='./ckpt/', 
-    #                             pretrained_model_path='./wav2vec2_base_model/', 
-    #                             saved_model_path='./saved_model/', 
+    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
+    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                             input_processor_path='./root/magister_v2/wav2vec2/processor/', 
+    #                             input_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
+    #                             input_pretrained_model_path='./wav2vec2_base_model/',
+    #                             output_processor_path='./root/magister_v2/wav2vec2/processor/', 
+    #                             output_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
+    #                             output_saved_model_path='./root/magister_v2/wav2vec2/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
-    #                             epochs=10, 
+    #                             epochs=10,
     #                             lr=1e-4, 
     #                             weight_decay=0.005, 
     #                             warmup_steps=1000, 
+    #                             architecture='wav2vec2',
     #                             finetune_from_scratch=True)
 
-    # finetune_model()
+    # _, _, _, _ = finetune_model()
 
-    ####################################################
+    ##################################################
 
-    ########## FINETUNING THE MODEL - RESUMING FROM CHECKPOINT ##########
+    # ########## MAGISTER: FINETUNING (RESUMING FROM CHECKPOINT) - WAV2VEC2 ##########
 
-    # finetune_model = Finetuning(train_pkl='./pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                             dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                             test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                             processor_path='./processor/', 
-    #                             checkpoint_path='./ckpt/', 
-    #                             pretrained_model_path='./saved_model/', 
-    #                             saved_model_path='./saved_model/', 
+    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
+    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                             input_processor_path='./root/magister_v2/wav2vec2/processor/', 
+    #                             input_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
+    #                             input_pretrained_model_path='./root/magister_v2/wav2vec2/saved_model/',
+    #                             output_processor_path='./root/magister_v2/wav2vec2/processor/', 
+    #                             output_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
+    #                             output_saved_model_path='./root/magister_v2/wav2vec2/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
-    #                             epochs=15, 
+    #                             epochs=15,
     #                             lr=1e-4, 
     #                             weight_decay=0.005, 
     #                             warmup_steps=1000, 
+    #                             architecture='wav2vec2',
     #                             finetune_from_scratch=False)
 
-    # finetune_model()
+    # _, _, _, _ = finetune_model()
 
     ####################################################
 
-    ########## EVALUATION OF THE FINETUNED MODEL ##########
+    # ########## MAGISTER: EVALUATION - WAV2VEC2 ##########
     
-    # evaluation = Evaluation(dev_pkl='./pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                         test_pkl='./pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                         processor_path='./processor/', 
-    #                         saved_model_path='./saved_model/')
+    # evaluation = Evaluation(dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                         test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                         processor_path='./root/magister_v2/wav2vec2/processor/', 
+    #                         saved_model_path='./root/magister_v2/wav2vec2/saved_model/',
+    #                         architecture='wav2vec2')
 
     # evaluation()
 
     ####################################################
 
-    ########## LIBRISPEECH CONFIG ##########
 
-    finetune_model = Finetuning(train_pkl='./pkl/librispeech_train.pkl', 
-                                dev_pkl='./pkl/librispeech_dev.pkl', 
-                                test_pkl='./pkl/librispeech_test.pkl', 
-                                processor_path='./wavlm/processor/', 
-                                checkpoint_path='./wavlm/ckpt/', 
-                                pretrained_model_path='./wavlm_base_model/', 
-                                saved_model_path='./wavlm/saved_model/', 
-                                max_sample_length=450000, 
-                                batch_size=8, 
-                                epochs=5, 
-                                lr=1e-4, 
-                                weight_decay=0.005, 
-                                warmup_steps=1000, 
-                                architecture='wavlm',
-                                finetune_from_scratch=True)
 
-    _, _, _, _ = finetune_model()
+
+
+
+
+    # ########## MAGISTER: FINETUNING (FROM SCRATCH) - WAVLM ##########
+
+    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
+    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                             input_processor_path='./root/magister_v2/wavlm/processor/', 
+    #                             input_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
+    #                             input_pretrained_model_path='./wavlm_base_model/',
+    #                             output_processor_path='./root/magister_v2/wavlm/processor/', 
+    #                             output_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
+    #                             output_saved_model_path='./root/magister_v2/wavlm/saved_model/', 
+    #                             max_sample_length=450000, 
+    #                             batch_size=8, 
+    #                             epochs=10,
+    #                             lr=1e-4, 
+    #                             weight_decay=0.005, 
+    #                             warmup_steps=1000, 
+    #                             architecture='wavlm',
+    #                             finetune_from_scratch=True)
+
+    # _, _, _, _ = finetune_model()
+
+    ##################################################
+
+    # ########## MAGISTER: FINETUNING (RESUMING FROM CHECKPOINT) - WAVLM ##########
+
+    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
+    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    #                             input_processor_path='./root/magister_v2/wavlm/processor/', 
+    #                             input_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
+    #                             input_pretrained_model_path='./root/magister_v2/wavlm/saved_model/',
+    #                             output_processor_path='./root/magister_v2/wavlm/processor/', 
+    #                             output_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
+    #                             output_saved_model_path='./root/magister_v2/wavlm/saved_model/', 
+    #                             max_sample_length=450000, 
+    #                             batch_size=8, 
+    #                             epochs=15,
+    #                             lr=1e-4, 
+    #                             weight_decay=0.005, 
+    #                             warmup_steps=1000, 
+    #                             architecture='wavlm',
+    #                             finetune_from_scratch=False)
+
+    # _, _, _, _ = finetune_model()
+
+    ####################################################
+
+    ########## MAGISTER: EVALUATION - WAVLM ##########
+    
+    evaluation = Evaluation(dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
+                            test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+                            processor_path='./root/magister_v2/wavlm/processor/', 
+                            saved_model_path='./root/magister_v2/wavlm/saved_model/',
+                            architecture='wavlm')
+
+    evaluation()
+
+    ###################################################
+
+
+
+
+
+
+
+
+    # ########## LIBRISPEECH: GET AUDIO LENGTH DISTRIBUTION ##########
+
+    # print('Getting the audio length distribution of the train dataset\n')
+    # distribution = FinetuningPreparation(train_pkl='./root/pkl/librispeech_train.pkl',
+    #                                      dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                                      test_pkl='./root/pkl/librispeech_test.pkl',
+    #                                      processor_path='./root/wav2vec2/processor/', 
+    #                                      max_sample_length=None, 
+    #                                      mode='get_audio_length_distribution')
+
+    # distribution()
+
+    ###################################################
+
+    ########## LIBRISPEECH: FINETUNING ##########
+
+    # finetune_model = Finetuning(train_pkl='./pkl/librispeech_train.pkl', 
+    #                             dev_pkl='./pkl/librispeech_dev.pkl', 
+    #                             test_pkl='./pkl/librispeech_test.pkl', 
+    #                             processor_path='./wavlm/processor/', 
+    #                             checkpoint_path='./wavlm/ckpt/', 
+    #                             pretrained_model_path='./wavlm_base_model/', 
+    #                             saved_model_path='./wavlm/saved_model/', 
+    #                             max_sample_length=450000, 
+    #                             batch_size=8, 
+    #                             epochs=5, 
+    #                             lr=1e-4, 
+    #                             weight_decay=0.005, 
+    #                             warmup_steps=1000, 
+    #                             architecture='wavlm',
+    #                             finetune_from_scratch=True)
+
+    # _, _, _, _ = finetune_model()
  
     ####################################################

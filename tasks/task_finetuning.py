@@ -17,20 +17,26 @@ DATASET_PROJECT = config['dataset_project']
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
-    docker_image="nicholasneo78/w2v2_kenlm_pipeline:v0.2.3",
+    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.0",
 )
 
 # get the args for data preprocessing
 args = {
     'dataset_task_id': config['dataset_task_id'],
     'dataset_task_id_w2v2_base': config['dataset_task_id_w2v2_base'],
+
     'train_pkl': config['train_pkl'],
     'dev_pkl': config['dev_pkl'],
     'test_pkl': config['test_pkl'],
-    'processor_path': config['processor_path'],
-    'checkpoint_path': config['checkpoint_path'],
-    #'pretrained_model_path': config['pretrained_model_path'],
-    'saved_model_path': config['saved_model_path'],
+
+    'input_processor_path': config['input_processor_path'],
+    'input_checkpoint_path': config['input_checkpoint_path'],
+    'input_pretrained_model_path': config['input_pretrained_model_path'],
+
+    'output_processor_path': config['output_processor_path'],
+    'output_checkpoint_path': config['output_checkpoint_path'],
+    'output_saved_model_path': config['output_saved_model_path'],
+
     'max_sample_length': config['max_sample_length'],
     'batch_size': config['batch_size'],
     'epochs': config['epochs'],
@@ -69,10 +75,15 @@ dataset = Dataset.create(
 finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{args["train_pkl"]}', 
                                 dev_pkl=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
                                 test_pkl=f'{dataset_pkl_path}/{args["test_pkl"]}', 
-                                processor_path= f'{dataset_pretrained_path}/{args["processor_path"]}', #args["processor_path"], 
-                                checkpoint_path= f'{dataset_pretrained_path}/{args["checkpoint_path"]}', #args["checkpoint_path"], 
-                                pretrained_model_path=f'{dataset_pretrained_path}/saved_model/', # dataset_pretrained_path,
-                                saved_model_path=args["saved_model_path"], 
+                                
+                                input_processor_path= f'{dataset_pretrained_path}/{args["input_processor_path"]}', #args["processor_path"], 
+                                input_checkpoint_path= f'{dataset_pretrained_path}/{args["input_checkpoint_path"]}', #args["checkpoint_path"], 
+                                input_pretrained_model_path=f'{dataset_pretrained_path}/{args["input_pretrained_model_path"]}', # dataset_pretrained_path,
+                                
+                                output_processor_path= args["output_processor_path"], #f'{dataset_pretrained_path}/{args["processor_path"]}', #args["processor_path"], 
+                                output_checkpoint_path= args["output_checkpoint_path"],  #f'{dataset_pretrained_path}/{args["checkpoint_path"]}', #args["checkpoint_path"], 
+                                output_saved_model_path=args["output_saved_model_path"], 
+                                
                                 max_sample_length=args["max_sample_length"], 
                                 batch_size=args["batch_size"], 
                                 epochs=args["epochs"], 

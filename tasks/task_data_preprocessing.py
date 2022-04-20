@@ -16,7 +16,7 @@ DATASET_PROJECT = config['dataset_project']
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
-    docker_image="nicholasneo78/w2v2_kenlm_pipeline:v0.2.3",
+    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.0",
 )
 
 # get the args for data preprocessing
