@@ -59,6 +59,8 @@ from preprocessing.finetuning import Finetuning
 dataset_pkl = Dataset.get(dataset_id=args['dataset_pkl_task_id'])
 dataset_pkl_path = dataset_pkl.get_local_copy()
 
+# previous_task = Task.get_task(task_id=args['dataset_pretrained_task_id'])
+
 # obtaining the wav2vec2_base_pretrained model or resume finetuning
 dataset_pretrained = Dataset.get(dataset_id=args['dataset_pretrained_task_id'])
 dataset_pretrained_path = dataset_pretrained.get_local_copy()
@@ -68,7 +70,6 @@ dataset = Dataset.create(
     dataset_project=DATASET_PROJECT,
     dataset_name=DATASET_NAME,
 )
-
 
 # process
 finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{args["train_pkl"]}', 

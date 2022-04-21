@@ -38,12 +38,15 @@ class GetTxtFromPkl():
         df_for_building_lm = pd.concat([pd.DataFrame(df_train.text), pd.DataFrame(df_dev.text)]).reset_index(drop=True)
 
         # create pickle folder if it does not exist
-        self.create_new_dir('./lm/')
+        self.create_new_dir('./root/')
+        self.create_new_dir('./root/lm/')
 
         # remove the '#' (filler words) as it is not useful in building the language model and write the annotations into a .txt file
         with open(self.txt_filepath, 'w+') as f:
             for idx, text in enumerate(df_for_building_lm.text):
                 f.write(f"{text.replace('# ', '').replace('#', '')}\n")
+
+        return self.txt_filepath
 
     def __call__(self):
         return self.generate_text_file()
@@ -66,6 +69,6 @@ if __name__ == "__main__":
                                      df_dev_filepath='./root/pkl/librispeech_dev.pkl',
                                      txt_filepath='lm/librispeech.txt')
 
-    get_txt_from_pkl()
+    _ = get_txt_from_pkl()
 
     ####################################################
