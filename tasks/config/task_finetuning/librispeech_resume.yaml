@@ -8,8 +8,8 @@ output_url: 's3://experiment-logging' #/storage'
 dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the data_preprocessing.py
-dataset_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
-dataset_task_id_w2v2_base: '33a973d1ec394fe689435314275b33b7' # resume finetuning
+dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
+dataset_pretrained_task_id: 'f2475bdabe364b5e921b2b762469c1b3' # resume finetuning
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
@@ -25,7 +25,7 @@ output_saved_model_path: 'root/saved_model/'
 
 max_sample_length: 450000
 batch_size: 16
-epochs: 12
+epochs: 5
 lr: 1e-4
 weight_decay: 0.005
 warmup_steps: 1000

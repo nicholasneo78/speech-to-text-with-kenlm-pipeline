@@ -372,7 +372,7 @@ class Finetuning():
             num_train_epochs=self.epochs,
             fp16=True,
             gradient_checkpointing=True,
-            save_steps=500,
+            save_steps=200,
             eval_steps=50,
             logging_steps=50,
             learning_rate=self.lr,

@@ -2,8 +2,8 @@ from clearml import Task, Dataset
 import yaml
 
 # get task configs - ONLY THING NEEDED TO CHANGE
-CONFIG_FILE = './config/config_task_finetuning_librispeech_from_scratch.yaml' # from scratch
-# CONFIG_FILE = './config/config_task_finetuning_librispeech_resume.yaml' # resume training
+# CONFIG_FILE = './config/task_finetuning/librispeech_from_scratch.yaml' # from scratch
+CONFIG_FILE = './config/task_finetuning/librispeech_resume.yaml' # resume training
 
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
@@ -17,14 +17,13 @@ DATASET_PROJECT = config['dataset_project']
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
-    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.1",
-    #docker_setup_bash_script=['python3 -m pip install tensorboardX --no-cache-dir']
+    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.1"
 )
 
 # get the args for data preprocessing
 args = {
-    'dataset_task_id': config['dataset_task_id'],
-    'dataset_task_id_w2v2_base': config['dataset_task_id_w2v2_base'],
+    'dataset_pkl_task_id': config['dataset_pkl_task_id'],
+    'dataset_pretrained_task_id': config['dataset_pretrained_task_id'],
 
     'train_pkl': config['train_pkl'],
     'dev_pkl': config['dev_pkl'],
@@ -57,18 +56,17 @@ task.execute_remotely(queue_name=config['queue'], exit_process=True)
 from preprocessing.finetuning import Finetuning
 
 # obtaining the pkl file
-dataset_pkl = Dataset.get(dataset_id=args['dataset_task_id'])
+dataset_pkl = Dataset.get(dataset_id=args['dataset_pkl_task_id'])
 dataset_pkl_path = dataset_pkl.get_local_copy()
 
 # obtaining the wav2vec2_base_pretrained model or resume finetuning
-dataset_pretrained = Dataset.get(dataset_id=args['dataset_task_id_w2v2_base'])
+dataset_pretrained = Dataset.get(dataset_id=args['dataset_pretrained_task_id'])
 dataset_pretrained_path = dataset_pretrained.get_local_copy()
 
 # create new dataset object to store the checkpoint, processor, and saved model
 dataset = Dataset.create(
     dataset_project=DATASET_PROJECT,
     dataset_name=DATASET_NAME,
-    # parent_datasets=[args['dataset_task_id']]
 )
 
 

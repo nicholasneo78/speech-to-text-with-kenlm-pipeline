@@ -8,8 +8,8 @@ output_url: 's3://experiment-logging' #/storage'
 dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the data_preprocessing.py
-dataset_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
-dataset_task_id_w2v2_base: 'c407832abe274bdfadbee1615e400bd2' # finetune from scratch
+dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
+dataset_pretrained_task_id: 'c407832abe274bdfadbee1615e400bd2' # finetune from scratch
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'

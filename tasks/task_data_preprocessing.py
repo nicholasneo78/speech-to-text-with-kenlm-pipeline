@@ -2,7 +2,7 @@ from clearml import Task, Dataset
 import yaml
 
 # get task configs - ONLY THING NEEDED TO CHANGE
-CONFIG_FILE = './config/config_task_data_preprocessing_librispeech.yaml'
+CONFIG_FILE = './config/task_data_preprocessing/librispeech.yaml'
 
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
