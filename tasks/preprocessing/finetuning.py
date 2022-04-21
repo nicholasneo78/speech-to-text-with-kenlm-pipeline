@@ -533,7 +533,7 @@ if __name__ == "__main__":
     #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
     #                             input_processor_path='./root/magister_v2/wav2vec2/processor/', 
     #                             input_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
-    #                             input_pretrained_model_path='./wav2vec2_base_model/',
+    #                             input_pretrained_model_path='./root_base_model/wav2vec2_base_model/',
     #                             output_processor_path='./root/magister_v2/wav2vec2/processor/', 
     #                             output_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
     #                             output_saved_model_path='./root/magister_v2/wav2vec2/saved_model/', 
@@ -599,7 +599,7 @@ if __name__ == "__main__":
     #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
     #                             input_processor_path='./root/magister_v2/wavlm/processor/', 
     #                             input_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
-    #                             input_pretrained_model_path='./wavlm_base_model/',
+    #                             input_pretrained_model_path='./root_base_model/wavlm_base_model/',
     #                             output_processor_path='./root/magister_v2/wavlm/processor/', 
     #                             output_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
     #                             output_saved_model_path='./root/magister_v2/wavlm/saved_model/', 
@@ -673,14 +673,14 @@ if __name__ == "__main__":
 
     ###################################################
 
-    ########## LIBRISPEECH: FINETUNING ##########
+    ########## LIBRISPEECH: FINETUNING (FROM SCRATCH) - WAVLM ##########
 
     # finetune_model = Finetuning(train_pkl='./pkl/librispeech_train.pkl', 
     #                             dev_pkl='./pkl/librispeech_dev.pkl', 
     #                             test_pkl='./pkl/librispeech_test.pkl', 
     #                             processor_path='./wavlm/processor/', 
     #                             checkpoint_path='./wavlm/ckpt/', 
-    #                             pretrained_model_path='./wavlm_base_model/', 
+    #                             pretrained_model_path='./root_base_model/wavlm_base_model/', 
     #                             saved_model_path='./wavlm/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 

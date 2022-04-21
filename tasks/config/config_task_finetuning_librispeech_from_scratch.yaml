@@ -9,17 +9,22 @@ dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the data_preprocessing.py
 dataset_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
-dataset_task_id_w2v2_base: 'bf5a0962b65946ec92b67ddc690532b1' # finetune from scratch
+dataset_task_id_w2v2_base: 'c407832abe274bdfadbee1615e400bd2' # finetune from scratch
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
 test_pkl: 'pkl/librispeech_test.pkl'
-processor_path: 'root/processor/'
-checkpoint_path: 'root/ckpt/'
-# pretrained_model_path: 'wav2vec2_base_model/'
-saved_model_path: 'root/saved_model/'
+
+input_processor_path: 'root/processor/'
+input_checkpoint_path: 'root/ckpt/'
+input_pretrained_model_path: 'wav2vec2_base_model/'
+
+output_processor_path: 'root/processor/'
+output_checkpoint_path: 'root/ckpt/'
+output_saved_model_path: 'root/saved_model/'
+
 max_sample_length: 450000
-batch_size: 8
+batch_size: 16
 epochs: 3
 lr: 1e-4
 weight_decay: 0.005
@@ -28,4 +33,4 @@ architecture: 'wav2vec2'
 finetune_from_scratch: True 
 
 # queue name
-queue: 'compute2'
+queue: 'compute'
