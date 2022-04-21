@@ -2,8 +2,8 @@ from clearml import Task, Dataset
 import yaml
 
 # get task configs - ONLY THING NEEDED TO CHANGE
-# CONFIG_FILE = './config/task_finetuning/librispeech_from_scratch.yaml' # from scratch
-CONFIG_FILE = './config/task_finetuning/librispeech_resume.yaml' # resume training
+# CONFIG_FILE = './config/task_finetuning/librispeech_from_scratch_wav2vec2.yaml' # from scratch
+CONFIG_FILE = './config/task_finetuning/librispeech_resume_wav2vec2.yaml' # resume training
 
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
