@@ -48,6 +48,9 @@ RUN pip install numpy==1.21.1 --no-binary numpy
 # installing dependencies
 RUN pip install -r requirements.txt
 
+# installing tensorboardX
+RUN pip install tensorboardX --no-cache-dir
+
 # # build ctcdecode from source
 # RUN git clone --recursive https://github.com/parlance/ctcdecode.git \
 # && cd ctcdecode \ 
