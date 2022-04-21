@@ -20,7 +20,7 @@ checkpoint_path: 'root/ckpt/'
 saved_model_path: 'root/saved_model/'
 max_sample_length: 450000
 batch_size: 8
-epochs: 2
+epochs: 3
 lr: 1e-4
 weight_decay: 0.005
 warmup_steps: 1000
