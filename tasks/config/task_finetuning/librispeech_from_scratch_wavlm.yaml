@@ -17,7 +17,7 @@ test_pkl: 'pkl/librispeech_test.pkl'
 
 input_processor_path: 'root/processor/'
 input_checkpoint_path: 'root/ckpt/'
-input_pretrained_model_path: 'wav2vec2_base_model/'
+input_pretrained_model_path: 'wavlm_base_model/'
 
 output_processor_path: 'root/processor/'
 output_checkpoint_path: 'root/ckpt/'
@@ -25,8 +25,8 @@ output_saved_model_path: 'root/saved_model/'
 
 max_sample_length: 450000
 batch_size: 16
-epochs: 3
-lr: 1e-5
+epochs: 2
+lr: 1e-5 #1e-4
 weight_decay: 0.005
 warmup_steps: 1000
 architecture: 'wavlm'

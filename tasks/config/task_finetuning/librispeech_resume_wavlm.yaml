@@ -9,7 +9,7 @@ dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the finetuning.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
-dataset_pretrained_task_id: '' # resume finetuning
+dataset_pretrained_task_id: 'a2e412a1832343549fbf1ccc6dd7f5cb' # resume finetuning
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
@@ -26,7 +26,7 @@ output_saved_model_path: 'root/saved_model/'
 max_sample_length: 450000
 batch_size: 16
 epochs: 50
-lr: 1e-5
+lr: 1e-5 #1e-4
 weight_decay: 0.005
 warmup_steps: 1000
 architecture: 'wavlm'
