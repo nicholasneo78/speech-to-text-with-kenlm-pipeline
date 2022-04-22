@@ -14,10 +14,11 @@ tasks/preprocessing/datasets/*
 tasks/preprocessing/root/pkl/*
 
 # transformers
-tasks/preprocessing/root/wavlm/*
-tasks/preprocessing/root/magister_v2/*
+# tasks/preprocessing/root/wavlm/*
+# tasks/preprocessing/root/magister_v2/*
 tasks/preprocessing/root_base_model/*
 tasks/preprocessing/lm_src/*
+tasks/preprocessing/root/*
 
 failed/*
 kenlm/*

@@ -101,7 +101,7 @@ if __name__ == "__main__":
     get_lm = BuildLM(df_train_filepath='./root/pkl/magister_data_v2_wav_16000_train.pkl',
                      df_dev_filepath='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
                      script_path="./build_lm.sh", 
-                     root_path="/stt_with_kenlm_pipeline", 
+                     root_path="/stt_with_kenlm_pipeline/kenlm", 
                      txt_filepath="lm/magister_v2_annotations.txt", 
                      n_grams="5", 
                      dataset_name="magister_v2")
