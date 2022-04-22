@@ -13,6 +13,9 @@ script_task_id: 'c70c443505414744a772882d9137ba24'
 # arguments corresponding to the transform_pkl_to_txt.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
 
+# kenlm id
+kenlm_id: 'e429669809e5486784f0ace5cf182adb'
+
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
 script_path: 'build_lm.sh'

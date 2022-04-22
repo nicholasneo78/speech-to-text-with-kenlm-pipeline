@@ -23,6 +23,7 @@ task.set_base_docker(
 args = {
     'dataset_pkl_task_id': config["dataset_pkl_task_id"],
     'script_task_id': config["script_task_id"],
+    'kenlm_id': config['kenlm_id'],
     'train_pkl': config["train_pkl"],
     'dev_pkl': config["dev_pkl"],
     'script_path': config["script_path"],
@@ -47,6 +48,10 @@ dataset_pkl_path = dataset_pkl.get_local_copy()
 get_script = Dataset.get(dataset_id=args['script_task_id'])
 get_script_dir = get_script.get_local_copy()
 
+# get the kenlm build
+get_kenlm = Dataset.get(dataset_id=args['kenlm_id'])
+get_kenlm_dir = get_kenlm.get_local_copy()
+
 # create new dataset object to store the language model
 dataset = Dataset.create(
     dataset_project=DATASET_PROJECT,
@@ -58,7 +63,7 @@ print(f'Script Path: {get_script_dir}')
 get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{args["train_pkl"]}',
                      df_dev_filepath=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
                      script_path=f'{get_script_dir}/{args["script_path"]}', 
-                     root_path=args["root_path"], #"/workspace", 
+                     root_path=f'{get_kenlm_dir}', #"/workspace", 
                      txt_filepath=args["txt_filepath"], 
                      n_grams=args["n_grams"], 
                      dataset_name=args["dataset_name_"])
