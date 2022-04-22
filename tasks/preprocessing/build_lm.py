@@ -38,7 +38,7 @@ class GetTxtFromPkl():
         # combine the train and dev set to prep the creation of the language model
         df_for_building_lm = pd.concat([pd.DataFrame(df_train.text), pd.DataFrame(df_dev.text)]).reset_index(drop=True)
 
-        # create pickle folder if it does not exist
+        # create root folder if it does not exist
         self.create_new_dir('./root/')
         self.create_new_dir('./root/lm/')
 
@@ -72,6 +72,7 @@ class BuildLM():
         get_txt_file()
 
         # pass arguments into the bash script after text file is generated
+        subprocess.run(['chmod', '+x', self.script_path])
         subprocess.run([self.script_path, "-k", self.root_path, "-n", self.n_grams, "-d", self.dataset_name, "-t", self.txt_filepath])
         
         return f"lm/{self.n_grams}_gram_{self.dataset_name}.arpa"
@@ -85,8 +86,8 @@ if __name__ == "__main__":
                      df_dev_filepath='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
                      script_path="./build_lm.sh", 
                      root_path="/workspace", 
-                     txt_filepath="lm/librispeech.txt", 
+                     txt_filepath="lm/magister_v2_annotations.txt", 
                      n_grams="5", 
-                     dataset_name="librispeech")
+                     dataset_name="magister_v2")
 
     lm_path = get_lm()
