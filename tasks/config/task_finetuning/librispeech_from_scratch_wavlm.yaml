@@ -1,23 +1,23 @@
 # configuration for the librispeech dataset with clearml
 
 # task initialisation
-project_name: 'wav2vec2_kenlm_pipeline'
-task_name: 'finetuning_resume'
-dataset_name: 'librispeech_v2_finetuning_resume_wav2vec2'
-output_url: 's3://experiment-logging'
+project_name: 'wavlm_kenlm_pipeline'
+task_name: 'finetuning'
+dataset_name: 'librispeech_v2_finetuning_wavlm'
+output_url: 's3://experiment-logging' #/storage'
 dataset_project: 'datasets/librispeech'
 
-# arguments corresponding to the finetuning.py
+# arguments corresponding to the data_preprocessing.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
-dataset_pretrained_task_id: 'a1ef12a4c81a4adea98482e3ac2a85a7' # resume finetuning
+dataset_pretrained_task_id: '2df89184b2f54de8a838647b888a6073' # finetune from scratch
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
 test_pkl: 'pkl/librispeech_test.pkl'
 
-input_processor_path: 'processor/'
-input_checkpoint_path: 'ckpt/'
-input_pretrained_model_path: 'saved_model/' #'wav2vec2_base_model/'
+input_processor_path: 'root/processor/'
+input_checkpoint_path: 'root/ckpt/'
+input_pretrained_model_path: 'wav2vec2_base_model/'
 
 output_processor_path: 'root/processor/'
 output_checkpoint_path: 'root/ckpt/'
@@ -25,12 +25,12 @@ output_saved_model_path: 'root/saved_model/'
 
 max_sample_length: 450000
 batch_size: 16
-epochs: 15
-lr: 1e-4
+epochs: 3
+lr: 1e-5
 weight_decay: 0.005
 warmup_steps: 1000
-architecture: 'wav2vec2'
-finetune_from_scratch: False 
+architecture: 'wavlm'
+finetune_from_scratch: True 
 
 # queue name
 queue: 'compute'

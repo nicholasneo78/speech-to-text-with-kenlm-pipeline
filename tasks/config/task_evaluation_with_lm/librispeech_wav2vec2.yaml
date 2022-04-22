@@ -2,10 +2,8 @@
 
 # task initialisation
 project_name: 'wav2vec2_kenlm_pipeline'
-task_name: 'finetuning_resume'
-dataset_name: 'librispeech_v2_finetuning_resume'
+task_name: 'evaluation_with_lm'
 output_url: 's3://experiment-logging'
-dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the finetuning.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files

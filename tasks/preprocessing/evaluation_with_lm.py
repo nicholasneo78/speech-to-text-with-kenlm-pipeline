@@ -101,7 +101,7 @@ class EvaluationWithLM():
 
         # regex to obtain the number of grams for the final print message
         try:
-            n_grams = re.search(r'\d+', self.lm_path).group()
+            n_grams = re.search(r'\d+', os.path.basename(self.lm_path)).group()
             obtain_n = True
         except AttributeError:
             obtain_n = False

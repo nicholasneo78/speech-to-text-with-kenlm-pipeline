@@ -10,9 +10,8 @@ with open(CONFIG_FILE) as f:
 # clearml configs
 PROJECT_NAME = config['project_name']
 TASK_NAME = config['task_name']
-DATASET_NAME = config['dataset_name']
 OUTPUT_URL = config['output_url']
-DATASET_PROJECT = config['dataset_project']
+
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
