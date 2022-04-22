@@ -29,7 +29,7 @@ args = {
     'root_path': config["root_path"],
     'txt_filepath': config["txt_filepath"],
     'n_grams': config["n_grams"],
-    'dataset_name': config["dataset_name"]
+    'dataset_name_': config["dataset_name_"]
 }
 
 task.connect(args)
@@ -45,7 +45,7 @@ dataset_pkl_path = dataset_pkl.get_local_copy()
 
 # obtain the build_lm script path
 get_script = Dataset.get(dataset_id=args['script_task_id'])
-get_script_path = get_script.get_local_copy()
+get_script_dir = get_script.get_local_copy()
 
 # create new dataset object to store the language model
 dataset = Dataset.create(
@@ -53,17 +53,23 @@ dataset = Dataset.create(
     dataset_name=DATASET_NAME,
 )
 
+print(f'Script Path: {get_script_dir}')
+
 get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{args["train_pkl"]}',
                      df_dev_filepath=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
-                     script_path=get_script_path, 
+                     script_path=f'{get_script_dir}/{args["script_path"]}', 
                      root_path=args["root_path"], #"/workspace", 
                      txt_filepath=args["txt_filepath"], 
                      n_grams=args["n_grams"], 
-                     dataset_name=args["dataset_name"])
+                     dataset_name=args["dataset_name_"])
 
 lm_path = get_lm()
 
+print('\nClearML add files now\n')
+
 dataset.add_files(path=lm_path, local_base_folder='root/')
+
+print('\n\nPassed\n\n')
 
 dataset.upload(output_url=OUTPUT_URL)
 dataset.finalize()

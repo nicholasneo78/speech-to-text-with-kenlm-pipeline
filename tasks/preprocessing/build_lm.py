@@ -39,8 +39,8 @@ class GetTxtFromPkl():
         df_for_building_lm = pd.concat([pd.DataFrame(df_train.text), pd.DataFrame(df_dev.text)]).reset_index(drop=True)
 
         # create root folder if it does not exist
-        self.create_new_dir('./root/')
-        self.create_new_dir('./root/lm/')
+        self.create_new_dir('root/')
+        self.create_new_dir('root/lm/')
 
         # remove the '#' (filler words) as it is not useful in building the language model and write the annotations into a .txt file
         with open(self.txt_filepath, 'w+') as f:
@@ -63,6 +63,13 @@ class BuildLM():
         self.n_grams = n_grams  # bash script param
         self.dataset_name = dataset_name # bash script param
 
+    # create new directory and ignore already created ones
+    def create_new_dir(self, directory):
+        try:
+            os.mkdir(directory)
+        except OSError as error:
+            pass # directory already exists!
+
     def build_lm(self):
         get_txt_file = GetTxtFromPkl(df_train_filepath=self.df_train_filepath, 
                                      df_dev_filepath=self.df_dev_filepath, 
@@ -71,11 +78,20 @@ class BuildLM():
         # generate the text file
         get_txt_file()
 
+        print('\nGet text file completed\n')
+
+        # create root folder if it does not exist
+        self.create_new_dir('root/')
+        self.create_new_dir('root/lm/')
+
         # pass arguments into the bash script after text file is generated
-        subprocess.run(['chmod', '+x', self.script_path])
-        subprocess.run([self.script_path, "-k", self.root_path, "-n", self.n_grams, "-d", self.dataset_name, "-t", self.txt_filepath])
+        #subprocess.run(['chmod', '+x', self.script_path])
+        subprocess.run(["bash", self.script_path, "-k", self.root_path, "-n", self.n_grams, "-d", self.dataset_name, "-t", self.txt_filepath])
         
-        return f"lm/{self.n_grams}_gram_{self.dataset_name}.arpa"
+        print('\nExecution of script completed\n')
+
+        return f"root/lm/{self.n_grams}_gram_{self.dataset_name}.arpa"
+        #return self.output_arpa
 
     def __call__(self):
         return self.build_lm()
@@ -85,7 +101,7 @@ if __name__ == "__main__":
     get_lm = BuildLM(df_train_filepath='./root/pkl/magister_data_v2_wav_16000_train.pkl',
                      df_dev_filepath='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
                      script_path="./build_lm.sh", 
-                     root_path="/workspace", 
+                     root_path="/stt_with_kenlm_pipeline", 
                      txt_filepath="lm/magister_v2_annotations.txt", 
                      n_grams="5", 
                      dataset_name="magister_v2")

@@ -17,5 +17,7 @@ tasks/preprocessing/root/pkl/*
 tasks/preprocessing/root/wavlm/*
 tasks/preprocessing/root/magister_v2/*
 tasks/preprocessing/root_base_model/*
+tasks/preprocessing/lm_src/*
 
 failed/*
+kenlm/*

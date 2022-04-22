@@ -21,7 +21,9 @@ do
     esac
 done
 
-output_arpa_loc="lm/${n_gram}_gram_${dataset_name}.arpa"
+echo "Building the LM"
+
+output_arpa_loc="root/lm/${n_gram}_gram_${dataset_name}.arpa"
 
 # script execution
 # "/workspace/kenlm/build/bin/lmplz" -o $n_gram < $txtfile > $output_arpa_loc

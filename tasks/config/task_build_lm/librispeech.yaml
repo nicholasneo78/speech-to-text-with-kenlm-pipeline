@@ -8,18 +8,18 @@ output_url: 's3://experiment-logging'
 dataset_project: 'datasets/librispeech'
 
 # get to the build_lm.sh script path
-script_task_id: 'f85542c51812451099e76719a8831dbe'
+script_task_id: 'c70c443505414744a772882d9137ba24'
 
 # arguments corresponding to the transform_pkl_to_txt.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
-script_path: ''
+script_path: 'build_lm.sh'
 root_path: ''
 txt_filepath: 'root/lm/librispeech.txt'
 n_grams: '5'
-dataset_name: 'librispeech'
+dataset_name_: 'librispeech'
 
 # queue name
 queue: 'cpu-only'
