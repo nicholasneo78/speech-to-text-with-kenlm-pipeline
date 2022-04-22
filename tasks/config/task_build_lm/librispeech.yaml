@@ -2,19 +2,19 @@
 
 # task initialisation
 project_name: 'wav2vec2_kenlm_pipeline'
-task_name: 'build_lm'
-dataset_name: 'librispeech_v2_build_lm'
+task_name: 'evaluation_with_lm'
+dataset_name: ''
 output_url: 's3://experiment-logging'
-dataset_project: 'datasets/librispeech'
+dataset_project: ''
 
 # get to the build_lm.sh script path
-script_task_id: 'c70c443505414744a772882d9137ba24'
+script_task_id: '67b056fb6b4a42b9b6704efa7f801f7d'
 
 # arguments corresponding to the transform_pkl_to_txt.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
 
 # kenlm id
-kenlm_id: 'e429669809e5486784f0ace5cf182adb'
+kenlm_id: 'e429669809e5486784f0ace5cf182adb' # kenlm path to build the lm
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'

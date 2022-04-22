@@ -78,17 +78,13 @@ class BuildLM():
         # generate the text file
         get_txt_file()
 
-        print('\nGet text file completed\n')
-
         # create root folder if it does not exist
         self.create_new_dir('root/')
         self.create_new_dir('root/lm/')
 
         # pass arguments into the bash script after text file is generated
-        #subprocess.run(['chmod', '+x', self.script_path])
+        subprocess.run(['chmod', '+x', self.script_path])
         subprocess.run(["bash", self.script_path, "-k", self.root_path, "-n", self.n_grams, "-d", self.dataset_name, "-t", self.txt_filepath])
-        
-        print('\nExecution of script completed\n')
 
         return f"root/lm/{self.n_grams}_gram_{self.dataset_name}.arpa"
         #return self.output_arpa

@@ -27,4 +27,5 @@ output_arpa_loc="root/lm/${n_gram}_gram_${dataset_name}.arpa"
 
 # script execution
 # "/workspace/kenlm/build/bin/lmplz" -o $n_gram < $txtfile > $output_arpa_loc
+chmod -R 777 ${kenlm_loc}/kenlm/
 ${kenlm_loc}/kenlm/build/bin/lmplz -o $n_gram < $txtfile > $output_arpa_loc

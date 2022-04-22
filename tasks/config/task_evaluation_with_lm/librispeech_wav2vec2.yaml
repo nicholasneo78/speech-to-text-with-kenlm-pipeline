@@ -1,0 +1,24 @@
+# configuration for the librispeech dataset with clearml
+
+# task initialisation
+project_name: 'wav2vec2_kenlm_pipeline'
+task_name: 'finetuning_resume'
+dataset_name: 'librispeech_v2_finetuning_resume'
+output_url: 's3://experiment-logging'
+dataset_project: 'datasets/librispeech'
+
+# arguments corresponding to the finetuning.py
+dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
+dataset_finetuned_task_id: '0155311328eb4240b84c1d588fd8d8d8' # the finetuned model
+lm_id: '3366eaba06054260a40b02c6f9277dce' # kenlm arpa file
+
+test_pkl: 'pkl/librispeech_test.pkl'
+finetuned_model_path: 'saved_model/'
+input_processor_path: 'processor/'
+lm_path: 'lm/5_gram_librispeech.arpa'
+
+alpha: 0.6
+beta: 1.0
+architecture: 'wav2vec2'
+
+queue: 'compute'

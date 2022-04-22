@@ -58,8 +58,6 @@ dataset = Dataset.create(
     dataset_name=DATASET_NAME,
 )
 
-print(f'Script Path: {get_script_dir}')
-
 get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{args["train_pkl"]}',
                      df_dev_filepath=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
                      script_path=f'{get_script_dir}/{args["script_path"]}', 
@@ -70,11 +68,7 @@ get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{args["train_pkl"]}',
 
 lm_path = get_lm()
 
-print('\nClearML add files now\n')
-
 dataset.add_files(path=lm_path, local_base_folder='root/')
-
-print('\n\nPassed\n\n')
 
 dataset.upload(output_url=OUTPUT_URL)
 dataset.finalize()
