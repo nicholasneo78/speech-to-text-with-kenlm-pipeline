@@ -9,7 +9,7 @@ dataset_project: 'datasets/librispeech'
 
 # arguments corresponding to the finetuning.py
 dataset_pkl_task_id: 'fdb1e1471ebb4b8dbf4f599080401819' # pkl files
-dataset_pretrained_task_id: 'a2e412a1832343549fbf1ccc6dd7f5cb' # resume finetuning
+dataset_pretrained_task_id: '0ba84567b6b8494dbc57c102fa5e53b9' # resume finetuning
 
 train_pkl: 'pkl/librispeech_train.pkl'
 dev_pkl: 'pkl/librispeech_dev.pkl'
