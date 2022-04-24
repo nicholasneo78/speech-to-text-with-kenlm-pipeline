@@ -2,7 +2,8 @@ from clearml import Task, Dataset
 import yaml
 
 # get task configs - ONLY THING NEEDED TO CHANGE
-CONFIG_FILE = './config/task_evaluation_with_lm/librispeech_wav2vec2.yaml'
+# CONFIG_FILE = './config/task_evaluation_with_lm/librispeech_wav2vec2.yaml'
+CONFIG_FILE = './config/task_evaluation_with_lm/librispeech_wavlm.yaml'
 
 with open(CONFIG_FILE) as f:
     config = yaml.safe_load(f)
