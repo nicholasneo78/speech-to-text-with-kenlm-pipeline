@@ -1,67 +1,99 @@
 from clearml import Task, Dataset
-import yaml
+import sys
+import argparse
 
-# get task configs - ONLY THING NEEDED TO CHANGE
-# CONFIG_FILE = './config/task_finetuning/librispeech_from_scratch_wav2vec2.yaml' # from scratch
-# CONFIG_FILE = './config/task_finetuning/librispeech_from_scratch_wavlm.yaml' # from scratch
-# CONFIG_FILE = './config/task_finetuning/librispeech_resume_wav2vec2.yaml'
-CONFIG_FILE = './config/task_finetuning/librispeech_resume_wavlm.yaml'
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Preprocess data to generate pickle data files from the data manifest",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
 
-with open(CONFIG_FILE) as f:
-    config = yaml.safe_load(f)
+    # arguments corresponding to the task initialisation
+    parser.add_argument("--project_name",                 type=str, help="the clearml project name")
+    parser.add_argument("--task_name",                    type=str, help="clearml task name")
+    parser.add_argument("--dataset_name",                 type=str, help="name of the output dataset produced")
+    parser.add_argument("--output_url",                   type=str, help="the clearml url that the task will be output at")
+    parser.add_argument("--dataset_project",              type=str, help="the clearml path which the datasets resides")
+
+    # arguments corresponding to getting data from different task id
+    parser.add_argument("--dataset_pkl_task_id",          type=str, help="task id to retrieve the dataset")
+    parser.add_argument("--dataset_pretrained_task_id",   type=str, help="task id to retrieve the pretrained/finetuned model")
+
+    # arguments correspoding to the finetuning.py file
+    parser.add_argument("--train_pkl",                    type=str, help="path to get the train pkl file")
+    parser.add_argument("--dev_pkl",                      type=str, help="path to get the dev pkl file")
+    parser.add_argument("--test_pkl",                     type=str, help="path to get the test pkl file")
+    parser.add_argument("--input_processor_path",         type=str, help="path to retrieve the processor")
+    parser.add_argument("--input_checkpoint_path",        type=str, help="path to retrieve the checkpoint")
+    parser.add_argument("--input_pretrained_model_path",  type=str, help="path to retrieve the pretrained/finetuned model")
+    parser.add_argument("--output_processor_path",        type=str, help="path to output the processor")
+    parser.add_argument("--output_checkpoint_path",       type=str, help="path to output the checkpoint")
+    parser.add_argument("--output_saved_model_path",      type=str, help="path to output the pretrained/finetuned model")
+    parser.add_argument("--max_sample_length",            type=int, help="get the maximum sample length of the audio")
+    parser.add_argument("--batch_size",                   type=int, help="batch size")
+    parser.add_argument("--epochs",                       type=int, help="number of epochs")
+    parser.add_argument("--lr",                           type=str, help="learning rate")
+    parser.add_argument("--weight_decay",                 type=float, help="weight decay")
+    parser.add_argument("--warmup_steps",                 type=int, help="number of steps for warmup - lower lr")
+    parser.add_argument("--architecture",                 type=str, help="model based on wav2ve2 or wavlm")
+    parser.add_argument("--finetune_from_scratch",        action='store_true', default=False, help="finetune model either from scratch or pre-existing finetuned model")
+
+    # queue name
+    parser.add_argument("--queue",                        type=str, help="the queue name for clearml")   
+
+    return parser.parse_args(sys.argv[1:])
+
+arg = parse_args()
 
 # clearml configs
-PROJECT_NAME = config['project_name']
-TASK_NAME = config['task_name']
-DATASET_NAME = config['dataset_name']
-OUTPUT_URL = config['output_url']
-DATASET_PROJECT = config['dataset_project']
+PROJECT_NAME = arg.project_name
+TASK_NAME = arg.task_name
+DATASET_NAME = arg.dataset_name
+OUTPUT_URL = arg.output_url
+DATASET_PROJECT = arg.dataset_project
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
-    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.1"
+    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.1",
 )
 
 # get the args for data preprocessing
 args = {
-    'dataset_pkl_task_id': config['dataset_pkl_task_id'],
-    'dataset_pretrained_task_id': config['dataset_pretrained_task_id'],
+    'dataset_pkl_task_id': arg.dataset_pkl_task_id,
+    'dataset_pretrained_task_id': arg.dataset_pretrained_task_id,
 
-    'train_pkl': config['train_pkl'],
-    'dev_pkl': config['dev_pkl'],
-    'test_pkl': config['test_pkl'],
+    'train_pkl': arg.train_pkl,
+    'dev_pkl': arg.dev_pkl,
+    'test_pkl': arg.test_pkl,
 
-    'input_processor_path': config['input_processor_path'],
-    'input_checkpoint_path': config['input_checkpoint_path'],
-    'input_pretrained_model_path': config['input_pretrained_model_path'],
+    'input_processor_path': arg.input_processor_path,
+    'input_checkpoint_path': arg.input_checkpoint_path,
+    'input_pretrained_model_path': arg.input_pretrained_model_path,
 
-    'output_processor_path': config['output_processor_path'],
-    'output_checkpoint_path': config['output_checkpoint_path'],
-    'output_saved_model_path': config['output_saved_model_path'],
+    'output_processor_path': arg.output_processor_path,
+    'output_checkpoint_path': arg.output_checkpoint_path,
+    'output_saved_model_path': arg.output_saved_model_path,
 
-    'max_sample_length': config['max_sample_length'],
-    'batch_size': config['batch_size'],
-    'epochs': config['epochs'],
-    'lr': config['lr'],
-    'weight_decay': config['weight_decay'],
-    'warmup_steps': config['warmup_steps'],
-    'architecture': config['architecture'],
-    'finetune_from_scratch': config['finetune_from_scratch']
+    'max_sample_length': arg.max_sample_length,
+    'batch_size': arg.batch_size,
+    'epochs': arg.epochs,
+    'lr': arg.lr,
+    'weight_decay': arg.weight_decay,
+    'warmup_steps': arg.warmup_steps,
+    'architecture': arg.architecture,
+    'finetune_from_scratch': arg.finetune_from_scratch
 }
 
 task.connect(args)
 
 # execute clearml
-task.execute_remotely(queue_name=config['queue'], exit_process=True)
-
+task.execute_remotely(queue_name=arg.queue, exit_process=True)
 
 from preprocessing.finetuning import Finetuning
 
 # obtaining the pkl file
 dataset_pkl = Dataset.get(dataset_id=args['dataset_pkl_task_id'])
 dataset_pkl_path = dataset_pkl.get_local_copy()
-
-# previous_task = Task.get_task(task_id=args['dataset_pretrained_task_id'])
 
 # obtaining the wav2vec2_base_pretrained model or resume finetuning
 dataset_pretrained = Dataset.get(dataset_id=args['dataset_pretrained_task_id'])

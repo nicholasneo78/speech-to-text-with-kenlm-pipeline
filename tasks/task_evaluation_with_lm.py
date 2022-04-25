@@ -13,12 +13,12 @@ def parse_args():
     parser.add_argument("--task_name",                    type=str, help="clearml task name")
     parser.add_argument("--output_url",                   type=str, help="the clearml url that the task will be output at")
 
-    # arguments correspoding to getting data from different task id
+    # arguments corresponding to getting data from different task id
     parser.add_argument("--dataset_pkl_task_id",          type=str, help="task id to retrieve the dataset")
     parser.add_argument("--dataset_finetuned_task_id",    type=str, help="task id to retrieve the finetuned model")
     parser.add_argument("--lm_id",                        type=str, help="task id to retrieve the kenlm language model")
     
-    # arguments correspoding to the evaluation_with_lm.py file
+    # arguments corresponding to the evaluation_with_lm.py file
     parser.add_argument("--test_pkl",                     type=str, help="path to get the test pkl file")
     parser.add_argument("--finetuned_model_path",         type=str, help="path to get the finetuned model")
     parser.add_argument("--input_processor_path",         type=str, help="path to get the processor")
