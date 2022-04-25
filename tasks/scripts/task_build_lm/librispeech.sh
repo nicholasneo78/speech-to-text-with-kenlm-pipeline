@@ -2,8 +2,8 @@
 
 python3 ../../task_build_lm.py \
     --project_name "wav2vec2_kenlm_pipeline" \
-    --task_name "data_preprocessing" \
-    --dataset_name "librispeech_v2_data_preprocessing" \
+    --task_name "build_lm" \
+    --dataset_name "librispeech_v2_build_lm" \
     --output_url "s3://experiment-logging" \
     --dataset_project "datasets/librispeech" \
     --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
