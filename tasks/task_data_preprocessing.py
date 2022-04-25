@@ -1,13 +1,6 @@
 from clearml import Task, Dataset
-import yaml
 import sys
 import argparse
-
-# # get task configs - ONLY THING NEEDED TO CHANGE
-# CONFIG_FILE = './config/task_data_preprocessing/librispeech.yaml'
-
-# with open(CONFIG_FILE) as f:
-#     config = yaml.safe_load(f)
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -48,7 +41,7 @@ DATASET_PROJECT = arg.dataset_project
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
-    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.0",
+    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.1",
 )
 
 # get the args for data preprocessing

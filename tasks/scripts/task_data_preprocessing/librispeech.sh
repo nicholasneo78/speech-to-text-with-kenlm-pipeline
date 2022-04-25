@@ -11,7 +11,7 @@ python3 ../../task_data_preprocessing.py \
     --pkl_train "root/pkl/librispeech_train.pkl" \
     --manifest_path_dev "dev/dev_manifest.json" \
     --pkl_dev "root/pkl/librispeech_dev.pkl" \
-    --manifest_path_train "test/test_manifest.json" \
-    --pkl_train "root/pkl/librispeech_test.pkl" \
+    --manifest_path_test "test/test_manifest.json" \
+    --pkl_test "root/pkl/librispeech_test.pkl" \
     --additional_preprocessing "general" \
     --queue "compute"
