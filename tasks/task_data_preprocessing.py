@@ -16,24 +16,24 @@ def parse_args():
     )
 
     # arguments corresponding to the task initialisation
-    parser.add_argument("project_name",                 type=str, help="the clearml project name")
-    parser.add_argument("task_name",                    type=str, help="clearml task name")
-    parser.add_argument("dataset_name",                 type=str, help="name of the output dataset produced")
-    parser.add_argument("output_url",                   type=str, help="the clearml url that the task will be output at")
-    parser.add_argument("dataset_project",              type=str, help="the clearml path which the datasets resides")
+    parser.add_argument("--project_name",                 type=str, help="the clearml project name")
+    parser.add_argument("--task_name",                    type=str, help="clearml task name")
+    parser.add_argument("--dataset_name",                 type=str, help="name of the output dataset produced")
+    parser.add_argument("--output_url",                   type=str, help="the clearml url that the task will be output at")
+    parser.add_argument("--dataset_project",              type=str, help="the clearml path which the datasets resides")
     
     # arguments correspoding to the data_preprocessing.py file
-    parser.add_argument("dataset_task_id",              type=str, help="task id to retrieve the dataset")
-    parser.add_argument("manifest_path_train",          type=str, help="path to retrieve the train manifest")
-    parser.add_argument("pkl_train",                    type=str, help="path to produce the train pickle file")
-    parser.add_argument("manifest_path_dev",            type=str, help="path to retrieve the dev manifest")
-    parser.add_argument("pkl_dev",                      type=str, help="path to produce the dev pickle file")
-    parser.add_argument("manifest_path_test",           type=str, help="path to retrieve the test manifest")
-    parser.add_argument("pkl_test",                     type=str, help="path to produce the test pickle file")
-    parser.add_argument("additional_preprocessing",     type=str, help="any other special cases of text preprocessing needed based on the annotations")
+    parser.add_argument("--dataset_task_id",              type=str, help="task id to retrieve the dataset")
+    parser.add_argument("--manifest_path_train",          type=str, help="path to retrieve the train manifest")
+    parser.add_argument("--pkl_train",                    type=str, help="path to produce the train pickle file")
+    parser.add_argument("--manifest_path_dev",            type=str, help="path to retrieve the dev manifest")
+    parser.add_argument("--pkl_dev",                      type=str, help="path to produce the dev pickle file")
+    parser.add_argument("--manifest_path_test",           type=str, help="path to retrieve the test manifest")
+    parser.add_argument("--pkl_test",                     type=str, help="path to produce the test pickle file")
+    parser.add_argument("--additional_preprocessing",     type=str, help="any other special cases of text preprocessing needed based on the annotations")
 
     # queue name
-    parser.add_argument("queue",                        type=str, help="the queue name for clearml")   
+    parser.add_argument("--queue",                        type=str, help="the queue name for clearml")   
 
     return parser.parse_args(sys.argv[1:])
 
@@ -70,26 +70,30 @@ task.execute_remotely(queue_name=arg.queue, exit_process=True)
 
 from preprocessing.data_preprocessing import GeneratePickleFromManifest
 
-# register clearml dataset
+# obtaining the manifest file
+dataset_manifest = Dataset.get(dataset_id=args['dataset_task_id'])
+dataset_manifest_path = dataset_manifest.get_local_copy()
+
+# register clearml pkl file dataset
 dataset = Dataset.create(
     dataset_project=DATASET_PROJECT,
     dataset_name=DATASET_NAME,
-    parent_datasets=[args['dataset_task_id']]
+    #parent_datasets=[args['dataset_task_id']]
 )
 
 # import dataset
-dataset_path = dataset.get_local_copy()
+# dataset_path = dataset.get_local_copy()
 
 # process
-librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/{args["manifest_path_train"]}', 
+librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{args["manifest_path_train"]}', 
                                                    pkl_filename=args["pkl_train"], 
                                                    additional_preprocessing=args['additional_preprocessing'])
 
-librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/{args["manifest_path_dev"]}', 
+librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{args["manifest_path_dev"]}', 
                                                  pkl_filename=args["pkl_dev"], 
                                                  additional_preprocessing=args['additional_preprocessing'])
 
-librispeech_test_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_path}/{args["manifest_path_test"]}', 
+librispeech_test_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{args["manifest_path_test"]}', 
                                                   pkl_filename=args["pkl_test"], 
                                                   additional_preprocessing=args['additional_preprocessing'])
 
@@ -102,8 +106,6 @@ print(path_dev)
 print(path_test)
 
 # declare a root folder so that the subfolders can be retained by clearml
-
-
 dataset.add_files(path=path_train, local_base_folder='root/')
 dataset.add_files(path=path_dev, local_base_folder='root/')
 dataset.add_files(path=path_test, local_base_folder='root/')
