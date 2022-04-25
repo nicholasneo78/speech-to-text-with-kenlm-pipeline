@@ -3,7 +3,7 @@
 python3 ../../task_finetuning.py \
     --project_name "wavlm_kenlm_pipeline" \
     --task_name "finetuning_resume" \
-    --dataset_name "librispeech_v2_finetuning_wavlm" \
+    --dataset_name "librispeech_v2_finetuning_resume_wavlm" \
     --output_url "s3://experiment-logging" \
     --dataset_project "datasets/librispeech" \
     --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
@@ -13,7 +13,7 @@ python3 ../../task_finetuning.py \
     --test_pkl "pkl/librispeech_test.pkl" \
     --input_processor_path "processor/" \
     --input_checkpoint_path "ckpt/" \
-    --input_pretrained_model_path "saved_model//" \
+    --input_pretrained_model_path "saved_model/" \
     --output_processor_path "root/processor/" \
     --output_checkpoint_path "root/ckpt/" \
     --output_saved_model_path "root/saved_model/" \

@@ -3,7 +3,7 @@
 python3 ../../task_finetuning.py \
     --project_name "wav2vec2_kenlm_pipeline" \
     --task_name "finetuning_resume" \
-    --dataset_name "librispeech_v2_finetuning_wav2vec2" \
+    --dataset_name "librispeech_v2_finetuning_resume_wav2vec2" \
     --output_url "s3://experiment-logging" \
     --dataset_project "datasets/librispeech" \
     --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
