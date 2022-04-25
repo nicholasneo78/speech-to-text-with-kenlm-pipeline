@@ -372,7 +372,7 @@ class Finetuning():
             num_train_epochs=self.epochs,
             fp16=True,
             gradient_checkpointing=True,
-            save_steps=1000,
+            save_steps=500,
             eval_steps=50,
             logging_steps=50,
             learning_rate=self.lr,
@@ -405,7 +405,7 @@ class Finetuning():
         if self.input_checkpoint_path == self.output_checkpoint_path:
             pass
         else:
-            shutil.copytree(self.input_checkpoint_path, self.output_checkpoint_path) #+'root/')
+            shutil.copytree(self.input_checkpoint_path, self.output_checkpoint_path)
 
         # save the model to local directory
         trainer.save_model(self.output_saved_model_path)
