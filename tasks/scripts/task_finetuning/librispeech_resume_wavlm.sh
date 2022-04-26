@@ -7,7 +7,7 @@ python3 ../../task_finetuning.py \
     --output_url "s3://experiment-logging" \
     --dataset_project "datasets/librispeech" \
     --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
-    --dataset_pretrained_task_id "435eb59d57fb4b16ad864183fd23e3e6" \
+    --dataset_pretrained_task_id "4790c892d0e5433594450d3a933fa2fe" \
     --train_pkl "pkl/librispeech_train.pkl" \
     --dev_pkl "pkl/librispeech_dev.pkl" \
     --test_pkl "pkl/librispeech_test.pkl" \
@@ -19,8 +19,8 @@ python3 ../../task_finetuning.py \
     --output_saved_model_path "root/saved_model/" \
     --max_sample_length 450000 \
     --batch_size 16 \
-    --epochs 250 \
-    --lr 5e-5 \
+    --epochs 100 \
+    --lr 1e-4 \
     --weight_decay 0.005 \
     --warmup_steps 1000 \
     --architecture "wavlm" \

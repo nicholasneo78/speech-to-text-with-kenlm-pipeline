@@ -19,8 +19,8 @@ python3 ../../task_finetuning.py \
     --output_saved_model_path "root/saved_model/" \
     --max_sample_length 450000 \
     --batch_size 16 \
-    --epochs 5 \
-    --lr 5e-5 \
+    --epochs 10 \
+    --lr 1e-4 \
     --weight_decay 0.005 \
     --warmup_steps 1000 \
     --architecture "wav2vec2" \
