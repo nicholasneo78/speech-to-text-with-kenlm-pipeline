@@ -13,33 +13,49 @@ from datasets import Dataset, DatasetDict
 import re
 from num2words import num2words
 from nltk import flatten
+from typing import Tuple
 
-# generate the pkl from scatch with all the data required to build the DatasetDict for the finetuning step 
-class GeneratePickleFromScratch():
+class GeneratePickleFromScratch:
+    '''
+        generates the pkl from scatch with all the data required to build the DatasetDict for the finetuning step
+    '''
     
-    def __init__(self, root_folder, pkl_filename, audio_format, additional_preprocessing='general'):
+    def __init__(self, root_folder: str, pkl_filename: str, audio_format: str, additional_preprocessing: str = 'general') -> None:
+        '''
+            root_folder: the root folder where the audio file with audio_format will be processed
+            pkl_filename: the file path where the pickle data file will reside after preprocessing
+            audio_format: the targeted audio format of the audio that is to be processed
+            additional_preprocessing: depending on the annotations given, are there any other additional preprocessing needed to standardize the annotations
+        '''
         self.root_folder = root_folder
         self.pkl_filename = pkl_filename
         self.audio_format = audio_format
         self.additional_preprocessing = additional_preprocessing
 
-    # create new directory and ignore already created ones
-    def create_new_dir(self, directory):
+    def create_new_dir(self, directory: str) -> None:
+        '''
+            creates new directory and ignore already created ones
+
+            directory: the directory path that is being created
+        '''
         try:
             os.mkdir(directory)
         except OSError as error:
             pass # directory already exists!
 
-    # helper function to build the lookup table for the id and annotations from all the text files and return the table
-    def build_lookup_table(self):
-        #initiate list to store the id and annotations lookup
+    def build_lookup_table(self) -> pd.DataFrame:
+        '''
+            helper function to build the lookup table for the id and annotations from all the text files and return the lookup table
+        '''
+        
+        # create a list to store the id and annotations lookup
         split_list_frame = []
 
-        # get all the annotations into a dataframe
+        # get all the annotations into a dataframe to build a lookup table
         for root, subdirs, files in os.walk(self.root_folder):
             for file in files:
                 if file.endswith(".txt"):
-                    # add on to the code here
+                    # reads the annotation text files
                     df = pd.read_csv(os.path.join(root, file), header=None)
                     df.columns = ['name']
 
@@ -47,18 +63,26 @@ class GeneratePickleFromScratch():
                         split_list = j.split(" ",1)
                         split_list_frame.append(split_list)
 
-        df_new = pd.DataFrame(split_list_frame, columns=['id', 'annotations']) # id and annotations are just dummy headers here
+        # id and annotations are just dummy headers here
+        df_new = pd.DataFrame(split_list_frame, columns=['id', 'annotations']) 
+
+        # returns the annotations in a pandas dataframe (lookup table)
         return df_new 
 
-
-    # to input the text and detect if any digits exists, if there is, will convert the numbers into its word representation
-    def get_text_from_number(self, text):
-        # split sentence to list of words
+    def get_text_from_number(self, text: str) -> str:
+        '''
+            helper function to input the text and detect if any digits exists, if there is, will convert the numbers into its word representation
+            
+            text : obtains an entry of the annotations to do the text preprocessing
+        '''
+        # split sentence to a list of words
         text_list = text.split()
+
+        # append the processed words to this list per iteration
         new_text_list = []
         
         for txt in text_list:
-            
+
             # check if word is STRICTLY alphanumeric, not either one of it
             if (txt.isalnum()) and (not txt.isalpha()) and (not txt.isnumeric()):
                 sep_alpha_numeric_list = []
@@ -68,9 +92,6 @@ class GeneratePickleFromScratch():
                     
                     # append original letter
                     sep_alpha_numeric_list.append(txt[letter_idx])
-                    # print(sep_alpha_numeric_list)
-                    # print(len(list(txt)))
-                    # print(letter_idx)
                     
                     # compare the current indexed letter/digits and the next index letter/digits
                     if letter_idx != len(list(txt))-1 and ((txt[letter_idx].isalpha() and txt[letter_idx+1].isnumeric()) or (txt[letter_idx].isnumeric() and txt[letter_idx+1].isalpha())):                    
@@ -97,6 +118,7 @@ class GeneratePickleFromScratch():
                 # if less than 100, will pronounced in the usual way => e.g 55 == fifty-five
                 if float(t) <= 100:
                     preprocessed_text_list[idx] = num2words(t)
+
                 # else pronounced by its individual number => e.g 119 => one one nine
                 else:
                     sep_num_list = []
@@ -106,13 +128,21 @@ class GeneratePickleFromScratch():
             except:
                 continue
                 
+        # make lists of lists into just a list of words
         text_list_flat = flatten(preprocessed_text_list)
+
+        # returns the preprocessed text, where all the numbers in annotations are converted to text
         return ' '.join(text_list_flat).upper()
 
+    def preprocess_text(self, df: pd.DataFrame, base_path: str) -> str:
+        '''
+            all the text preprocessing being done for the annotations
 
-    # all the text preprocessing
-    def preprocess_text(self, df, base_path):
+            df: lookup table containing the annotations
+            base_path: get the audio file name w/o the extension
+        '''
 
+        # retrieve the annotations from the dataframe (lookup table) 
         clean_text = df.loc[df['id'] == base_path, 'annotations'].to_numpy()[0]
         
         # additional preprocessing to replace the filler words with one symbol
@@ -122,6 +152,7 @@ class GeneratePickleFromScratch():
         # add more here for other filler word or additional preprocessing needed for other data
         # elif ...
 
+        # usual preprocessing of the annotations
         else:
             clean_text = clean_text.replace('#', ' ')
 
@@ -137,11 +168,13 @@ class GeneratePickleFromScratch():
         # convert multiple spaces into only one space
         clean_text = ' '.join(clean_text.split())
 
+        # returns the preprocessed annotations
         return clean_text
 
-
-    # generate the pickle file from scratch to prepare the final dataset for finetuning step
-    def build_pickle_from_scratch(self):
+    def build_pickle_from_scratch(self) -> Tuple[pd.DataFrame, str]:
+        '''
+            generate the pickle file from scratch to prepare the final dataset for finetuning step
+        '''
 
         # list to append all the data in
         data_list = []
@@ -160,14 +193,14 @@ class GeneratePickleFromScratch():
                     # get the array of values from the audio files and using 16000 sampling rate (16000 due to w2v2 requirement)
                     audio_array, _ = librosa.load(os.path.join(root, file), sr=16000)
                     
-                    # NOTE THAT THERE ARE TWO LEVEL OF DICTIONARY: 
+                    # THERE ARE TWO LEVEL OF DICTIONARY: 
                         # the sub dictionary for the audio component 
                         # the main dictionary which comprises the file, audio and text component
                     
                     # text preprocessing
                     clean_text = self.preprocess_text(df_new, base_path)
 
-                    # creating the final data dictionary that is to be saved to a pkl file
+                    # creating the final data dictionary in this format that is to be saved to a pkl file
                     data = {
                         'file': os.path.join(root, file),
                         'audio': {
@@ -189,31 +222,50 @@ class GeneratePickleFromScratch():
         
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
-        
+
+        # returns the final preprocessed dataframe and the filepath of the pickle file
         return df_final, self.pkl_filename
         
     def __call__(self):
         return self.build_pickle_from_scratch()
 
-
-# generate the pkl from manifest with all the data required to build the DatasetDict for the finetuning step 
-class GeneratePickleFromManifest():
-    def __init__(self, manifest_path, pkl_filename, additional_preprocessing='general'):
+class GeneratePickleFromManifest:
+    '''
+        generate the pkl from manifest with all the data required to build the DatasetDict for the finetuning step 
+    '''
+    def __init__(self, manifest_path: str, pkl_filename: str, additional_preprocessing: str='general') -> None:
+        '''
+            manifest_path: the path to retrieve the manifest file with the information of the audio path and annotations
+            pkl_filename: the file path where the pickle data file will reside after preprocessing
+            additional_preprocessing: depending on the annotations given, are there any other additional preprocessing needed to standardize the annotations
+        '''
         self.manifest_path = manifest_path
         self.pkl_filename = pkl_filename
         self.additional_preprocessing = additional_preprocessing
 
-    # create new directory and ignore already created ones
-    def create_new_dir(self, directory):
+    def create_new_dir(self, directory: str) -> None:
+        '''
+            create new directory and ignore already created ones
+
+            directory: the directory path that is being created
+        '''
+
         try:
             os.mkdir(directory)
         except OSError as error:
             pass # directory already exists!
 
-    # to input the text and detect if any digits exists, if there is, will convert the numbers into its word representation
-    def get_text_from_number(self, text):
+    def get_text_from_number(self, text: str) -> str:
+        '''
+            to input the text and detect if any digits exists, if there is, will convert the numbers into its word representation
+
+            text : obtains an entry of the annotations to do the text preprocessing
+        '''
+
         # split sentence to list of words
         text_list = text.split()
+
+        # append the preprocessed text in this list
         new_text_list = []
         
         for txt in text_list:
@@ -245,8 +297,6 @@ class GeneratePickleFromManifest():
         # split the text into list of words again
         preprocessed_text_list = preprocessed_text.split()
         
-        # print(preprocessed_text_list)
-        
         # check and see if the individual strings are digits or not
         for idx, t in enumerate(preprocessed_text_list):
             try:
@@ -262,12 +312,18 @@ class GeneratePickleFromManifest():
             except:
                 continue
                 
+        # make lists of lists into just a list of words
         text_list_flat = flatten(preprocessed_text_list)
+
+        # returns the preprocessed text, where all the numbers in annotations are converted to text
         return ' '.join(text_list_flat).upper()
 
+    def preprocess_text(self, text: str) -> str:
+        '''
+            all the text preprocessing being done for the annotations
 
-    # all the text preprocessing
-    def preprocess_text(self, text):
+            text: text annotations required to be preprocessed            
+        '''
 
         # additional preprocessing to replace the filler words with one symbol
         if self.additional_preprocessing == 'general':
@@ -291,11 +347,13 @@ class GeneratePickleFromManifest():
         # convert multiple spaces into only one space
         clean_text = ' '.join(clean_text.split())
 
+        # returns the preprocessed text
         return clean_text
 
-
-    # generate the pickle file from manifest data file to prepare the final dataset for finetuning step
-    def build_pickle_from_manifest(self):
+    def build_pickle_from_manifest(self) -> Tuple[pd.DataFrame, str]:
+        '''
+            generate the pickle file from manifest data file to prepare the final dataset for finetuning step
+        '''
 
         # dict_list: to create a list to store the dictionaries from the manifest file
         # data_list: to store the data into this list to be exported into a pkl file
@@ -338,6 +396,7 @@ class GeneratePickleFromManifest():
         # export the dataframe to pickle
         df_final.to_pickle(self.pkl_filename)
 
+        # returns the final preprocessed dataframe and the filepath of the pickle file
         return df_final, self.pkl_filename
     
 

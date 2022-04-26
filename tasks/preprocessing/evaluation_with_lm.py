@@ -14,8 +14,22 @@ from tqdm import tqdm
 device = 'cuda' if torch.cuda.is_available else 'cpu'
 print(f'Device: {device}\n')
 
-class EvaluationWithLM():
-    def __init__(self, finetuned_model_path, processor_path, lm_path, test_data_path, alpha, beta, architecture):
+class EvaluationWithLM:
+    '''
+        perform evaluation of the finetuned model with the test set that incorporates language model
+    '''
+
+    def __init__(self, finetuned_model_path: str, processor_path: str, lm_path: str, test_data_path: str, alpha: float, beta: float, architecture: str):
+        '''
+            finetuned_model_path: path to get the finetuned model
+            processor_path: path to get the processor
+            lm_path: path to get the language model arpa file
+            test_data_path: path to get the test pickle data file for evaluation
+            alpha: for decoding using language model - weight associated with the LMs probabilities. A weight of 0 means the LM has no effect
+            beta: for decoding using language model - weight associated with the number of words within the beam
+            architecture: either pretrained from wav2vec2 model or the wavlm model
+        '''
+
         self.finetuned_model_path = finetuned_model_path
         self.processor_path = processor_path
         self.lm_path = lm_path
@@ -24,8 +38,10 @@ class EvaluationWithLM():
         self.beta = beta
         self.architecture = architecture
 
-    # greedy decode algorithm - decodes argmax of logits and squash in CTC fashion
-    def greedy_decode(self, logits, labels):
+    def greedy_decode(self, logits: torch.Tensor, labels: str) -> str:
+        '''
+            greedy decode with no language model
+        '''
         label_dict = {n: c for n, c in enumerate(labels)}
         prev_c = None
         out = []
@@ -37,8 +53,10 @@ class EvaluationWithLM():
             prev_c = c
         return "".join(out)
 
-    # get the final WER for both the greedy decoding and beam search decoding
-    def get_wer(self):
+    def get_wer(self) -> float:
+        '''
+            get the final WER for both the greedy decoding and beam search decoding
+        '''
         
         # load the finetuned model and the processor that is produced from finetuning.py script
         if self.architecture == 'wav2vec2':

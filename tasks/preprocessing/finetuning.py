@@ -19,15 +19,26 @@ from datasets import Dataset, DatasetDict, load_metric
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, WavLMForCTC, TrainingArguments, Trainer
 from transformers.integrations import TensorBoardCallback
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Tuple, Optional, Union
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Device: {device}\n')
 
-# a class for all the finetuning preparations done
-class FinetuningPreparation():
+class FinetuningPreparation:
+    '''
+        a class for all the finetuning preparations done
+    '''
 
-    def __init__(self, train_pkl, dev_pkl, test_pkl, processor_path='./processor/', max_sample_length=450000, mode='finetuning_prep'):
+    def __init__(self, train_pkl: str, dev_pkl: str, test_pkl: str, processor_path: str = './processor/', max_sample_length: int = 450000, mode: str='finetuning_prep') -> None:
+        '''
+            train_pkl: file path of the train pickle file
+            dev_pkl: file path of the dev pickle file
+            test_pkl: file path of the test pickle file
+            processor_path: file path of the processor file
+            max_sample_length: max audio sample length threshold
+            mode: either finetune mode or to see the audio length distribution mode
+        '''
+        
         self.train_pkl = train_pkl
         self.dev_pkl = dev_pkl
         self.test_pkl = test_pkl
@@ -35,8 +46,10 @@ class FinetuningPreparation():
         self.max_sample_length = max_sample_length
         self.mode = mode
 
-    # load the pickle data file
-    def load_pickle_data(self):
+    def load_pickle_data(self) -> DatasetDict:
+        '''
+            load the pickle data file
+        '''
         with open(self.train_pkl, 'rb') as f:
             df_train = pickle.load(f)
 
@@ -53,16 +66,25 @@ class FinetuningPreparation():
             "test": Dataset.from_pandas(df_test)
         })
 
+        # returns the DatasetDict object from the pkl datasets
         return dataset
 
-    # extract all characters available in the train and dev datasets
-    def extract_all_chars(self, batch):
+    def extract_all_chars(self, batch) -> List:
+        '''
+            extract all characters available in the train and dev datasets
+        '''
         all_text = " ".join(batch["text"])
         vocab = list(set(all_text))
+
+        # returns a list of all possible characters from the datasets
         return vocab
 
-    # prepare the processor object
-    def build_processor(self, dataset):
+    def build_processor(self, dataset: pd.DataFrame) -> Wav2Vec2Processor:
+        '''
+            prepare the processor object
+
+            dataset: load the pickle datasets into a DataFrame object
+        '''
 
         # extract characters from train dataset
         vocabs_train = self.extract_all_chars(dataset['train'])
@@ -122,10 +144,13 @@ class FinetuningPreparation():
         # save the processor
         processor.save_pretrained(self.processor_path)
 
+        # returns the processor object
         return processor
 
-    # preprocess the dataset to feed into the transformer
-    def preprocess_dataset_for_transformer(self, batch, processor):
+    def preprocess_dataset_for_transformer(self, batch, processor: Wav2Vec2Processor):
+        '''
+            preprocess the dataset to feed into the transformer
+        '''
 
         # proceed with the preprocessing of data
         audio = batch["audio"]
@@ -138,8 +163,13 @@ class FinetuningPreparation():
             batch["labels"] = processor(batch["text"]).input_ids
         return batch
 
-    # get the audio sample distribution - separate branch to check the distribution of the audio length of the train datasets in terms of sampling size
-    def get_audio_length_distribution(self, dataset, processor):
+    def get_audio_length_distribution(self, dataset: pd.DataFrame, processor: Wav2Vec2Processor) -> None:
+        '''
+            get the audio sample distribution - separate branch to check the distribution of the audio length of the train datasets in terms of sampling size
+        
+            dataset: the dataframe loaded from the pickle data file
+            processor: the wav2vec2 processor
+        '''
 
         # further preprocessing of the dataset
         dataset = dataset.map(lambda x: self.preprocess_dataset_for_transformer(x, processor), remove_columns=dataset.column_names["train"], num_proc=1)
@@ -161,16 +191,23 @@ class FinetuningPreparation():
         plt.ylabel('Number of inputs')
         plt.show()
 
-    # filter the audio length to prevent OOM issue due to lengthy audio files
-    def filter_audio_length(self, dataset):
+    def filter_audio_length(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        '''
+            filter the audio length to prevent OOM issue due to lengthy audio files
+
+            dataset: the dataframe loaded from the pickle data file
+        '''
 
         # filter out those longer duration videos (based on the histogram with the right tail minority)
         dataset["train"] = dataset["train"].filter(lambda x: x < self.max_sample_length, input_columns=["input_length"])
 
+        # returns the dataset with the audio length within the threshold
         return dataset
 
-    # consolidating all the above methods for preparation
-    def finetuning_preparation(self):
+    def finetuning_preparation(self) -> Tuple[pd.DataFrame, Wav2Vec2Processor]:
+        '''
+            consolidating all the above methods for preparation
+        '''
         
         # load the DatasetDict object from the pkl files 
         dataset = self.load_pickle_data()
@@ -184,10 +221,13 @@ class FinetuningPreparation():
         # filter the audio length to prevent OOM issue due to lengthy audio files
         dataset = self.filter_audio_length(dataset)
 
+        # returns the dataset and the processer
         return dataset, processor
 
-    # wrapper class of get_audio_length_distribution
-    def get_audio_length_distribution_preparation(self):
+    def get_audio_length_distribution_preparation(self) -> None:
+        '''
+            wrapper class of get_audio_length_distribution
+        '''
 
         # load the DatasetDict object from the pkl files 
         dataset = self.load_pickle_data()
@@ -270,10 +310,32 @@ class DataCollatorCTCWithPadding:
 
         return batch
 
+class Finetuning:
+    '''
+        set up trainer class to proceed with finetuning
+    '''
 
-# set up trainer class to proceed with finetuning
-class Finetuning():
-    def __init__(self, train_pkl, dev_pkl, test_pkl, input_processor_path, input_checkpoint_path, input_pretrained_model_path, output_processor_path, output_checkpoint_path, output_saved_model_path, max_sample_length, batch_size, epochs, lr, weight_decay, warmup_steps, architecture, finetune_from_scratch=False):
+    def __init__(self, train_pkl: str, dev_pkl: str, test_pkl: str, input_processor_path: str, input_checkpoint_path: str, input_pretrained_model_path: str, output_processor_path: str, output_checkpoint_path: str, output_saved_model_path: str, max_sample_length: int, batch_size: int, epochs: int, lr: float, weight_decay: float, warmup_steps: int, architecture: str, finetune_from_scratch: bool=False) -> None:
+        '''
+            train_pkl: file path of the train pickle file
+            dev_pkl: file path of the dev pickle file
+            test_pkl: file path of the test pickle file
+            input_processor_path: directory of the processor path
+            input_checkpoint_path: directory of the checkpoint path
+            input_pretrained_model_path: directory of the pretrained model path
+            output_processor_path: directory of the processor path produced after finetuning
+            output_checkpoint_path: directory of the checkpoint path produced after finetuning
+            output_saved_model_path: directory of the pretrained model path produced after finetuning
+            max_sample_length: max audio sample length threshold
+            batch_size: batch size used to finetune the model
+            epochs: number of epochs used to finetune the model
+            lr: learning rate used to finetune the model
+            weight_decay: the weight decay of the learning rate
+            warmup_steps: number of finetuning steps for warmup
+            architecture: using either the wav2vec2 or the wavlm architecture
+            finetune_from_scratch: either finetuning from scratch or resuming from checkpoint
+        '''
+        
         self.train_pkl = train_pkl
         self.dev_pkl = dev_pkl
         self.test_pkl = test_pkl
@@ -295,8 +357,10 @@ class Finetuning():
         self.architecture = architecture
         self.finetune_from_scratch = finetune_from_scratch
     
-    # defining evaluation metric during finetuning process
-    def compute_metrics(self, pred, processor):
+    def compute_metrics(self, pred, processor) -> Dict:
+        '''
+            defining evaluation metric during finetuning process
+        '''
 
         # load evaluation metric
         wer_metric = load_metric("wer")
@@ -317,10 +381,13 @@ class Finetuning():
         # obtain metric score
         wer = wer_metric.compute(predictions=pred_str, references=label_str)
 
+        # returns the word error rate
         return {"wer": wer}
 
-    # proceed with finetuning of the model
-    def finetune(self):
+    def finetune(self) -> str:
+        '''
+            proceed with finetuning of the model
+        '''
 
         # load the preprocessed dataset from the FinetuningPreparation class
         data_preparation = FinetuningPreparation(train_pkl=self.train_pkl,
@@ -414,22 +481,35 @@ class Finetuning():
         # save the processor
         processor.save_pretrained(self.output_processor_path)
 
-        return  self.output_checkpoint_path, self.output_processor_path, self.input_pretrained_model_path, self.output_saved_model_path
+        # returns the file paths
+        return self.output_checkpoint_path, self.output_processor_path, self.input_pretrained_model_path, self.output_saved_model_path
 
     def __call__(self):
         return self.finetune()
 
-# set up evaluation code
-class Evaluation():
-    def __init__(self, dev_pkl, test_pkl, processor_path, saved_model_path, architecture):
+class Evaluation:
+    '''
+        evaluation of the model, without a language model
+    '''
+    def __init__(self, dev_pkl: str, test_pkl: str, processor_path: str, saved_model_path: str, architecture: str) -> None:
+        '''
+            dev_pkl: file path of the dev pickle file
+            test_pkl: file path of the test pickle file
+            processor_path: directory of the processor path after finetuning
+            saved_model_path: directory of the model path after finetuning
+            architecture: using either the wav2vec2 or the wavlm architecture
+        '''
+
         self.dev_pkl = dev_pkl
         self.test_pkl = test_pkl
         self.processor_path = processor_path
         self.saved_model_path = saved_model_path
         self.architecture = architecture
 
-    # load the pickle data file - train data not required here
-    def load_pickle_data(self):
+    def load_pickle_data(self) -> DatasetDict:
+        '''
+            load the pickle data file - train data not required here
+        '''
 
         with open(self.dev_pkl, 'rb') as f:
             df_dev = pickle.load(f)
@@ -443,10 +523,13 @@ class Evaluation():
             "test": Dataset.from_pandas(df_test)
         })
 
+        # returns the DatasetDict object
         return dataset
 
-    # preprocess the dataset to feed into the transformer
     def preprocess_dataset_for_transformer(self, batch, processor):
+        '''
+            preprocess the dataset to feed into the transformer
+        '''
 
         # proceed with the preprocessing of data
         audio = batch["audio"]
@@ -459,8 +542,10 @@ class Evaluation():
             batch["labels"] = processor(batch["text"]).input_ids
         return batch
 
-    # get the prediction result
     def map_to_result_gpu(self, batch, model, processor):
+        '''
+            get the prediction result
+        '''
         model.to(device)
         with torch.no_grad():
             input_values = torch.tensor(batch["input_values"], device=device).unsqueeze(0)
@@ -472,8 +557,10 @@ class Evaluation():
 
         return batch
 
-    # get prediction score
     def evaluate(self):
+        '''
+            get prediction score
+        '''
 
         # load the saved model and processor from local
         if self.architecture == 'wav2vec2':
@@ -505,7 +592,6 @@ class Evaluation():
         return self.evaluate()
 
 
-
 if __name__ == "__main__":
     
     # ########## MAGISTER: GET AUDIO LENGTH DISTRIBUTION ##########
@@ -521,10 +607,6 @@ if __name__ == "__main__":
     # distribution()
 
     ###################################################
-
-
-
-
 
     ########## MAGISTER: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
 
@@ -651,7 +733,6 @@ if __name__ == "__main__":
     evaluation()
 
     ###################################################
-
 
 
 

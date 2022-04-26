@@ -7,7 +7,7 @@ python3 ../../task_finetuning.py \
     --output_url "s3://experiment-logging" \
     --dataset_project "datasets/librispeech" \
     --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
-    --dataset_pretrained_task_id "c407832abe274bdfadbee1615e400bd2" \
+    --dataset_pretrained_task_id "004ce6adba86436b858290912d71f44d" \
     --train_pkl "pkl/librispeech_train.pkl" \
     --dev_pkl "pkl/librispeech_dev.pkl" \
     --test_pkl "pkl/librispeech_test.pkl" \
