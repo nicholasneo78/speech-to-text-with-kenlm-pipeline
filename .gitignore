@@ -22,3 +22,4 @@ tasks/preprocessing/root/*
 
 failed/*
 kenlm/*
+docker_tar/*

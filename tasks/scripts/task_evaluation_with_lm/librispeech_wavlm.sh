@@ -5,7 +5,7 @@ python3 ../../task_evaluation_with_lm.py \
     --task_name "evaluation_with_lm" \
     --output_url "s3://experiment-logging" \
     --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
-    --dataset_finetuned_task_id "b65762c8ff454ae4afe99924eebcc396" \
+    --dataset_finetuned_task_id "a06cdbdeeb5847e3bc6d187bbab08541" \
     --lm_id "3366eaba06054260a40b02c6f9277dce" \
     --test_pkl "pkl/librispeech_test.pkl" \
     --finetuned_model_path "saved_model/" \

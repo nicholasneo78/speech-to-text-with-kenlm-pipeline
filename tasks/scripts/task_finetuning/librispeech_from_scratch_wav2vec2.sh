@@ -18,10 +18,10 @@ python3 ../../task_finetuning.py \
     --output_checkpoint_path "root/ckpt/" \
     --output_saved_model_path "root/saved_model/" \
     --max_sample_length 450000 \
-    --batch_size 16 \
-    --epochs 10 \
+    --batch_size 8 \
+    --epochs 100 \
     --lr 1e-4 \
-    --weight_decay 0.005 \
+    --weight_decay 0.01 \
     --warmup_steps 1000 \
     --architecture "wav2vec2" \
     --queue 'compute' \
