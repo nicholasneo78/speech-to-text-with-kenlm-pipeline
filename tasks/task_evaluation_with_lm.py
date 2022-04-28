@@ -89,11 +89,6 @@ args = {
     'architecture': arg.architecture
 }
 
-print(f'alpha: {args["alpha"]}')
-print(f'alpha: {arg.alpha}')
-print(f'alpha: {args["beta"]}')
-print(f'alpha: {arg.beta}')
-
 # task.connect(args)
 
 # execute clearml
@@ -113,6 +108,10 @@ dataset_finetuned_path = dataset_finetuned.get_local_copy()
 lm = Dataset.get(dataset_id=args['lm_id'])
 lm_path = lm.get_local_copy()
 
+print(f'alpha: {args["alpha"]}')
+print(f'alpha: {arg.alpha}')
+print(f'beta: {args["beta"]}')
+print(f'beta: {arg.beta}')
 
 evaluation = EvaluationWithLM(finetuned_model_path=f'{dataset_finetuned_path}/{args["finetuned_model_path"]}',
                               processor_path=f'{dataset_finetuned_path}/{args["input_processor_path"]}',
