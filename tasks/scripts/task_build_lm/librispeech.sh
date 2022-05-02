@@ -1,6 +1,7 @@
 #!/bin/bash
 
 python3 ../../task_build_lm.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:v0.1.1" \
     --project_name "wav2vec2_kenlm_pipeline" \
     --task_name "build_lm" \
     --dataset_name "librispeech_v2_build_lm" \
