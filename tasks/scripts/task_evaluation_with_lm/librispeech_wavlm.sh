@@ -1,6 +1,7 @@
 #!/bin/bash
 
 python3 ../../task_evaluation_with_lm.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:v0.1.1" \
     --project_name "wavlm_kenlm_pipeline" \
     --task_name "evaluation_with_lm" \
     --output_url "s3://experiment-logging" \
