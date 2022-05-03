@@ -1,7 +1,6 @@
 #!/bin/bash
 
 python3 ../../task_data_preprocessing.py \
-    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:v0.1.1" \
     --project_name "wav2vec2_kenlm_pipeline" \
     --task_name "data_preprocessing" \
     --dataset_name "librispeech_v2_data_preprocessing" \

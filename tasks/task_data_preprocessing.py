@@ -9,7 +9,6 @@ def parse_args():
     )
 
     # arguments corresponding to the task initialisation
-    parser.add_argument("--docker_image",                 type=str, help="the docker image used to load all the dependencies")
     parser.add_argument("--project_name",                 type=str, help="the clearml project name")
     parser.add_argument("--task_name",                    type=str, help="clearml task name")
     parser.add_argument("--dataset_name",                 type=str, help="name of the output dataset produced")
@@ -42,7 +41,7 @@ DATASET_PROJECT = arg.dataset_project
 
 task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
 task.set_base_docker(
-    docker_image=arg.docker_image,
+    docker_image="nicholasneo78/stt_with_kenlm_pipeline:v0.1.1",
 )
 
 # get the args for data preprocessing
@@ -57,7 +56,7 @@ args = {
     'additional_preprocessing': arg.additional_preprocessing
 }
 
-# task.connect(args)
+task.connect(args)
 
 # execute clearml
 task.execute_remotely(queue_name=arg.queue, exit_process=True)
@@ -74,6 +73,9 @@ dataset = Dataset.create(
     dataset_name=DATASET_NAME,
     #parent_datasets=[args['dataset_task_id']]
 )
+
+# import dataset
+# dataset_path = dataset.get_local_copy()
 
 # process
 librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{args["manifest_path_train"]}', 
