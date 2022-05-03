@@ -1,5 +1,3 @@
-clearml
-boto3==1.16.7
 transformers
 datasets
 librosa
