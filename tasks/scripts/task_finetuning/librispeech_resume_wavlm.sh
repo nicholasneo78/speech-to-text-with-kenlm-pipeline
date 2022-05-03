@@ -1,7 +1,6 @@
 #!/bin/bash
 
 python3 ../../task_finetuning.py \
-    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:v0.1.1" \
     --project_name "wavlm_kenlm_pipeline" \
     --task_name "finetuning_resume" \
     --dataset_name "librispeech_v2_finetuning_resume_wavlm" \
