@@ -36,32 +36,30 @@ def parse_args():
 
 arg = parse_args()
 
-# clearml configs
-PROJECT_NAME = arg.project_name
-TASK_NAME = arg.task_name
-DATASET_NAME = arg.dataset_name
-OUTPUT_URL = arg.output_url
-DATASET_PROJECT = arg.dataset_project
+# # clearml configs
+# PROJECT_NAME = arg.project_name
+# TASK_NAME = arg.task_name
+# DATASET_NAME = arg.dataset_name
+# OUTPUT_URL = arg.output_url
+# DATASET_PROJECT = arg.dataset_project
 
-task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
+task = Task.init(project_name=arg.project_name, task_name=arg.task_name, output_uri=arg.output_url)
 task.set_base_docker(
     docker_image=arg.docker_image,
 )
 
-# get the args for data preprocessing
-args = {
-    'dataset_pkl_task_id': arg.dataset_pkl_task_id,
-    'script_task_id': arg.script_task_id,
-    'kenlm_id': arg.kenlm_id,
-    'train_pkl': arg.train_pkl,
-    'dev_pkl': arg.dev_pkl,
-    'script_path': arg.script_path,
-    'txt_filepath': arg.txt_filepath,
-    'n_grams': arg.n_grams,
-    'dataset_name_': arg.dataset_name_
-}
-
-# task.connect(args)
+# # get the args for data preprocessing
+# args = {
+#     'dataset_pkl_task_id': arg.dataset_pkl_task_id,
+#     'script_task_id': arg.script_task_id,
+#     'kenlm_id': arg.kenlm_id,
+#     'train_pkl': arg.train_pkl,
+#     'dev_pkl': arg.dev_pkl,
+#     'script_path': arg.script_path,
+#     'txt_filepath': arg.txt_filepath,
+#     'n_grams': arg.n_grams,
+#     'dataset_name_': arg.dataset_name_
+# }
 
 # execute clearml
 task.execute_remotely(queue_name=arg.queue, exit_process=True)
@@ -69,36 +67,36 @@ task.execute_remotely(queue_name=arg.queue, exit_process=True)
 from preprocessing.build_lm import BuildLM
 
 # obtaining the pkl file
-dataset_pkl = Dataset.get(dataset_id=args['dataset_pkl_task_id'])
+dataset_pkl = Dataset.get(dataset_id=arg.dataset_pkl_task_id)
 dataset_pkl_path = dataset_pkl.get_local_copy()
 
 # obtain the build_lm script path
-get_script = Dataset.get(dataset_id=args['script_task_id'])
+get_script = Dataset.get(dataset_id=arg.script_task_id)
 get_script_dir = get_script.get_local_copy()
 
 # get the kenlm build
-get_kenlm = Dataset.get(dataset_id=args['kenlm_id'])
+get_kenlm = Dataset.get(dataset_id=arg.kenlm_id)
 get_kenlm_dir = get_kenlm.get_local_copy()
 
 # create new dataset object to store the language model
 dataset = Dataset.create(
-    dataset_project=DATASET_PROJECT,
-    dataset_name=DATASET_NAME,
+    dataset_project=arg.dataset_project,
+    dataset_name=arg.dataset_name,
 )
 
-get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{args["train_pkl"]}',
-                     df_dev_filepath=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
-                     script_path=f'{get_script_dir}/{args["script_path"]}', 
+get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{arg.train_pkl}',
+                     df_dev_filepath=f'{dataset_pkl_path}/{arg.dev_pkl}', 
+                     script_path=f'{get_script_dir}/{arg.script_path}', 
                      root_path=f'{get_kenlm_dir}', #"/workspace", 
-                     txt_filepath=args["txt_filepath"], 
-                     n_grams=args["n_grams"], 
-                     dataset_name=args["dataset_name_"])
+                     txt_filepath=arg.txt_filepath, 
+                     n_grams=arg.n_grams, 
+                     dataset_name=arg.dataset_name_)
 
 lm_path = get_lm()
 
 dataset.add_files(path=lm_path, local_base_folder='root/')
 
-dataset.upload(output_url=OUTPUT_URL)
+dataset.upload(output_url=arg.output_url)
 dataset.finalize()
 
 print('Done')

@@ -46,46 +46,44 @@ def parse_args():
 
 arg = parse_args()
 
-# clearml configs
-PROJECT_NAME = arg.project_name
-TASK_NAME = arg.task_name
-DATASET_NAME = arg.dataset_name
-OUTPUT_URL = arg.output_url
-DATASET_PROJECT = arg.dataset_project
+# # clearml configs
+# PROJECT_NAME = arg.project_name
+# TASK_NAME = arg.task_name
+# DATASET_NAME = arg.dataset_name
+# OUTPUT_URL = arg.output_url
+# DATASET_PROJECT = arg.dataset_project
 
-task = Task.init(project_name=PROJECT_NAME, task_name=TASK_NAME, output_uri=OUTPUT_URL)
+task = Task.init(project_name=arg.project_name, task_name=arg.task_name, output_uri=arg.output_url)
 task.set_base_docker(
     docker_image=arg.docker_image,
 )
 
-# get the args for data preprocessing
-args = {
-    'dataset_pkl_task_id': arg.dataset_pkl_task_id,
-    'dataset_pretrained_task_id': arg.dataset_pretrained_task_id,
+# # get the args for data preprocessing
+# args = {
+#     'dataset_pkl_task_id': arg.dataset_pkl_task_id,
+#     'dataset_pretrained_task_id': arg.dataset_pretrained_task_id,
 
-    'train_pkl': arg.train_pkl,
-    'dev_pkl': arg.dev_pkl,
-    'test_pkl': arg.test_pkl,
+#     'train_pkl': arg.train_pkl,
+#     'dev_pkl': arg.dev_pkl,
+#     'test_pkl': arg.test_pkl,
 
-    'input_processor_path': arg.input_processor_path,
-    'input_checkpoint_path': arg.input_checkpoint_path,
-    'input_pretrained_model_path': arg.input_pretrained_model_path,
+#     'input_processor_path': arg.input_processor_path,
+#     'input_checkpoint_path': arg.input_checkpoint_path,
+#     'input_pretrained_model_path': arg.input_pretrained_model_path,
 
-    'output_processor_path': arg.output_processor_path,
-    'output_checkpoint_path': arg.output_checkpoint_path,
-    'output_saved_model_path': arg.output_saved_model_path,
+#     'output_processor_path': arg.output_processor_path,
+#     'output_checkpoint_path': arg.output_checkpoint_path,
+#     'output_saved_model_path': arg.output_saved_model_path,
 
-    'max_sample_length': arg.max_sample_length,
-    'batch_size': arg.batch_size,
-    'epochs': arg.epochs,
-    'lr': arg.lr,
-    'weight_decay': arg.weight_decay,
-    'warmup_steps': arg.warmup_steps,
-    'architecture': arg.architecture,
-    'finetune_from_scratch': arg.finetune_from_scratch
-}
-
-# task.connect(args)
+#     'max_sample_length': arg.max_sample_length,
+#     'batch_size': arg.batch_size,
+#     'epochs': arg.epochs,
+#     'lr': arg.lr,
+#     'weight_decay': arg.weight_decay,
+#     'warmup_steps': arg.warmup_steps,
+#     'architecture': arg.architecture,
+#     'finetune_from_scratch': arg.finetune_from_scratch
+# }
 
 # execute clearml
 task.execute_remotely(queue_name=arg.queue, exit_process=True)
@@ -93,40 +91,40 @@ task.execute_remotely(queue_name=arg.queue, exit_process=True)
 from preprocessing.finetuning import Finetuning
 
 # obtaining the pkl file
-dataset_pkl = Dataset.get(dataset_id=args['dataset_pkl_task_id'])
+dataset_pkl = Dataset.get(dataset_id=arg.dataset_pkl_task_id)
 dataset_pkl_path = dataset_pkl.get_local_copy()
 
 # obtaining the wav2vec2_base_pretrained model or resume finetuning
-dataset_pretrained = Dataset.get(dataset_id=args['dataset_pretrained_task_id'])
+dataset_pretrained = Dataset.get(dataset_id=arg.dataset_pretrained_task_id)
 dataset_pretrained_path = dataset_pretrained.get_local_copy()
 
 # create new dataset object to store the checkpoint, processor, and saved model
 dataset = Dataset.create(
-    dataset_project=DATASET_PROJECT,
-    dataset_name=DATASET_NAME,
+    dataset_project=arg.dataset_project,
+    dataset_name=arg.dataset_name,
 )
 
 # process
-finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{args["train_pkl"]}', 
-                            dev_pkl=f'{dataset_pkl_path}/{args["dev_pkl"]}', 
-                            test_pkl=f'{dataset_pkl_path}/{args["test_pkl"]}', 
+finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{arg.train_pkl}', 
+                            dev_pkl=f'{dataset_pkl_path}/{arg.dev_pkl}', 
+                            test_pkl=f'{dataset_pkl_path}/{arg.test_pkl}', 
                                 
-                            input_processor_path= f'{dataset_pretrained_path}/{args["input_processor_path"]}', #args["processor_path"], 
-                            input_checkpoint_path= f'{dataset_pretrained_path}/{args["input_checkpoint_path"]}', #args["checkpoint_path"], 
-                            input_pretrained_model_path=f'{dataset_pretrained_path}/{args["input_pretrained_model_path"]}', # dataset_pretrained_path,
+                            input_processor_path= f'{dataset_pretrained_path}/{arg.input_processor_path}', 
+                            input_checkpoint_path= f'{dataset_pretrained_path}/{arg.input_checkpoint_path}', 
+                            input_pretrained_model_path=f'{dataset_pretrained_path}/{arg.input_pretrained_model_path}',
                             
-                            output_processor_path= args["output_processor_path"], 
-                            output_checkpoint_path= args["output_checkpoint_path"], 
-                            output_saved_model_path=args["output_saved_model_path"], 
+                            output_processor_path= arg.output_processor_path, 
+                            output_checkpoint_path= arg.output_checkpoint_path, 
+                            output_saved_model_path=arg.output_saved_model_path, 
                             
-                            max_sample_length=args["max_sample_length"], 
-                            batch_size=args["batch_size"], 
-                            epochs=args["epochs"], 
-                            lr=float(args["lr"]), 
-                            weight_decay=args["weight_decay"], 
-                            warmup_steps=args["warmup_steps"], 
-                            finetune_from_scratch=args["finetune_from_scratch"],
-                            architecture=args["architecture"]
+                            max_sample_length=arg.max_sample_length, 
+                            batch_size=arg.batch_size, 
+                            epochs=arg.epochs, 
+                            lr=float(arg.lr), 
+                            weight_decay=arg.weight_decay, 
+                            warmup_steps=arg.warmup_steps, 
+                            finetune_from_scratch=arg.finetune_from_scratch,
+                            architecture=arg.architecture
                     )
 
 checkpoint_path, processor_path, pretrained_model_path, saved_model_path = finetune_model()
@@ -135,7 +133,7 @@ dataset.add_files(path=checkpoint_path, local_base_folder='root/')
 dataset.add_files(path=processor_path, local_base_folder='root/')
 dataset.add_files(path=saved_model_path, local_base_folder='root/')
 
-dataset.upload(output_url=OUTPUT_URL)
+dataset.upload(output_url=arg.output_url)
 dataset.finalize()
 
 print('Done')
