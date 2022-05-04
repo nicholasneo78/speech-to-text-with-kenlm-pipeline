@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument("--epochs",                       type=int, help="number of epochs")
     parser.add_argument("--lr",                           type=str, help="learning rate")
     parser.add_argument("--weight_decay",                 type=float, help="weight decay")
-    parser.add_argument("--warmup_steps",                 type=int, help="number of steps for warmup - lower lr")
+    parser.add_argument("--warmup_steps",                 type=int, help="number of steps for warmup")
     parser.add_argument("--architecture",                 type=str, help="model based on wav2ve2 or wavlm")
     parser.add_argument("--finetune_from_scratch",        action='store_true', default=False, help="finetune model either from scratch or pre-existing finetuned model")
 
