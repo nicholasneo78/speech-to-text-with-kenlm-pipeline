@@ -6,7 +6,7 @@ services:
   local: 
     build: ./ #Uncomment this to rebuild
     #image:  pythonfiles_model
-    image: stt_with_kenlm_pipeline:v0.1.3
+    image: stt_with_kenlm_pipeline:latest
     ports:
       - 8888:8888
     #Let code run

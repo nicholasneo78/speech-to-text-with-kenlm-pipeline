@@ -87,7 +87,7 @@ dataset = Dataset.create(
 get_lm = BuildLM(df_train_filepath=f'{dataset_pkl_path}/{arg.train_pkl}',
                      df_dev_filepath=f'{dataset_pkl_path}/{arg.dev_pkl}', 
                      script_path=f'{get_script_dir}/{arg.script_path}', 
-                     root_path=f'{get_kenlm_dir}', #"/workspace", 
+                     root_path=f'{get_kenlm_dir}',
                      txt_filepath=arg.txt_filepath, 
                      n_grams=arg.n_grams, 
                      dataset_name=arg.dataset_name_)
