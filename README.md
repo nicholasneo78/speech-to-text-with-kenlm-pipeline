@@ -69,7 +69,7 @@ To preprocess the audio and the annotation data, split it into train-dev-test se
 - `pkl_filename`: (str) the directory where the pickle file is being generated    
 
 #### Return
-Both class returns the `pandas DataFrame` and the `pickle filepath` where the pickle file is generated from the preprocessing.  
+Both class returns the pandas DataFrame and the pickle filepath where the pickle file is generated from the preprocessing.  
    
 #### Before executing the code
 Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/data_preprocessing.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, call the class, either `GeneratePickleFromScratch` or `GeneratePickleFromManifest` to do the data preprocessing, here is a code snippet to illustrate the data preprocessing step:  
@@ -117,28 +117,52 @@ To execute the data preprocessing code, on the terminal, go to this repository a
 cd /stt-with-kenlm-pipeline/tasks/preprocessing
 python3 data_preprocessing.py
 ```
+<br>
+
+
 
 ## Building the language model using Kenlm  
-To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.**  
+To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
   
 #### Arguments  
-  
+- `df_train_filepath`: (str) the file path where the train pickle file is being generated    
+- `df_dev_filepath`: (str) the file path where the dev pickle file is being generated   
+- `script_path`: (str) script path to execute the building of the kenlm language model .arpa file  
+- `root_path`: the root path where the kenlm directory and its packages resides  
+- `txt_filepath`: (str) the text file path generated when the train and dev pickle file annotations are being consolidated    
+- `n_grams`: (str) number of grams you want for the language model    
+- `dataset_name`: (str) the name you want to give for the language model built    
 
 #### Return
-
+The filepath of the language model built.  
    
 #### Before executing the code
-
+Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/build_lm.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, call the class `BuildLM` to build the Kenlm language model, here is a code snippet to illustrate the building of language model:   
    
 ```python
+get_lm = BuildLM(df_train_filepath='./root/pkl/<YOUR_FILENAME_OF_THE_TRAIN_PICKLE_FILE_GENERATED>.pkl',
+                 df_dev_filepath='./root/pkl/<YOUR_FILENAME_OF_THE_DEV_PICKLE_FILE_GENERATED>.pkl.pkl', 
+                 script_path="./build_lm.sh", 
+                 root_path="/stt_with_kenlm_pipeline/kenlm", 
+                 txt_filepath="root/lm/<YOUR_TEXT_FILE_NAME>.txt", 
+                 n_grams="<NUMBER_OF_GRAMS>", # preferably "5" 
+                 dataset_name="<NAME OF THE DATASET>")
 
+lm_path = get_lm()
 ```  
    
 There will be an example of the code tested on the librispeech dataset in the python script.    
 
 #### Executing the code
-
+To execute the language model building code, on the terminal, go to this repository and enter into the docker image (refer above for the command), inside the docker container, type the following command:  
 ```shell
 cd /stt-with-kenlm-pipeline/tasks/preprocessing
-
+python3 build_lm.py
 ```
+<br>
+
+## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace 
+The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. In this repository, for demonstration purpose, only the base wav2vec2 and base wavlm pretrained models are used, but feel free to add the larger wav2vec2 and wavlm models as the base pretrained model. This script also has the ability to check for the audio length distribution of the train dataset, so that you can remove the longer audio data to prevent out-of-memory issues. *This script can also do evaluation on the test dataset but with the absence of a language model. Hence, it is not encouraged to get the evaluation score here, but rather on the evaluation script discussed later.*    
+
+#### Arguments  
+
