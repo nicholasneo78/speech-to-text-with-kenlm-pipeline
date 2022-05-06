@@ -31,7 +31,7 @@ The repository structure will be as shown below:
 
 <br>
 
-# Executing code on local machine
+# Executing the code on local machine
 **The documentations below are for running the code using local machine, please go to the section on "Executing code on ClearML" if you want to run your code on ClearML**  
 
 ### Getting Started - Via Docker 
@@ -219,7 +219,7 @@ None
 
 
 #### Before executing the code
-Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/build_lm.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, depending on your task, call the class `FinetuningPreparation` to get the audio length distribution, `Finetuning` to finetune the model and `Evaluation` to evaluate on the finetuned model. Here is a code snippet to illustrate the building of language model:  
+Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/finetuning.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, depending on your task, call the class `FinetuningPreparation` to get the audio length distribution, `Finetuning` to finetune the model and `Evaluation` to evaluate on the finetuned model. Here is a code snippet to illustrate the executed task:  
 <br>  
 
 *Get audio length distribution*  
@@ -271,3 +271,56 @@ evaluation()
 ```
 
 There will be an example of the code tested on the librispeech dataset in the python script.   
+  
+
+#### Executing the code
+To execute either the get audio distribution, finetuning or evaluation code, on the terminal, go to this repository and enter into the docker image (refer above for the command), inside the docker container, type the following command:  
+```shell
+cd /stt-with-kenlm-pipeline/tasks/preprocessing
+python3 finetuning.py
+```
+<br>
+  
+## Evaluation of the finetuned model with the Kenlm language model built 
+The code to evaluate the finetuned model with the use of the Kenlm language model built earlier.  
+  
+#### Arguments  
+- `finetuned_model_path`: (str) the file path to get the output saved finetuned model
+- `processor_path`: (str) the file path to get the output saved processor path   
+- `lm_path`: (str) the file path of the kenlm .arpa language model 
+- `test_data_path`: (str) the file path where the test pickle file is being generated
+- `alpha`: (float) for decoding using language model - weight associated with the LMs probabilities. A weight of 0 means the LM has no effect
+- `beta`: (float) for decoding using language model - weight associated with the number of words within the beam
+- `architecture`: (str) choose whether to finetune on wav2vec2 or wavlm architecture  
+
+#### Return
+The WER using greedy search and the WER using beam search
+  
+#### Before executing the code
+Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/evaluation_with_lm.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, call the class `EvaluationWithLM`. Here is a code snippet to illustrate getting the WER for greedy and beam search:  
+<br>  
+
+#### Executing the code
+```python
+evaluation = EvaluationWithLM(finetuned_model_path='./root/<YOUR_OUTPUT_SAVED_MODEL_PATH>',
+                              processor_path='./root/<YOUR_OUTPUT_PROCESSOR_PATH>',
+                              lm_path='root/<YOUR_SAVED_KENLM_LANGUAGE_MODEL_PATH>.arpa', 
+                              test_data_path='./root/pkl/<YOUR_FILENAME_OF_THE_TEST_PICKLE_FILE_GENERATED>.pkl', 
+                              alpha=<ALPHA_VALUE>, 
+                              beta=<BETA_VALUE>,
+                              architecture='<EITHER_wav2vec2_OR_wavlm>')
+
+greedy, beam = evaluation()
+```
+
+There will be an example of the code tested on the librispeech dataset in the python script.  
+
+#### Executing the code
+To execute the evaluation code, on the terminal, go to this repository and enter into the docker image (refer above for the command), inside the docker container, type the following command:  
+```shell
+cd /stt-with-kenlm-pipeline/tasks/preprocessing
+python3 evaluation_with_lm.py
+```
+<br>
+
+# Executing the code on ClearML
