@@ -76,7 +76,7 @@ To preprocess the audio and the annotation data, split it into train-dev-test se
 - `pkl_filename`: (str) the directory where the pickle file is being generated    
 
 #### Return
-Both class returns the pandas DataFrame and the pickle filepath where the pickle file is generated from the preprocessing.  
+Both classes returns the pandas DataFrame and the pickle filepath where the pickle file is generated from the preprocessing.  
    
 #### Before executing the code
 Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/data_preprocessing.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, call the class, either `GeneratePickleFromScratch` or `GeneratePickleFromManifest` to do the data preprocessing, here is a code snippet to illustrate the data preprocessing step:  
@@ -127,7 +127,6 @@ python3 data_preprocessing.py
 <br>
 
 
-
 ## Building the language model using Kenlm  
 To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
   
@@ -172,4 +171,103 @@ python3 build_lm.py
 The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. In this repository, for demonstration purpose, only the base wav2vec2 and base wavlm pretrained models are used, but feel free to add the larger wav2vec2 and wavlm models as the base pretrained model. This script also has the ability to check for the audio length distribution of the train dataset, so that you can remove the longer audio data to prevent out-of-memory issues. *This script can also do evaluation on the test dataset but with the absence of a language model. Hence, it is not encouraged to get the evaluation score here, but rather on the evaluation script discussed later.*    
 
 #### Arguments  
+*Get audio length distribution*  
+- `train_pkl`: (str) the file path where the train pickle file is being generated 
+- `dev_pkl`: (str) the file path where the dev pickle file is being generated  
+- `test_pkl`: (str) the file path where the test pickle file is being generated    
+- `processor_path`: (str) the path where the processor will be generated from the loaded pickle file
+- `max_sample_length`: (int) the maximum audio sample length of the audio file that could be accepted before hitting an out-of-memory issue (NOT USED because this is just checking the audio distribution and not the actual finetuning) 
+- `mode`: (str) a flag to set, whether you want finetuning or checking audio distribution mode  
+<br>  
 
+*Finetuning*  
+- `train_pkl`: (str) the file path where the train pickle file is being generated 
+- `dev_pkl`: (str) the file path where the dev pickle file is being generated  
+- `test_pkl`: (str) the file path where the test pickle file is being generated 
+- `input_processor_path`: (str) the path where the processor is being input for the finetuning 
+- `input_checkpoint_path`: (str) the path where the checkpoint is being input for the finetuning
+- `input_pretrained_model_path`: (str) the path where the saved model is being input for the finetuning 
+- `output_processor_path`: the path where the processor is being output after the finetuning   
+- `output_checkpoint_path`: (str) the path where the checkpoint is being output after the finetuning
+- `output_saved_model_path`: (str) the path where the saved model is being output after the finetuning
+- `max_sample_length`: (int) the maximum audio sample length of the audio file that could be accepted before hitting an out-of-memory issue
+- `batch_size`: (int) the batch size used for the finetuning
+- `epochs`: (int) the number of epochs used for the finetuning
+- `lr`: (float) learning rate used for the finetuning
+- `weight_decay`: (float) weight decay used for the finetuning
+- `warmup_steps`: (int) number of finetuning steps used with a lower learning rate for the model to adapt to finetuning
+- `architecture`: (str) choose whether to finetune on wav2vec2 or wavlm architecture
+- `finetune_from_scratch`: (boolean) whether to finetune from the pretrained base model or to resume finetuning from previous checkpoint steps
+<br> 
+  
+*Evaluation*  
+- `dev_pkl`: (str) the file path where the dev pickle file is being generated  
+- `test_pkl`: (str) the file path where the test pickle file is being generated
+- `processor_path`: (str) the path where the processor is being output from the finetuning step 
+- `saved_model_path`: (str) the path where the saved model is being output after the finetuning   
+- `architecture`: (str) choose whether to finetune on wav2vec2 or wavlm architecture
+  
+#### Return
+*Get audio length distribution*   
+None
+  
+*Finetuning*  
+The output checkpoint path, output processor path, input pretrained model path and the output saved model path   
+  
+*Evaluation*   
+None   
+
+
+#### Before executing the code
+Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/build_lm.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, depending on your task, call the class `FinetuningPreparation` to get the audio length distribution, `Finetuning` to finetune the model and `Evaluation` to evaluate on the finetuned model. Here is a code snippet to illustrate the building of language model:  
+<br>  
+
+*Get audio length distribution*  
+```python
+distribution = FinetuningPreparation(train_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_TRAIN_PICKLE_FILE_GENERATED>.pkl',
+                                     dev_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_DEV_PICKLE_FILE_GENERATED>.pkl', 
+                                     test_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_TEST_PICKLE_FILE_GENERATED>.pkl',
+                                     processor_path='./root/<PATH_WHERE_THE_PROCESSOR_RESIDES>', 
+                                     max_sample_length=None, 
+                                     mode='get_audio_length_distribution')
+
+distribution()
+```
+<br>
+
+*Finetuning*  
+```python
+finetune_model = Finetuning(train_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_TRAIN_PICKLE_FILE_GENERATED>.pkl',
+                            dev_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_DEV_PICKLE_FILE_GENERATED>.pkl', 
+                            test_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_TEST_PICKLE_FILE_GENERATED>.pkl', 
+                            input_processor_path='./root/<YOUR_INPUT_PROCESSOR_PATH>', 
+                            input_checkpoint_path='./root/<YOUR_INPUT_CHECKPOINT_PATH>', 
+                            input_pretrained_model_path='./root/<YOUR_INPUT_PRETRAINED_MODEL_PATH>',
+                            output_processor_path='./root/<YOUR_OUTPUT_PROCESSOR_PATH>', 
+                            output_checkpoint_path='./root/<YOUR_OUTPUT_CHECKPOINT_PATH>', 
+                            output_saved_model_path='./root/<YOUR_OUTPUT_SAVED_MODEL_PATH>', 
+                            max_sample_length=<YOUR_MAX_AUDIO_SAMPLE_LENGTH_NUMBER>, 
+                            batch_size=<BATCH_SIZE>, 
+                            epochs=<NUMBER_OF_EPOCHS>,
+                            lr=<LEARNING_RATE>, 
+                            weight_decay=<WEIGHT_DECAY>, 
+                            warmup_steps=<WARMUP_STEPS>, 
+                            architecture='<EITHER_wav2vec2_OR_wavlm>',
+                            finetune_from_scratch=<EITHER_True_OR_False>)
+
+output_ckpt_path, output_processor_path, input_pretrained_model_path, output_saved_model_path = finetune_model()
+```
+<br>
+
+*Evaluation*  
+```python
+evaluation = Evaluation(dev_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_DEV_PICKLE_FILE_GENERATED>.pkl', 
+                        test_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_TEST_PICKLE_FILE_GENERATED>.pkl',
+                        processor_path='./root/<YOUR_OUTPUT_PROCESSOR_PATH>', 
+                        saved_model_path='./root/<YOUR_OUTPUT_SAVED_MODEL_PATH>',
+                        architecture='<EITHER_wav2vec2_OR_wavlm>')
+
+evaluation()
+```
+
+There will be an example of the code tested on the librispeech dataset in the python script.   
