@@ -4,8 +4,7 @@ A self-supervised speech-to-text pipeline that is finetuned on HuggingFace's wav
 ## Introduction 
 ### Research Papers  
   
-[wav2vec2 Architecture](https://arxiv.org/abs/2006.11477)   
-[WavLM Architecture](https://arxiv.org/abs/2110.13900)   
+[wav2vec 2.0 Architecture](https://arxiv.org/abs/2006.11477) | [wavLM Architecture](https://arxiv.org/abs/2110.13900)   
    
 ### Tasks in this pipeline   
 The tasks in this pipeline are as follows:  
@@ -14,7 +13,27 @@ The tasks in this pipeline are as follows:
 3. Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace   
 4. Evaluation of the finetuned model with the Kenlm language model built   
   
-## Executing code on local machine 
+<br>  
+
+## Project Organization  
+There are some folders that are required to be created to store your speech and audio datasets and the base models used, the instructions will be shown below. You can get the base [wav2vec 2.0](https://huggingface.co/facebook/wav2vec2-base/tree/main) and [wavLM](https://huggingface.co/microsoft/wavlm-base/tree/main) models from the HuggingFace website.
+
+The repository structure will be as shown below:  
+```
+    ├── README.md          <- The top-level README for developers using this project.
+    ├── tasks
+    |     
+    │
+    ├── dockerfile         <- The dockerfile to build an image with the required packages
+    │
+    └── requirements.txt   <- The requirements file for reproducing project environment
+```
+
+<br>
+
+# Executing code on local machine
+**The documentations below are for running the code using local machine, please go to the section on "Executing code on ClearML" if you want to run your code on ClearML**  
+
 ### Getting Started - Via Docker 
 **Preferably, a Linux OS should be used**
 1. Ensure that docker is installed in your computer
@@ -39,20 +58,8 @@ You should see the image `stt-with-kenlm-pipeline` with the tag `latest` in the 
 docker-compose run local bash
 ```
 The codes are then ready to be executed inside the docker image, more information about executing each code will be discussed below.  
-
-## Project Organization  
-There are some folders that are required to be created to store your speech and audio datasets and the base models used, the instructions will be shown below. You can get the base [wav2vec2](https://huggingface.co/facebook/wav2vec2-base/tree/main) and [wavlm](https://huggingface.co/microsoft/wavlm-base/tree/main) models from the HuggingFace website.
-
-The repository structure will be as shown below:  
-```
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── tasks
-    |     
-    │
-    ├── dockerfile         <- The dockerfile to build an image with the required packages
-    │
-    └── requirements.txt   <- The requirements file for reproducing project environment
-```
+   
+<br>   
    
 ## Data Preprocessing  
 To preprocess the audio and the annotation data, split it into train-dev-test sets and convert into pickle files as required by the finetuning step. You can choose to generate the pickle datasets from scratch or from a manifest file. Check out [this repository](https://github.com/nicholasneo78/manifest-preprocessing) to see how you can generate the manifest file from your dataset.     
