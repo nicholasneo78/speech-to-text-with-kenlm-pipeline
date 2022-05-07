@@ -326,6 +326,12 @@ python3 evaluation_with_lm.py
 # Executing code on ClearML
 **The documentations below are for running the code using ClearML, please go to the section on "Executing code on local machine" if you want to run your code locally**  
 
+### Getting Started - Install ClearML and boto3
+To install ClearML and boto3, simply do a pip install in your environment:  
+```shell
+pip install clearml boto3
+```
+
 ### Getting Started - Uploading the datasets and required model to S3 bucket
 Upload the following items to your S3 bucket, either via AWS S3 cli or minio client and monitor it with ClearML dashboard:
 - Your datasets   
@@ -339,14 +345,100 @@ Check the artifacts on ClearML platform to check if the uploaded items are in th
 Similarly, for the dev data (dev/dev_manifest.json, dev/....) and test data (test/test_manifest.json, test/....)   
 <br>
 #### Kenlm  
-![datasets](./img/1_datasets_cmd.jpg)  
+![datasets](./img/2_kenlm_cmd.jpg)  
 <br>  
 #### build_lm.sh bash script   
-![datasets](./img/1_datasets_cmd.jpg)   
+![datasets](./img/3_build_lm_cmd.jpg)   
 <br>  
 #### Pretrained base models   
-![datasets](./img/1_datasets_cmd.jpg)   
+![datasets](./img/4_base_model_cmd.jpg)   
 <br>  
+  
+## Data Preprocessing 
+To preprocess the audio and the annotation data and converts the train, dev and test datasets into pickle files as required by the finetuning step. **For ClearML version, only generating the pickle datasets from a manifest file is supported. If you want to generate from scratch, refer to the section on 'Executing code on local machine'.** Check out [this repository](https://github.com/nicholasneo78/manifest-preprocessing) to see how you can generate the manifest file from your dataset.     
+
+#### Arguments
+- `docker_image`: (str) the docker image used to load all the dependencies 
+- `project_name`: (str) the clearml project name   
+- `task_name`: (str) clearml task name     
+- `dataset_name`: (str) name of the output dataset produced    
+- `output_url`: (str) the clearml url that the task will be output at    
+- `dataset_project`: (str) the clearml path which the datasets resides  
+- `dataset_task_id`: (str) task id to retrieve the dataset  
+- `manifest_path_train`: (str) path to retrieve the train manifest  
+- `pkl_train`: (str) path to produce the train pickle file     
+- `manifest_path_train`: (str) path to retrieve the dev manifest  
+- `pkl_dev`: (str) path to produce the dev pickle file  
+- `manifest_path_test`: (str) path to retrieve the test manifest  
+- `pkl_test`: (str) path to produce the test pickle file   
+- `additional_preprocessing`: (str) any other special cases of text preprocessing needed based on the annotations  
+
+#### What is produced  
+The train, dev and test datasets in the pickle format will be produced in the s3 bucket and shown in ClearML, depending on where you put your dataset_project location.
+
+#### Before executing the code
+Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/` but with your own inputs. Here is a code snippet to illustrate the executed task:  
+```shell
+#!/bin/bash
+
+python3 ../../task_data_preprocessing.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:latest" \
+    --project_name "<YOUR_PROJECT_NAME>" \
+    --task_name "<YOUR_TASK_NAME>" \
+    --dataset_name "<YOUR_DATASET_NAME>" \
+    --output_url "s3://<YOUR_OUTPUT_URL>" \
+    --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
+    --dataset_task_id "<YOUR_DATASET_TASK_ID>" \
+    --manifest_path_train "train/<YOUR_TRAIN_MANIFEST_FILENAME>.json" \
+    --pkl_train "root/pkl/<YOUR_TRAIN_PKL_FILENAME>.pkl" \
+    --manifest_path_dev "dev/<YOUR_DEV_MANIFEST_FILENAME>.json" \
+    --pkl_dev "root/pkl/<YOUR_DEV_PKL_FILENAME>.pkl" \
+    --manifest_path_test "test/<YOUR_TEST_MANIFEST_FILENAME>.json" \
+    --pkl_test "root/pkl/<YOUR_TEST_PKL_FILENAME>.pkl" \
+    --additional_preprocessing "general" \
+    --queue "<YOUR_CLEARML_QUEUE>"
+```
+
+#### Executing the code
+To execute the code, on the terminal, go to this repository and type the following command:  
+```shell
+cd tasks/scripts/task_data_preprocessing
+chmod 777 <YOUR_SCRIPT_FILE>.sh
+./<YOUR_SCRIPT_FILE>.sh
+```
+<br>
+
+## Building the language model using Kenlm  
+
+#### Arguments
+
+#### What is produced  
+
+#### Before executing the code
+
+#### Executing the code
+
+
+## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace   
+
+#### Arguments
+
+#### What is produced  
+
+#### Before executing the code
+
+#### Executing the code
+
+
+## Evaluation of the finetuned model with the Kenlm language model built   
+
+#### Arguments
+
+#### What is produced  
+
+#### Before executing the code
+
+#### Executing the code
 
 ```shell
 git clone https://github.com/nicholasneo78/speech-to-text-with-kenlm-pipeline
