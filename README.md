@@ -327,16 +327,26 @@ python3 evaluation_with_lm.py
 **The documentations below are for running the code using ClearML, please go to the section on "Executing code on local machine" if you want to run your code locally**  
 
 ### Getting Started - Uploading the datasets and required model to S3 bucket
-1. Upload the following items to your S3 bucket, either via AWS S3 cli or minio client and monitor it with ClearML dashboard:
-  - Your datasets   
-  - Kenlm (can be found in speech-to-text-with-kenlm-pipeline/kenlm/)  
-  - build_lm.sh bash script (can be found in speech-to-text-with-kenlm-pipeline/tasks/preprocessing/build_lm.sh)   
-  - A folder with the base models (wav2vec2 and wavlm)   
-2. Check the artifacts on ClearML platform to check if the uploaded items are in the correct directories respectively, the correct directories are shown in the screenshots shown below (note the file structure of the folders as denoted by the '/' in the file paths):
-  - Datasets (Using librispeech as example)   
-  - Kenlm   
-  - build_lm.sh bash script   
-  - Pretrained base models   
+Upload the following items to your S3 bucket, either via AWS S3 cli or minio client and monitor it with ClearML dashboard:
+- Your datasets   
+- Kenlm (can be found in speech-to-text-with-kenlm-pipeline/kenlm/)  
+- build_lm.sh bash script (can be found in speech-to-text-with-kenlm-pipeline/tasks/preprocessing/build_lm.sh)   
+- A folder with the base models (wav2vec2 and wavlm)   
+Check the artifacts on ClearML platform to check if the uploaded items are in the correct directories respectively, the correct directories are shown in the screenshots shown below (note the file structure of the folders as denoted by the '/' in the file paths):  
+  
+#### Datasets (Using librispeech as example)   
+![datasets](./img/1_datasets_cmd.jpg)  
+Similarly, for the dev data (dev/dev_manifest.json, dev/....) and test data (test/test_manifest.json, test/....)   
+<br>
+#### Kenlm  
+![datasets](./img/1_datasets_cmd.jpg)  
+<br>  
+#### build_lm.sh bash script   
+![datasets](./img/1_datasets_cmd.jpg)   
+<br>  
+#### Pretrained base models   
+![datasets](./img/1_datasets_cmd.jpg)   
+<br>  
 
 ```shell
 git clone https://github.com/nicholasneo78/speech-to-text-with-kenlm-pipeline
