@@ -2,16 +2,22 @@
 A self-supervised speech-to-text pipeline that is finetuned on HuggingFace's wav2vec2 and wavlm pretrained models. The finetuned models produced from this pipeline is then evaluated with the use of `Kenlm` language model and beam search capability from the `pyctcdecode` libraries. This repository is centered around the ClearML MLOps Framework, but running the code on the local machine is also possible.  
   
 ## Introduction 
+
 ### Research Papers  
   
 [wav2vec 2.0 Architecture](https://arxiv.org/abs/2006.11477) | [wavLM Architecture](https://arxiv.org/abs/2110.13900)   
+
+### Methods of Executing the Code
+There will be two methods of executing the code in this pipeline, they are:  
+- [Executing code on local machine](#executing-code-on-local-machine)  
+- [Executing code on ClearML](#executing-code-on-clearml)  
    
 ### Tasks in this pipeline   
 The tasks in this pipeline are as follows:  
-1. Data Preprocessing  
-2. Building the language model using Kenlm  
-3. Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace   
-4. Evaluation of the finetuned model with the Kenlm language model built   
+1. Data Preprocessing - [Local](#data-preprocessing-on-local-machine) | [ClearML](#data-preprocessing-on-clearml)   
+2. Building the language model using Kenlm - [Local](#building-the-language-model-using-kenlm-on-local-machine) | [ClearML](#building-the-language-model-using-kenlm-on-clearml)  
+3. Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace - [Local](#finetuning-the-pretrained-wav2vec2-and-wavlm-models-from-huggingface-on-local-machine) | [ClearML](#finetuning-the-pretrained-wav2vec2-and-wavlm-models-from-huggingface-on-clearml)  
+4. Evaluation of the finetuned model with the Kenlm language model built - [Local](#evaluation-of-the-finetuned-model-with-the-kenlm-language-model-built-on-local-machine) | [ClearML](#evaluation-of-the-finetuned-model-with-the-kenlm-language-model-built-on-clearml)   
   
 <br>  
 
@@ -32,7 +38,7 @@ The repository structure will be as shown below:
 <br>
 
 # Executing code on local machine
-**The documentations below are for running the code using local machine, please go to the section on "Executing code on ClearML" if you want to run your code on ClearML**  
+**The documentations below are for running the code using local machine, please go to the section on [Executing code on ClearML](#executing-code-on-clearml) if you want to run your code on ClearML**  
 
 ### Getting Started - Via Docker 
 **Preferably, a Linux OS should be used**
@@ -61,7 +67,7 @@ The codes are then ready to be executed inside the docker image, more informatio
 
 <br>   
    
-## Data Preprocessing  
+## Data Preprocessing on Local Machine  
 To preprocess the audio and the annotation data and converts the train, dev and test datasets into pickle files as required by the finetuning step. You can choose to generate the pickle datasets from scratch or from a manifest file. Check out [this repository](https://github.com/nicholasneo78/manifest-preprocessing) to see how you can generate the manifest file from your dataset.     
     
 #### Arguments  
@@ -127,7 +133,7 @@ python3 data_preprocessing.py
 <br>
 
 
-## Building the language model using Kenlm  
+## Building the language model using Kenlm on Local Machine 
 To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
   
 #### Arguments  
@@ -167,7 +173,7 @@ python3 build_lm.py
 ```
 <br>
 
-## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace 
+## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace on Local Machine
 The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. In this repository, for demonstration purpose, only the base wav2vec2 and base wavlm pretrained models are used, but feel free to add the larger wav2vec2 and wavlm models as the base pretrained model. This script also has the ability to check for the audio length distribution of the train dataset, so that you can remove the longer audio data to prevent out-of-memory issues. *This script can also do evaluation on the test dataset but with the absence of a language model. Hence, it is not encouraged to get the evaluation score here, but rather on the evaluation script discussed later.*    
 
 #### Arguments  
@@ -281,7 +287,7 @@ python3 finetuning.py
 ```
 <br>
   
-## Evaluation of the finetuned model with the Kenlm language model built 
+## Evaluation of the finetuned model with the Kenlm language model built on Local Machine 
 The code to evaluate the finetuned model with the use of the Kenlm language model built earlier.  
   
 #### Arguments  
@@ -324,7 +330,7 @@ python3 evaluation_with_lm.py
 <br>
 
 # Executing code on ClearML
-**The documentations below are for running the code using ClearML, please go to the section on "Executing code on local machine" if you want to run your code locally**  
+**The documentations below are for running the code using ClearML, please go to the section on [Executing code on local machine](#executing-code-on-local-machine) if you want to run your code locally**  
 
 ### Getting Started - Install ClearML and boto3
 To install ClearML and boto3, simply do a pip install in your environment:  
@@ -354,7 +360,7 @@ Similarly, for the dev data (dev/dev_manifest.json, dev/....) and test data (tes
 ![datasets](./img/4_base_model_cmd.jpg)   
 <br>  
   
-## Data Preprocessing 
+## Data Preprocessing on ClearML  
 To preprocess the audio and the annotation data and converts the train, dev and test datasets into pickle files as required by the finetuning step. **For ClearML version, only generating the pickle datasets from a manifest file is supported. If you want to generate from scratch, refer to the section on 'Executing code on local machine'.** Check out [this repository](https://github.com/nicholasneo78/manifest-preprocessing) to see how you can generate the manifest file from your dataset.     
 
 #### Arguments
@@ -411,7 +417,7 @@ chmod 777 <YOUR_SCRIPT_FILE>.sh
 ```
 <br>
 
-## Building the language model using Kenlm  
+## Building the language model using Kenlm on ClearML  
 To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
 
 #### Arguments
@@ -470,7 +476,7 @@ chmod 777 <YOUR_SCRIPT_FILE>.sh
 ```
 <br>
 
-## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace   
+## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace on ClearML   
 The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. In this repository, for demonstration purpose, only the base wav2vec2 and base wavlm pretrained models are used, but feel free to add the larger wav2vec2 and wavlm models as the base pretrained model. This script also has the ability to check for the audio length distribution of the train dataset, so that you can remove the longer audio data to prevent out-of-memory issues. *This script can also do evaluation on the test dataset but with the absence of a language model. Hence, it is not encouraged to get the evaluation score here, but rather on the evaluation script discussed later.*  
 
 #### Arguments
@@ -583,7 +589,7 @@ chmod 777 <YOUR_SCRIPT_FILE>.sh
 ```
 <br>
 
-## Evaluation of the finetuned model with the Kenlm language model built   
+## Evaluation of the finetuned model with the Kenlm language model built on ClearML   
 The code to evaluate the finetuned model with the use of the Kenlm language model built earlier.  
   
 #### Arguments  
