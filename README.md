@@ -399,6 +399,8 @@ python3 ../../task_data_preprocessing.py \
     --additional_preprocessing "general" \
     --queue "<YOUR_CLEARML_QUEUE>"
 ```
+  
+There will be an example of the code tested on the librispeech dataset in the bash script.   
 
 #### Executing the code
 To execute the code, on the terminal, go to this repository and type the following command:  
@@ -447,7 +449,7 @@ python3 ../../task_build_lm.py \
     --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
     --dataset_pkl_task_id "<YOUR_DATASET_PKL_TASK_ID>" \
     --script_task_id "<YOUR_SCRIPT_TASK_ID>" \
-    --kenlm_id "YOUR_KENLM_TASK_ID" \
+    --kenlm_id "<YOUR_KENLM_TASK_ID>" \
     --train_pkl "pkl/<YOUR_TRAIN_PKL_FILENAME>.pkl" \
     --dev_pkl "pkl/<YOUR_DEV_PKL_FILENAME>.pkl" \
     --script_path "build_lm.sh" \
@@ -456,6 +458,9 @@ python3 ../../task_build_lm.py \
     --dataset_name_ "<YOUR_DATASET_NAME>" \
     --queue "<YOUR_CLEARML_QUEUE>"
 ```
+  
+There will be an example of the code tested on the librispeech dataset in the bash script.   
+
 #### Executing the code
 To execute the code, on the terminal, go to this repository and type the following command:  
 ```shell
@@ -502,7 +507,7 @@ The finetuned model will be produced in the s3 bucket and shown in ClearML, depe
 #### Before executing the code
 Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_fientuning/librispeech_from_scratch_wav2vec2.sh` or `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_fientuning/librispeech_resume_wav2vec2.sh` but with your own inputs. Here is a code snippet to illustrate the executed task:   
 
-*Finetuning the pretrained wav2vec2 model (from scratch)*   
+*Finetuning the pretrained model (from scratch)*   
 ```shell
 #!/bin/bash
 
@@ -535,7 +540,7 @@ python3 ../../task_finetuning.py \
     --finetune_from_scratch 
 ```
    
-*Finetuning the existing finetuned wav2vec2 model (resume finetuning)*   
+*Finetuning the existing finetuned model (resume finetuning)*   
 ```shell
 #!/bin/bash
 
@@ -566,6 +571,8 @@ python3 ../../task_finetuning.py \
     --architecture "<EITHER_wav2vec2_OR_wavlm>" \
     --queue 'YOUR_CLEARML_QUEUE' \
 ```
+  
+There will be an example of the code tested on the librispeech dataset in the bash script.   
 
 #### Executing the code
 To execute the code, on the terminal, go to this repository and type the following command:  
@@ -577,15 +584,60 @@ chmod 777 <YOUR_SCRIPT_FILE>.sh
 <br>
 
 ## Evaluation of the finetuned model with the Kenlm language model built   
-
-#### Arguments
+The code to evaluate the finetuned model with the use of the Kenlm language model built earlier.  
+  
+#### Arguments  
+- `docker_image`: (str) the docker image used to load all the dependencies 
+- `project_name`: (str) the clearml project name   
+- `task_name`: (str) clearml task name     
+- `output_url`: (str) the clearml url that the task will be output at     
+- `dataset_pkl_task_id`: (str) task id to retrieve the pickle files   
+- `dataset_finetuned_task_id`: (str) task id to retrieve the finetuned model  
+- `lm_id`: (str) task id to retrieve the kenlm language model   
+- `test_pkl`: (str) path to get the test pkl file   
+- `finetuned_model_path`: (str) the file path to get the output saved finetuned model  
+- `input_processor_path`: (str) path to get the processor  
+- `lm_path`: (str) path to get the language model   
+- `alpha`: (float) for decoding using language model - weight associated with the LMs probabilities. A weight of 0 means the LM has no effect   
+- `beta`: (float) for decoding using language model - weight associated with the number of words within the beam  
+- `architecture`: (str) model based on wav2ve2 or wavlm   
+- `queue`: (str) the queue name for clearml
 
 #### What is produced  
+No items in S3 bucket are uploaded. The WER (greedy and beam) will be shown on the ClearML console.  
 
 #### Before executing the code
-
-#### Executing the code
+Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_evaluation_with_lm/librispeech_wav2vec2.sh` but with your own inputs. Here is a code snippet to illustrate the executed task:   
 
 ```shell
-git clone https://github.com/nicholasneo78/speech-to-text-with-kenlm-pipeline
+#!/bin/bash
+
+python3 ../../task_evaluation_with_lm.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:latest" \
+    --project_name "<YOUR_PROJECT_NAME>" \
+    --task_name "<YOUR_TASK_NAME>" \
+    --dataset_name "<YOUR_DATASET_NAME>" \
+    --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
+    --dataset_pkl_task_id "<YOUR_DATASET_PKL_TASK_ID>" \
+    --dataset_finetuned_task_id "<YOUR_FINETUNED_MODEL_TASK_ID>" \
+    --lm_id "<YOUR_BUILT_KENLM_LANGUAGE_MODEL_TASK_ID>" \
+    --train_pkl "pkl/<YOUR_TEST_PKL_FILENAME>.pkl" \
+    --finetuned_model_path "<YOUR_FINETUNED_MODEL_PATH>" \
+    --input_processor_path "<YOUR_PROCESSOR_PATH>" \
+    --lm_path "lm/<YOUR_KENLM_LANGUAGE_MODEL_FILENAME>.arpa" \
+    --alpha <ALPHA> \
+    --beta <BETA> \
+    --architecture "<EITHER_wav2vec2_OR_wavlm>" \
+    --queue "<YOUR_CLEARML_QUEUE>"
+````
+  
+There will be an example of the code tested on the librispeech dataset in the bash script.   
+
+#### Executing the code
+To execute the code, on the terminal, go to this repository and type the following command:  
+```shell
+cd tasks/scripts/task_evaluation_with_lm
+chmod 777 <YOUR_SCRIPT_FILE>.sh
+./<YOUR_SCRIPT_FILE>.sh
 ```
+<br>
