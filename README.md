@@ -445,7 +445,7 @@ python3 ../../task_build_lm.py \
     --dataset_name "<YOUR_DATASET_NAME>" \
     --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
     --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
-    --dataset_pkl_task_id "YOUR_DATASET_PKL_TASK_ID" \
+    --dataset_pkl_task_id "<YOUR_DATASET_PKL_TASK_ID>" \
     --script_task_id "<YOUR_SCRIPT_TASK_ID>" \
     --kenlm_id "YOUR_KENLM_TASK_ID" \
     --train_pkl "pkl/<YOUR_TRAIN_PKL_FILENAME>.pkl" \
@@ -486,14 +486,14 @@ The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. 
 - `output_processor_path`: (str) path to output the processor   
 - `output_checkpoint_path`: (str) path to output the checkpoint    
 - `output_saved_model_path`: (str) path to output the pretrained/finetuned model   
-- `max_sample_length`: (str) get the maximum sample length of the audio   
-- `batch_size`: (str) batch size   
-- `epochs`: (str) epochs    
-- `lr`: (str) learning rate   
-- `weight_decay`: (str) weight decay   
-- `warmup_steps`: (str) number of steps for warmup   
+- `max_sample_length`: (int) get the maximum sample length of the audio   
+- `batch_size`: (int) batch size   
+- `epochs`: (int) epochs    
+- `lr`: (float) learning rate   
+- `weight_decay`: (float) weight decay   
+- `warmup_steps`: (int) number of steps for warmup   
 - `architecture`: (str) model based on wav2ve2 or wavlm   
-- `finetune_from_scratch`: (str) finetune model either from scratch or pre-existing finetuned model   
+- `finetune_from_scratch`: (boolean) finetune model either from scratch or pre-existing finetuned model   
 - `queue`: (str) the queue name for clearml   
 
 #### What is produced  
@@ -513,31 +513,68 @@ python3 ../../task_finetuning.py \
     --dataset_name "<YOUR_DATASET_NAME>" \
     --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
     --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
-    
-    --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
-    --dataset_pretrained_task_id "004ce6adba86436b858290912d71f44d" \
-    --train_pkl "pkl/librispeech_train.pkl" \
-    --dev_pkl "pkl/librispeech_dev.pkl" \
-    --test_pkl "pkl/librispeech_test.pkl" \
-    --input_processor_path "root/processor/" \
-    --input_checkpoint_path "root/ckpt/" \
-    --input_pretrained_model_path "wav2vec2_base_model/" \
-    --output_processor_path "root/processor/" \
-    --output_checkpoint_path "root/ckpt/" \
-    --output_saved_model_path "root/saved_model/" \
-    --max_sample_length 450000 \
-    --batch_size 8 \
-    --epochs 100 \
-    --lr 1e-4 \
-    --weight_decay 0.01 \
-    --warmup_steps 1000 \
-    --architecture "wav2vec2" \
-    --queue 'compute' \
+    --dataset_pkl_task_id "<YOUR_DATASET_PKL_TASK_ID>" \
+    --dataset_pretrained_task_id "<YOUR_PRETRAINED_WAV2VEC2_OR_WAVLM_MODEL>" \
+    --train_pkl "pkl/<YOUR_TRAIN_PKL_FILENAME>.pkl" \
+    --dev_pkl "pkl/<YOUR_DEV_PKL_FILENAME>.pkl" \
+    --test_pkl "pkl/<YOUR_TEST_PKL_FILENAME>.pkl" \
+    --input_processor_path "root/<YOUR_INPUT_PROCESSOR_PATH>" \
+    --input_checkpoint_path "root/<YOUR_INPUT_CHECKPOINT_PATH>" \
+    --input_pretrained_model_path "root/<YOUR_INPUT_PRETRAINED_MODEL_PATH>" \
+    --output_processor_path "root/<YOUR_OUTPUT_PROCESSOR_PATH>" \
+    --output_checkpoint_path "root/<YOUR_OUTPUT_CHECKPOINT_PATH>" \
+    --output_saved_model_path "root/<YOUR_OUTPUT_SAVED_MODEL_PATH>" \
+    --max_sample_length <YOUR_MAX_AUDIO_SAMPLE_LENGTH_NUMBER> \
+    --batch_size <BATCH_SIZE> \
+    --epochs <NUMBER_OF_EPOCHS> \
+    --lr <LEARNING_RATE> \
+    --weight_decay <WEIGHT_DECAY> \
+    --warmup_steps <WARMUP_STEPS> \
+    --architecture "<EITHER_wav2vec2_OR_wavlm>" \
+    --queue 'YOUR_CLEARML_QUEUE' \
     --finetune_from_scratch 
+```
+   
+*Finetuning the existing finetuned wav2vec2 model (resume finetuning)*   
+```shell
+#!/bin/bash
+
+python3 ../../task_finetuning.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:latest" \
+    --project_name "<YOUR_PROJECT_NAME>" \
+    --task_name "<YOUR_TASK_NAME>" \
+    --dataset_name "<YOUR_DATASET_NAME>" \
+    --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
+    --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
+    --dataset_pkl_task_id "<YOUR_DATASET_PKL_TASK_ID>" \
+    --dataset_pretrained_task_id "<YOUR_PRETRAINED_WAV2VEC2_OR_WAVLM_MODEL>" \
+    --train_pkl "pkl/<YOUR_TRAIN_PKL_FILENAME>.pkl" \
+    --dev_pkl "pkl/<YOUR_DEV_PKL_FILENAME>.pkl" \
+    --test_pkl "pkl/<YOUR_TEST_PKL_FILENAME>.pkl" \
+    --input_processor_path "<YOUR_INPUT_PROCESSOR_PATH>" \
+    --input_checkpoint_path "<YOUR_INPUT_CHECKPOINT_PATH>" \
+    --input_pretrained_model_path "<YOUR_INPUT_PRETRAINED_MODEL_PATH>" \
+    --output_processor_path "root/<YOUR_OUTPUT_PROCESSOR_PATH>" \
+    --output_checkpoint_path "root/<YOUR_OUTPUT_CHECKPOINT_PATH>" \
+    --output_saved_model_path "root/<YOUR_OUTPUT_SAVED_MODEL_PATH>" \
+    --max_sample_length <YOUR_MAX_AUDIO_SAMPLE_LENGTH_NUMBER> \
+    --batch_size <BATCH_SIZE> \
+    --epochs <NUMBER_OF_EPOCHS> \
+    --lr <LEARNING_RATE> \
+    --weight_decay <WEIGHT_DECAY> \
+    --warmup_steps <WARMUP_STEPS> \
+    --architecture "<EITHER_wav2vec2_OR_wavlm>" \
+    --queue 'YOUR_CLEARML_QUEUE' \
 ```
 
 #### Executing the code
-
+To execute the code, on the terminal, go to this repository and type the following command:  
+```shell
+cd tasks/scripts/task_finetuning
+chmod 777 <YOUR_SCRIPT_FILE>.sh
+./<YOUR_SCRIPT_FILE>.sh
+```
+<br>
 
 ## Evaluation of the finetuned model with the Kenlm language model built   
 
