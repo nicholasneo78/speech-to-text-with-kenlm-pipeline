@@ -372,12 +372,13 @@ To preprocess the audio and the annotation data and converts the train, dev and 
 - `manifest_path_test`: (str) path to retrieve the test manifest  
 - `pkl_test`: (str) path to produce the test pickle file   
 - `additional_preprocessing`: (str) any other special cases of text preprocessing needed based on the annotations  
+- `queue`: (str) the queue name for clearml
 
 #### What is produced  
 The train, dev and test datasets in the pickle format will be produced in the s3 bucket and shown in ClearML, depending on where you put your dataset_project location.
 
 #### Before executing the code
-Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/` but with your own inputs. Here is a code snippet to illustrate the executed task:  
+Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_data_preprocessing/librispeech.sh` but with your own inputs. Here is a code snippet to illustrate the executed task:  
 ```shell
 #!/bin/bash
 
@@ -409,23 +410,131 @@ chmod 777 <YOUR_SCRIPT_FILE>.sh
 <br>
 
 ## Building the language model using Kenlm  
+To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
 
 #### Arguments
+- `docker_image`: (str) the docker image used to load all the dependencies 
+- `project_name`: (str) the clearml project name   
+- `task_name`: (str) clearml task name     
+- `dataset_name`: (str) name of the output dataset produced    
+- `output_url`: (str) the clearml url that the task will be output at    
+- `dataset_project`: (str) the clearml path which the datasets resides   
+- `dataset_pkl_task_id`: (str) task id to retrieve the pickle files   
+- `script_task_id `: (str) task id to retrieve the script.sh uploaded earlier to the S3 bucket  
+- `kenlm_id`: (str) task id to retrieve the kenlm files to build the language model   
+- `train_pkl`: (str) path to get the train pkl file  
+- `dev_pkl`: (str) path to get the dev pkl file   
+- `script_path`: (str) filename of building the kenlm language model   
+- `txt_filepath`: (str) path to get the text file with all the words from train and dev set   
+- `n_grams`: (str) number of grams for the language model   
+- `dataset_name_`: (str) the name of the dataset   
+- `queue`: (str) the queue name for clearml   
 
 #### What is produced  
+The n-gram kenlm language model arpa file will be produced in the s3 bucket and shown in ClearML, depending on the defined n and where you put your dataset_project location.
 
 #### Before executing the code
+Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_build_lm/libirspeech.sh` but with your own inputs. Here is a code snippet to illustrate the executed task:  
+```shell
+#!/bin/bash
 
+python3 ../../task_build_lm.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:latest" \
+    --project_name "<YOUR_PROJECT_NAME>" \
+    --task_name "<YOUR_TASK_NAME>" \
+    --dataset_name "<YOUR_DATASET_NAME>" \
+    --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
+    --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
+    --dataset_pkl_task_id "YOUR_DATASET_PKL_TASK_ID" \
+    --script_task_id "<YOUR_SCRIPT_TASK_ID>" \
+    --kenlm_id "YOUR_KENLM_TASK_ID" \
+    --train_pkl "pkl/<YOUR_TRAIN_PKL_FILENAME>.pkl" \
+    --dev_pkl "pkl/<YOUR_DEV_PKL_FILENAME>.pkl" \
+    --script_path "build_lm.sh" \
+    --txt_filepath "root/lm/<YOUR_TEXT_FILENAME_TO_GET_ALL_WORDS_FROM_TRAIN_AND_DEV_SET>.txt" \
+    --n_grams "<NUMBER_OF_GRAMS_SPECIFIED>" \
+    --dataset_name_ "<YOUR_DATASET_NAME>" \
+    --queue "<YOUR_CLEARML_QUEUE>"
+```
 #### Executing the code
-
+To execute the code, on the terminal, go to this repository and type the following command:  
+```shell
+cd tasks/scripts/task_build_lm
+chmod 777 <YOUR_SCRIPT_FILE>.sh
+./<YOUR_SCRIPT_FILE>.sh
+```
+<br>
 
 ## Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace   
+The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. In this repository, for demonstration purpose, only the base wav2vec2 and base wavlm pretrained models are used, but feel free to add the larger wav2vec2 and wavlm models as the base pretrained model. This script also has the ability to check for the audio length distribution of the train dataset, so that you can remove the longer audio data to prevent out-of-memory issues. *This script can also do evaluation on the test dataset but with the absence of a language model. Hence, it is not encouraged to get the evaluation score here, but rather on the evaluation script discussed later.*  
 
 #### Arguments
+- `docker_image`: (str) the docker image used to load all the dependencies 
+- `project_name`: (str) the clearml project name   
+- `task_name`: (str) clearml task name     
+- `dataset_name`: (str) name of the output dataset produced    
+- `output_url`: (str) the clearml url that the task will be output at    
+- `dataset_project`: (str) the clearml path which the datasets resides   
+- `dataset_pkl_task_id`: (str) task id to retrieve the pickle files   
+- `dataset_pretrained_task_id`: (str) task id to retrieve the pretrained/finetuned model
+- `train_pkl`: (str) path to get the train pkl file  
+- `dev_pkl`: (str) path to get the dev pkl file  
+- `test_pkl`: (str) path to get the test pkl file   
+- `input_processor_path`: (str) path to retrieve the processor    
+- `input_checkpoint_path`: (str) path to retrieve the checkpoint   
+- `input_pretrained_model_path`: (str) path to retrieve the pretrained/finetuned model   
+- `output_processor_path`: (str) path to output the processor   
+- `output_checkpoint_path`: (str) path to output the checkpoint    
+- `output_saved_model_path`: (str) path to output the pretrained/finetuned model   
+- `max_sample_length`: (str) get the maximum sample length of the audio   
+- `batch_size`: (str) batch size   
+- `epochs`: (str) epochs    
+- `lr`: (str) learning rate   
+- `weight_decay`: (str) weight decay   
+- `warmup_steps`: (str) number of steps for warmup   
+- `architecture`: (str) model based on wav2ve2 or wavlm   
+- `finetune_from_scratch`: (str) finetune model either from scratch or pre-existing finetuned model   
+- `queue`: (str) the queue name for clearml   
 
 #### What is produced  
+The finetuned model will be produced in the s3 bucket and shown in ClearML, depending on the defined n and where you put your dataset_project location.   
 
 #### Before executing the code
+Before executing the code, create a script identical to the example given on `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_fientuning/librispeech_from_scratch_wav2vec2.sh` or `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_fientuning/librispeech_resume_wav2vec2.sh` but with your own inputs. Here is a code snippet to illustrate the executed task:   
+
+*Finetuning the pretrained wav2vec2 model (from scratch)*   
+```shell
+#!/bin/bash
+
+python3 ../../task_finetuning.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:latest" \
+    --project_name "<YOUR_PROJECT_NAME>" \
+    --task_name "<YOUR_TASK_NAME>" \
+    --dataset_name "<YOUR_DATASET_NAME>" \
+    --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
+    --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
+    
+    --dataset_pkl_task_id "fdb1e1471ebb4b8dbf4f599080401819" \
+    --dataset_pretrained_task_id "004ce6adba86436b858290912d71f44d" \
+    --train_pkl "pkl/librispeech_train.pkl" \
+    --dev_pkl "pkl/librispeech_dev.pkl" \
+    --test_pkl "pkl/librispeech_test.pkl" \
+    --input_processor_path "root/processor/" \
+    --input_checkpoint_path "root/ckpt/" \
+    --input_pretrained_model_path "wav2vec2_base_model/" \
+    --output_processor_path "root/processor/" \
+    --output_checkpoint_path "root/ckpt/" \
+    --output_saved_model_path "root/saved_model/" \
+    --max_sample_length 450000 \
+    --batch_size 8 \
+    --epochs 100 \
+    --lr 1e-4 \
+    --weight_decay 0.01 \
+    --warmup_steps 1000 \
+    --architecture "wav2vec2" \
+    --queue 'compute' \
+    --finetune_from_scratch 
+```
 
 #### Executing the code
 
