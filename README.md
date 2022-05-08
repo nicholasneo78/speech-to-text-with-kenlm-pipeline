@@ -386,7 +386,7 @@ python3 ../../task_data_preprocessing.py \
     --project_name "<YOUR_PROJECT_NAME>" \
     --task_name "<YOUR_TASK_NAME>" \
     --dataset_name "<YOUR_DATASET_NAME>" \
-    --output_url "s3://<YOUR_OUTPUT_URL>" \
+    --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
     --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
     --dataset_task_id "<YOUR_DATASET_TASK_ID>" \
     --manifest_path_train "train/<YOUR_TRAIN_MANIFEST_FILENAME>.json" \
