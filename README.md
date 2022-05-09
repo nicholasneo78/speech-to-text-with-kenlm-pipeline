@@ -26,14 +26,6 @@ There are some folders that are required to be created to store your speech and 
 
 The repository structure will be as shown below:  
 ```
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── tasks
-    |     
-    │
-    ├── dockerfile         <- The dockerfile to build an image with the required packages
-    │
-    └── requirements.txt   <- The requirements file for reproducing project environment
-
     .
     ├── docker-compose.yml
     ├── Dockerfile
