@@ -33,6 +33,122 @@ The repository structure will be as shown below:
     ├── dockerfile         <- The dockerfile to build an image with the required packages
     │
     └── requirements.txt   <- The requirements file for reproducing project environment
+
+    .
+    ├── docker-compose.yml
+    ├── Dockerfile
+    ├── img
+    │   ├── 1_datasets_cmd.jpg
+    │   ├── 2_kenlm_cmd.jpg
+    │   ├── 3_build_lm_cmd.jpg
+    │   └── 4_base_model_cmd.jpg
+    ├── kenlm
+    │   └── kenlm
+    ├── LICENSE
+    ├── README.md
+    ├── requirements.txt
+    └── tasks
+        ├── preprocessing
+        │   ├── build_lm.py
+        │   ├── build_lm.sh
+        │   ├── data_preprocessing.py
+        │   ├── datasets
+        │   ├── evaluation_with_lm.py
+        │   ├── finetuning.py
+        │   ├── lm_src
+        │   │   └── build_lm.sh
+        │   ├── root
+        │   │   ├── lm
+        │   │   │   ├── 3_gram_magister_v2.arpa
+        │   │   │   ├── 4_gram_magister_v2.arpa
+        │   │   │   └── 5_gram_magister_v2.arpa
+        │   │   ├── magister_v2
+        │   │   │   ├── wav2vec2
+        │   │   │   │   ├── ckpt
+        │   │   │   │   │   ├── checkpoint-3000
+        │   │   │   │   │   │   ├── config.json
+        │   │   │   │   │   │   ├── optimizer.pt
+        │   │   │   │   │   │   ├── preprocessor_config.json
+        │   │   │   │   │   │   ├── pytorch_model.bin
+        │   │   │   │   │   │   ├── rng_state.pth
+        │   │   │   │   │   │   ├── scaler.pt
+        │   │   │   │   │   │   ├── scheduler.pt
+        │   │   │   │   │   │   ├── trainer_state.json
+        │   │   │   │   │   │   └── training_args.bin
+        │   │   │   │   │   └── trainer_state.json
+        │   │   │   │   ├── processor
+        │   │   │   │   │   ├── preprocessor_config.json
+        │   │   │   │   │   ├── special_tokens_map.json
+        │   │   │   │   │   ├── tokenizer_config.json
+        │   │   │   │   │   └── vocab.json
+        │   │   │   │   └── saved_model
+        │   │   │   │       ├── config.json
+        │   │   │   │       ├── preprocessor_config.json
+        │   │   │   │       ├── pytorch_model.bin
+        │   │   │   │       └── training_args.bin
+        │   │   │   └── wavlm
+        │   │   │       ├── ckpt
+        │   │   │       │   ├── checkpoint-3000
+        │   │   │       │   │   ├── config.json
+        │   │   │       │   │   ├── optimizer.pt
+        │   │   │       │   │   ├── preprocessor_config.json
+        │   │   │       │   │   ├── pytorch_model.bin
+        │   │   │       │   │   ├── rng_state.pth
+        │   │   │       │   │   ├── scaler.pt
+        │   │   │       │   │   ├── scheduler.pt
+        │   │   │       │   │   ├── trainer_state.json
+        │   │   │       │   │   └── training_args.bin
+        │   │   │       │   └── trainer_state.json
+        │   │   │       ├── processor
+        │   │   │       │   ├── preprocessor_config.json
+        │   │   │       │   ├── special_tokens_map.json
+        │   │   │       │   ├── tokenizer_config.json
+        │   │   │       │   └── vocab.json
+        │   │   │       └── saved_model
+        │   │   │           ├── config.json
+        │   │   │           ├── preprocessor_config.json
+        │   │   │           ├── pytorch_model.bin
+        │   │   │           └── training_args.bin
+        │   │   └── pkl
+        │   │       ├── librispeech_dev.pkl
+        │   │       ├── librispeech_test.pkl
+        │   │       ├── librispeech_train.pkl
+        │   │       ├── magister_data_flac_16000_dev.pkl
+        │   │       ├── magister_data_flac_16000_test.pkl
+        │   │       ├── magister_data_flac_16000_train.pkl
+        │   │       ├── magister_data_v2_wav_16000_dev.pkl
+        │   │       ├── magister_data_v2_wav_16000_test.pkl
+        │   │       └── magister_data_v2_wav_16000_train.pkl
+        │   └── root_base_model
+        │       ├── wav2vec2_base_model
+        │       │   ├── config.json
+        │       │   ├── preprocessor_config.json
+        │       │   ├── pytorch_model.bin
+        │       │   ├── special_tokens_map.json
+        │       │   ├── tokenizer_config.json
+        │       │   └── vocab.json
+        │       └── wavlm_base_model
+        │           ├── config.json
+        │           ├── preprocessor_config.json
+        │           └── pytorch_model.bin
+        ├── scripts
+        │   ├── task_build_lm
+        │   │   └── librispeech.sh
+        │   ├── task_data_preprocessing
+        │   │   └── librispeech.sh
+        │   ├── task_evaluation_with_lm
+        │   │   ├── librispeech_wav2vec2.sh
+        │   │   └── librispeech_wavlm.sh
+        │   └── task_finetuning
+        │       ├── librispeech_from_scratch_wav2vec2.sh
+        │       ├── librispeech_from_scratch_wavlm.sh
+        │       ├── librispeech_resume_wav2vec2.sh
+        │       └── librispeech_resume_wavlm.sh
+        ├── task_build_lm.py
+        ├── task_data_preprocessing.py
+        ├── task_evaluation_with_lm.py
+        └── task_finetuning.py
+
 ```
 
 <br>
