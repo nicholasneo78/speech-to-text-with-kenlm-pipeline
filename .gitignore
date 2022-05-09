@@ -21,5 +21,4 @@ tasks/preprocessing/lm_src/*
 tasks/preprocessing/root/*
 
 failed/*
-kenlm/*
 docker_tar/*
