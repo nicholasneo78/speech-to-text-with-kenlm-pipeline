@@ -1,5 +1,4 @@
 # imports
-from gc import callbacks
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -15,7 +14,8 @@ import os
 import shutil
 
 import torch
-from datasets import Dataset, DatasetDict, load_metric
+from datasets import Dataset, DatasetDict #, load_metric
+from wer import _compute
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, WavLMForCTC, TrainingArguments, Trainer
 from transformers.integrations import TensorBoardCallback
 from dataclasses import dataclass, field
@@ -363,7 +363,7 @@ class Finetuning:
         '''
 
         # load evaluation metric
-        wer_metric = load_metric("wer")
+        #wer_metric = load_metric("wer")
 
         # get the predicted logits
         pred_logits = pred.predictions
@@ -379,7 +379,8 @@ class Finetuning:
         label_str = processor.batch_decode(pred.label_ids, group_tokens=False)
 
         # obtain metric score
-        wer = wer_metric.compute(predictions=pred_str, references=label_str)
+        # wer = wer_metric.compute(predictions=pred_str, references=label_str)
+        wer = _compute(predictions=pred_str, references=label_str)
 
         # returns the word error rate
         return {"wer": wer}
@@ -581,11 +582,13 @@ class Evaluation:
         results_test = dataset["test"].map(lambda x: self.map_to_result_gpu(x, model, processor), remove_columns=dataset["test"].column_names)
 
         # define evaluation metric
-        wer_metric = load_metric("wer")
+        #wer_metric = load_metric("wer")
 
         # get the wer of the dev and the test set
-        print("\nValidation WER: {:.5f}".format(wer_metric.compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
-        print("Test WER: {:.5f}".format(wer_metric.compute(predictions=results_test["pred_str"], references=results_test["text"])))
+        # print("\nValidation WER: {:.5f}".format(wer_metric.compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
+        # print("Test WER: {:.5f}".format(wer_metric.compute(predictions=results_test["pred_str"], references=results_test["text"])))
+        print("\nValidation WER: {:.5f}".format(_compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
+        print("Test WER: {:.5f}".format(_compute(predictions=results_test["pred_str"], references=results_test["text"])))
         print()
 
     def __call__(self):
