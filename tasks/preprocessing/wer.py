@@ -64,7 +64,7 @@ Examples:
 
 @datasets.utils.file_utils.add_start_docstrings(_DESCRIPTION, _KWARGS_DESCRIPTION)
 class WER(datasets.Metric):
-    def _info(self):
+    def info(self):
         return datasets.MetricInfo(
             description=_DESCRIPTION,
             citation=_CITATION,
@@ -81,7 +81,7 @@ class WER(datasets.Metric):
             ],
         )
 
-    def _compute(self, predictions=None, references=None, concatenate_texts=False):
+    def compute(self, predictions=None, references=None, concatenate_texts=False):
         if concatenate_texts:
             return compute_measures(references, predictions)["wer"]
         else:

@@ -14,8 +14,10 @@ import os
 import shutil
 
 import torch
+from jiwer import compute_measures
+import datasets
 from datasets import Dataset, DatasetDict #, load_metric
-from wer import _compute
+# from wer import compute
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, WavLMForCTC, TrainingArguments, Trainer
 from transformers.integrations import TensorBoardCallback
 from dataclasses import dataclass, field
@@ -23,6 +25,26 @@ from typing import Any, Dict, List, Tuple, Optional, Union
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Device: {device}\n')
+
+
+class WER(datasets.Metric):
+
+    def __init__(self, predictions=None, references=None, concatenate_texts=False):
+        self.predictions = predictions
+        self.references = references
+        self.concatenate_texts = concatenate_texts
+
+    def compute(self):
+        if self.concatenate_texts:
+            return compute_measures(self.references, self.predictions)["wer"]
+        else:
+            incorrect = 0
+            total = 0
+            for prediction, reference in zip(self.predictions, self.references):
+                measures = compute_measures(reference, prediction)
+                incorrect += measures["substitutions"] + measures["deletions"] + measures["insertions"]
+                total += measures["substitutions"] + measures["deletions"] + measures["hits"]
+            return incorrect / total
 
 class FinetuningPreparation:
     '''
@@ -380,7 +402,8 @@ class Finetuning:
 
         # obtain metric score
         # wer = wer_metric.compute(predictions=pred_str, references=label_str)
-        wer = _compute(predictions=pred_str, references=label_str)
+        get_wer = WER(predictions=pred_str, references=label_str)
+        wer = get_wer.compute()
 
         # returns the word error rate
         return {"wer": wer}
@@ -587,8 +610,10 @@ class Evaluation:
         # get the wer of the dev and the test set
         # print("\nValidation WER: {:.5f}".format(wer_metric.compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
         # print("Test WER: {:.5f}".format(wer_metric.compute(predictions=results_test["pred_str"], references=results_test["text"])))
-        print("\nValidation WER: {:.5f}".format(_compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
-        print("Test WER: {:.5f}".format(_compute(predictions=results_test["pred_str"], references=results_test["text"])))
+        get_wer_dev = WER(predictions=results_dev["pred_str"], references=results_dev["text"])
+        get_wer_test = WER(predictions=results_test["pred_str"], references=results_test["text"])
+        print("\nValidation WER: {:.5f}".format(get_wer_dev.compute()))
+        print("Test WER: {:.5f}".format(get_wer_test.compute()))
         print()
 
     def __call__(self):
