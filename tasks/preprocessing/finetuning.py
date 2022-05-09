@@ -16,7 +16,7 @@ import shutil
 import torch
 from jiwer import compute_measures
 import datasets
-from datasets import Dataset, DatasetDict #, load_metric
+from datasets import Dataset, DatasetDict
 # from wer import compute
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Processor, Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC, WavLMForCTC, TrainingArguments, Trainer
 from transformers.integrations import TensorBoardCallback
@@ -28,6 +28,9 @@ print(f'Device: {device}\n')
 
 
 class WER(datasets.Metric):
+    '''
+        WER metrics
+    '''
 
     def __init__(self, predictions=None, references=None, concatenate_texts=False):
         self.predictions = predictions
