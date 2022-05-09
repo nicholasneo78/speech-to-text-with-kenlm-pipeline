@@ -8,11 +8,35 @@ import torch
 import os
 import re
 import pickle
-from datasets import Dataset, load_metric
+from jiwer import compute_measures
+import datasets
+from datasets import Dataset
 from tqdm import tqdm
 
 device = 'cuda' if torch.cuda.is_available else 'cpu'
 print(f'Device: {device}\n')
+
+class WER(datasets.Metric):
+    '''
+        WER metrics
+    '''
+
+    def __init__(self, predictions=None, references=None, concatenate_texts=False):
+        self.predictions = predictions
+        self.references = references
+        self.concatenate_texts = concatenate_texts
+
+    def compute(self):
+        if self.concatenate_texts:
+            return compute_measures(self.references, self.predictions)["wer"]
+        else:
+            incorrect = 0
+            total = 0
+            for prediction, reference in zip(self.predictions, self.references):
+                measures = compute_measures(reference, prediction)
+                incorrect += measures["substitutions"] + measures["deletions"] + measures["insertions"]
+                total += measures["substitutions"] + measures["deletions"] + measures["hits"]
+            return incorrect / total
 
 class EvaluationWithLM:
     '''
@@ -115,7 +139,9 @@ class EvaluationWithLM:
             pred_greedy_search_list.append(greedy_text)
 
         # define evaluation metric
-        wer_metric = load_metric("wer")
+        wer_greedy = WER(predictions=pred_greedy_search_list, references=ground_truth_list)
+        wer_beam = WER(predictions=pred_beam_search_list, references=ground_truth_list)
+        #wer_metric = load_metric("wer")
 
         # regex to obtain the number of grams for the final print message
         try:
@@ -126,15 +152,15 @@ class EvaluationWithLM:
 
         # print the final evaluation
         if obtain_n:
-            print(f'\n{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list):.5f}')
-            print(f'{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list):.5f}\n')
+            print(f'\n{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_greedy.compute():.5f}')
+            print(f'{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_beam.compute():.5f}\n')
 
         else:
-            print(f'\nalpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list):.5f}')
-            print(f'alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list):.5f}\n')
+            print(f'\nalpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_greedy.compute():.5f}')
+            print(f'alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_beam.compute():.5f}\n')
 
         # return the values for debugging
-        return round(wer_metric.compute(predictions=pred_greedy_search_list, references=ground_truth_list), 5), round(wer_metric.compute(predictions=pred_beam_search_list, references=ground_truth_list), 5)
+        return round(wer_greedy.compute(), 5), round(wer_beam.compute(), 5)
 
     def __call__(self):
         return self.get_wer()
