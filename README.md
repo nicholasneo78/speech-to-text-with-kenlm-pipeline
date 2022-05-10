@@ -84,7 +84,7 @@ The repository structure will be as shown below:
 
 ```
 
-The structure of the dataset will be as shown below, ensure that there is a manifest file, each for train, dev and test dataset:  
+The structure of the dataset required by user will be shown below, ensure that there is a manifest file, each for train, dev and test dataset:  
 ```
 datasets
 ├── train
