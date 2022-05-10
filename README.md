@@ -84,6 +84,20 @@ The repository structure will be as shown below:
 
 ```
 
+The structure of the dataset will be as shown below, ensure that there is a manifest file, each for train, dev and test dataset:  
+```
+datasets
+├── train
+│   ├── <your audio files (audio files can be in nested folder form also)>       
+│   └── train_manifest.json
+├── dev
+│   ├── <your audio files (audio files can be in nested folder form also)>       
+│   └── dev_manifest.json
+└── test
+    ├── <your audio files (audio files can be in nested folder form also)>       
+    └── test_manifest.json
+```
+
 <br>
 
 # Executing code on local machine
