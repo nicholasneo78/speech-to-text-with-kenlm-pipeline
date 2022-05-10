@@ -22,103 +22,48 @@ The tasks in this pipeline are as follows:
 <br>  
 
 ## Project Organization  
-There are some folders that are required to be created to store your speech and audio datasets and the base models used, the instructions will be shown below. You can get the base [wav2vec 2.0](https://huggingface.co/facebook/wav2vec2-base/tree/main) and [wavLM](https://huggingface.co/microsoft/wavlm-base/tree/main) models from the HuggingFace website.
+There are **some folders that needs to be created by the user to store the datasets (audio and annotations) and the base models used. The instructions will be shown below in the repository structure on what needs to be created by the user**. You can get the base [wav2vec 2.0](https://huggingface.co/facebook/wav2vec2-base/tree/main) and [wavLM](https://huggingface.co/microsoft/wavlm-base/tree/main) models from the HuggingFace website.
 
 The repository structure will be as shown below:  
 ```
     .
-    ├── docker-compose.yml
-    ├── Dockerfile
-    ├── img                     <--- a directory for the readme
+    ├── docker-compose.yml      <--- the file used to build the docker container which will make use of the Dockerfile
+    ├── Dockerfile              <--- storing all the dependencies required to build the container, including requirements.txt, building packages from source etc.
+    ├── img                     <--- a directory of the images just for the readme
     ├── kenlm
-    │   └── kenlm
+    │   └── kenlm               <--- a folder with all the kenlm dependencies
     ├── LICENSE
-    ├── README.md
-    ├── requirements.txt
-    └── tasks
-        ├── preprocessing
-        │   ├── build_lm.py
+    ├── README.md               
+    ├── requirements.txt        <--- all the dependencies that are required to pip install
+    └── tasks                   <--- main directory where all the execution of code takes place
+        ├── preprocessing       <--- directory to store all the code (logic), also the directory where execution of code is done locally
+        │   ├── datasets        <--- <CREATE THIS FOLDER>
+        │   │    └── <PUT YOUR DATASETS HERE>
+        │   ├── build_lm.py             
         │   ├── build_lm.sh
         │   ├── data_preprocessing.py
-        │   ├── datasets
         │   ├── evaluation_with_lm.py
         │   ├── finetuning.py
         │   ├── lm_src
         │   │   └── build_lm.sh
-        │   ├── root
+        │   ├── root              <--- the directory that will be generated when you execute the pipeline codes (initially don't have)
         │   │   ├── lm
-        │   │   │   ├── 3_gram_magister_v2.arpa
-        │   │   │   ├── 4_gram_magister_v2.arpa
-        │   │   │   └── 5_gram_magister_v2.arpa
-        │   │   ├── magister_v2
-        │   │   │   ├── wav2vec2
-        │   │   │   │   ├── ckpt
-        │   │   │   │   │   ├── checkpoint-3000
-        │   │   │   │   │   │   ├── config.json
-        │   │   │   │   │   │   ├── optimizer.pt
-        │   │   │   │   │   │   ├── preprocessor_config.json
-        │   │   │   │   │   │   ├── pytorch_model.bin
-        │   │   │   │   │   │   ├── rng_state.pth
-        │   │   │   │   │   │   ├── scaler.pt
-        │   │   │   │   │   │   ├── scheduler.pt
-        │   │   │   │   │   │   ├── trainer_state.json
-        │   │   │   │   │   │   └── training_args.bin
-        │   │   │   │   │   └── trainer_state.json
-        │   │   │   │   ├── processor
-        │   │   │   │   │   ├── preprocessor_config.json
-        │   │   │   │   │   ├── special_tokens_map.json
-        │   │   │   │   │   ├── tokenizer_config.json
-        │   │   │   │   │   └── vocab.json
-        │   │   │   │   └── saved_model
-        │   │   │   │       ├── config.json
-        │   │   │   │       ├── preprocessor_config.json
-        │   │   │   │       ├── pytorch_model.bin
-        │   │   │   │       └── training_args.bin
-        │   │   │   └── wavlm
+        │   │   │   └── <your generated language model in arpa format>
+        │   │   ├── <your saved finetuned models for the dataset, checkpoint, processor and saved_model>
+        │   │   │   └── <finetuned model 1 ...>
         │   │   │       ├── ckpt
-        │   │   │       │   ├── checkpoint-3000
-        │   │   │       │   │   ├── config.json
-        │   │   │       │   │   ├── optimizer.pt
-        │   │   │       │   │   ├── preprocessor_config.json
-        │   │   │       │   │   ├── pytorch_model.bin
-        │   │   │       │   │   ├── rng_state.pth
-        │   │   │       │   │   ├── scaler.pt
-        │   │   │       │   │   ├── scheduler.pt
-        │   │   │       │   │   ├── trainer_state.json
-        │   │   │       │   │   └── training_args.bin
-        │   │   │       │   └── trainer_state.json
+        │   │   │       │   └── <your checkpoint files>
         │   │   │       ├── processor
-        │   │   │       │   ├── preprocessor_config.json
-        │   │   │       │   ├── special_tokens_map.json
-        │   │   │       │   ├── tokenizer_config.json
-        │   │   │       │   └── vocab.json
+        │   │   │       │   └── <your processor files>
         │   │   │       └── saved_model
-        │   │   │           ├── config.json
-        │   │   │           ├── preprocessor_config.json
-        │   │   │           ├── pytorch_model.bin
-        │   │   │           └── training_args.bin
-        │   │   └── pkl
-        │   │       ├── librispeech_dev.pkl
-        │   │       ├── librispeech_test.pkl
-        │   │       ├── librispeech_train.pkl
-        │   │       ├── magister_data_flac_16000_dev.pkl
-        │   │       ├── magister_data_flac_16000_test.pkl
-        │   │       ├── magister_data_flac_16000_train.pkl
-        │   │       ├── magister_data_v2_wav_16000_dev.pkl
-        │   │       ├── magister_data_v2_wav_16000_test.pkl
-        │   │       └── magister_data_v2_wav_16000_train.pkl
-        │   └── root_base_model
-        │       ├── wav2vec2_base_model
-        │       │   ├── config.json
-        │       │   ├── preprocessor_config.json
-        │       │   ├── pytorch_model.bin
-        │       │   ├── special_tokens_map.json
-        │       │   ├── tokenizer_config.json
-        │       │   └── vocab.json
-        │       └── wavlm_base_model
-        │           ├── config.json
-        │           ├── preprocessor_config.json
-        │           └── pytorch_model.bin
+        │   │   │           └── <your saved model files>
+        │   │   └── pkl             <--- storing your preprocessed pkl files
+        │   │       └── <your train, dev and test pkl files>
+        │   └── root_base_model     <--- <PUT YOUR BASE MODELS HERE>
+        │       ├── wav2vec2_base_model   <--- EXAMPLE 1
+        │       │   └── <PUT THE BASE MODEL 1 FILES HERE>
+        │       └── wavlm_base_model      <--- EXAMPLE 2
+        │           └── <PUT THE BASE MODEL 2 FILES HERE>
         ├── scripts
         │   ├── task_build_lm
         │   │   └── librispeech.sh
