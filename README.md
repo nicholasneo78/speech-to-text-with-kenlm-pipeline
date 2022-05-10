@@ -29,11 +29,7 @@ The repository structure will be as shown below:
     .
     ├── docker-compose.yml
     ├── Dockerfile
-    ├── img
-    │   ├── 1_datasets_cmd.jpg
-    │   ├── 2_kenlm_cmd.jpg
-    │   ├── 3_build_lm_cmd.jpg
-    │   └── 4_base_model_cmd.jpg
+    ├── img                     <--- a directory for the readme
     ├── kenlm
     │   └── kenlm
     ├── LICENSE
