@@ -625,31 +625,34 @@ class Evaluation:
 
 if __name__ == "__main__":
     
-    # ########## MAGISTER: GET AUDIO LENGTH DISTRIBUTION ##########
+    ########## LIBRISPEECH: GET AUDIO LENGTH DISTRIBUTION ##########
 
-    # print('Getting the audio length distribution of the train dataset\n')
-    # distribution = FinetuningPreparation(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl',
-    #                                      dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                                      test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl',
-    #                                      processor_path='./root/wav2vec2/processor/', 
-    #                                      max_sample_length=None, 
-    #                                      mode='get_audio_length_distribution')
+    print('Getting the audio length distribution of the train dataset\n')
+    distribution = FinetuningPreparation(train_pkl='./root/pkl/librispeech_train.pkl',
+                                         dev_pkl='./root/pkl/librispeech_dev.pkl', 
+                                         test_pkl='./root/pkl/librispeech_test.pkl',
+                                         processor_path='./root/wav2vec2/processor/', 
+                                         max_sample_length=None, 
+                                         mode='get_audio_length_distribution')
 
-    # distribution()
+    distribution()
 
     ###################################################
 
-    ########## MAGISTER: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
 
-    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                             input_processor_path='./root/magister_v2/wav2vec2/processor/', 
-    #                             input_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
+
+
+    # ########## LIBRISPEECH: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
+
+    # finetune_model = Finetuning(train_pkl='./root/pkl/librispeech_train.pkl', 
+    #                             dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                             test_pkl='./root/pkl/librispeech_test.pkl', 
+    #                             input_processor_path='./root/librispeech/wav2vec2/processor/', 
+    #                             input_checkpoint_path='./root/librispeech/wav2vec2/ckpt/', 
     #                             input_pretrained_model_path='./root_base_model/wav2vec2_base_model/',
-    #                             output_processor_path='./root/magister_v2/wav2vec2/processor/', 
-    #                             output_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
-    #                             output_saved_model_path='./root/magister_v2/wav2vec2/saved_model/', 
+    #                             output_processor_path='./root/librispeech/wav2vec2/processor/', 
+    #                             output_checkpoint_path='./root/librispeech/wav2vec2/ckpt/', 
+    #                             output_saved_model_path='./root/librispeech/wav2vec2/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=10,
@@ -661,19 +664,19 @@ if __name__ == "__main__":
 
     # _, _, _, _ = finetune_model()
 
-    ##################################################
+    # ##################################################
 
-    # ########## MAGISTER: FINETUNING (RESUMING FROM CHECKPOINT) - WAV2VEC2 ##########
+    # # ########## LIBRISPEECH: FINETUNING (RESUMING FROM CHECKPOINT) - WAV2VEC2 ##########
 
-    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                             input_processor_path='./root/magister_v2/wav2vec2/processor/', 
-    #                             input_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
-    #                             input_pretrained_model_path='./root/magister_v2/wav2vec2/saved_model/',
-    #                             output_processor_path='./root/magister_v2/wav2vec2/processor/', 
-    #                             output_checkpoint_path='./root/magister_v2/wav2vec2/ckpt/', 
-    #                             output_saved_model_path='./root/magister_v2/wav2vec2/saved_model/', 
+    # finetune_model = Finetuning(train_pkl='./root/pkl/librispeech_train.pkl', 
+    #                             dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                             test_pkl='./root/pkl/librispeech_test.pkl', 
+    #                             input_processor_path='./root/librispeech/wav2vec2/processor/', 
+    #                             input_checkpoint_path='./root/librispeech/wav2vec2/ckpt/', 
+    #                             input_pretrained_model_path='./root/librispeech/wav2vec2/saved_model/',
+    #                             output_processor_path='./root/librispeech/wav2vec2/processor/', 
+    #                             output_checkpoint_path='./root/librispeech/wav2vec2/ckpt/', 
+    #                             output_saved_model_path='./root/librispeech/wav2vec2/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=15,
@@ -685,9 +688,9 @@ if __name__ == "__main__":
 
     # _, _, _, _ = finetune_model()
 
-    ####################################################
+    # ####################################################
 
-    # ########## MAGISTER: EVALUATION - WAV2VEC2 ##########
+    # # ########## LIBRISPEECH: EVALUATION - WAV2VEC2 ##########
     
     # evaluation = Evaluation(dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
     #                         test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
@@ -697,25 +700,23 @@ if __name__ == "__main__":
 
     # evaluation()
 
-    ####################################################
+    # ####################################################
 
 
 
 
 
+    # ########## LIBRISPEECH: FINETUNING (FROM SCRATCH) - WAVLM ##########
 
-
-    # ########## MAGISTER: FINETUNING (FROM SCRATCH) - WAVLM ##########
-
-    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                             input_processor_path='./root/magister_v2/wavlm/processor/', 
-    #                             input_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
+    # finetune_model = Finetuning(train_pkl='./root/pkl/librispeech_train.pkl', 
+    #                             dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                             test_pkl='./root/pkl/librispeech_test.pkl', 
+    #                             input_processor_path='./root/librispeech/wavlm/processor/', 
+    #                             input_checkpoint_path='./root/librispeech/wavlm/ckpt/', 
     #                             input_pretrained_model_path='./root_base_model/wavlm_base_model/',
-    #                             output_processor_path='./root/magister_v2/wavlm/processor/', 
-    #                             output_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
-    #                             output_saved_model_path='./root/magister_v2/wavlm/saved_model/', 
+    #                             output_processor_path='./root/librispeech/wavlm/processor/', 
+    #                             output_checkpoint_path='./root/librispeech/wavlm/ckpt/', 
+    #                             output_saved_model_path='./root/librispeech/wavlm/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=10,
@@ -726,20 +727,20 @@ if __name__ == "__main__":
     #                             finetune_from_scratch=True)
 
     # _, _, _, _ = finetune_model()
+ 
+    # ####################################################
 
-    ##################################################
+    # ########## LIBRISPEECH: FINETUNING (RESUMING FROM CHECKPOINT) - WAVLM ##########
 
-    # ########## MAGISTER: FINETUNING (RESUMING FROM CHECKPOINT) - WAVLM ##########
-
-    # finetune_model = Finetuning(train_pkl='./root/pkl/magister_data_v2_wav_16000_train.pkl', 
-    #                             dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
-    #                             test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                             input_processor_path='./root/magister_v2/wavlm/processor/', 
-    #                             input_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
-    #                             input_pretrained_model_path='./root/magister_v2/wavlm/saved_model/',
-    #                             output_processor_path='./root/magister_v2/wavlm/processor/', 
-    #                             output_checkpoint_path='./root/magister_v2/wavlm/ckpt/', 
-    #                             output_saved_model_path='./root/magister_v2/wavlm/saved_model/', 
+    # finetune_model = Finetuning(train_pkl='./root/pkl/librispeech_train.pkl', 
+    #                             dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                             test_pkl='./root/pkl/librispeech_test.pkl', 
+    #                             input_processor_path='./root/librispeech/wavlm/processor/', 
+    #                             input_checkpoint_path='./root/librispeech/wavlm/ckpt/', 
+    #                             input_pretrained_model_path='./root/librispeech/wavlm/saved_model/',
+    #                             output_processor_path='./root/librispeech/wavlm/processor/', 
+    #                             output_checkpoint_path='./root/librispeech/wavlm/ckpt/', 
+    #                             output_saved_model_path='./root/librispeech/wavlm/saved_model/', 
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=15,
@@ -751,58 +752,16 @@ if __name__ == "__main__":
 
     # _, _, _, _ = finetune_model()
 
-    ####################################################
+    # ####################################################
 
-    ########## MAGISTER: EVALUATION - WAVLM ##########
+    # ########## LIBRISPEECH: EVALUATION - WAVLM ##########
     
-    evaluation = Evaluation(dev_pkl='./root/pkl/magister_data_v2_wav_16000_dev.pkl', 
-                            test_pkl='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
-                            processor_path='./root/magister_v2/wavlm/processor/', 
-                            saved_model_path='./root/magister_v2/wavlm/saved_model/',
-                            architecture='wavlm')
+    # evaluation = Evaluation(dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                         test_pkl='./root/pkl/librispeech_test.pkl', 
+    #                         processor_path='./root/librispeech/wavlm/processor/', 
+    #                         saved_model_path='./root/librispeech/wavlm/saved_model/',
+    #                         architecture='wavlm')
 
-    evaluation()
+    # evaluation()
 
-    ###################################################
-
-
-
-
-
-
-
-    # ########## LIBRISPEECH: GET AUDIO LENGTH DISTRIBUTION ##########
-
-    # print('Getting the audio length distribution of the train dataset\n')
-    # distribution = FinetuningPreparation(train_pkl='./root/pkl/librispeech_train.pkl',
-    #                                      dev_pkl='./root/pkl/librispeech_dev.pkl', 
-    #                                      test_pkl='./root/pkl/librispeech_test.pkl',
-    #                                      processor_path='./root/wav2vec2/processor/', 
-    #                                      max_sample_length=None, 
-    #                                      mode='get_audio_length_distribution')
-
-    # distribution()
-
-    ###################################################
-
-    ########## LIBRISPEECH: FINETUNING (FROM SCRATCH) - WAVLM ##########
-
-    # finetune_model = Finetuning(train_pkl='./pkl/librispeech_train.pkl', 
-    #                             dev_pkl='./pkl/librispeech_dev.pkl', 
-    #                             test_pkl='./pkl/librispeech_test.pkl', 
-    #                             processor_path='./wavlm/processor/', 
-    #                             checkpoint_path='./wavlm/ckpt/', 
-    #                             pretrained_model_path='./root_base_model/wavlm_base_model/', 
-    #                             saved_model_path='./wavlm/saved_model/', 
-    #                             max_sample_length=450000, 
-    #                             batch_size=8, 
-    #                             epochs=5, 
-    #                             lr=1e-4, 
-    #                             weight_decay=0.005, 
-    #                             warmup_steps=1000, 
-    #                             architecture='wavlm',
-    #                             finetune_from_scratch=True)
-
-    # _, _, _, _ = finetune_model()
- 
-    ####################################################
+    # ###################################################

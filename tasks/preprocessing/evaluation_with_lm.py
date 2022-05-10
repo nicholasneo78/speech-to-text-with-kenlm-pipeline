@@ -166,30 +166,13 @@ class EvaluationWithLM:
         return self.get_wer()
 
 if __name__ == "__main__":
-    # # magister v1
-    # evaluation = EvaluationWithLM(finetuned_model_path='./saved_model/',
-    #                               processor_path='./processor/',
-    #                               lm_path='lm/5_gram_magister.arpa', 
-    #                               test_data_path='./pkl/magister_data_flac_16000_test.pkl', 
-    #                               alpha=0.6, beta=1.0, architecture='wav2vec2')
-
-    # greedy, beam = evaluation()
-
-    # # magister v2 wav2vec2
-    # evaluation = EvaluationWithLM(finetuned_model_path='./root/magister_v2/wav2vec2/saved_model/',
-    #                               processor_path='./root/magister_v2/wav2vec2/processor/',
-    #                               lm_path='lm/5_gram_magister_v2.arpa', 
-    #                               test_data_path='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
-    #                               alpha=0.6, beta=1.0, architecture='wav2vec2')
-
-    # greedy, beam = evaluation()
 
     # magister v2 wavlm
-    evaluation = EvaluationWithLM(finetuned_model_path='./root/magister_v2/wavlm/saved_model/',
-                                  processor_path='./root/magister_v2/wavlm/processor/',
-                                  lm_path='lm/5_gram_magister_v2.arpa', 
-                                  test_data_path='./root/pkl/magister_data_v2_wav_16000_test.pkl', 
+    evaluation = EvaluationWithLM(finetuned_model_path='./root/librispeech/wavlm/saved_model/', # or './root/librispeech/wav2vec2/saved_model/'
+                                  processor_path='./root/librispeech/wavlm/processor/', # or './root/librispeech/wav2vec2/processor/'
+                                  lm_path='lm/5_gram_librispeech_v2.arpa', 
+                                  test_data_path='./root/pkl/librispeech_test.pkl', 
                                   alpha=0.6, beta=1.0,
-                                  architecture='wavlm')
+                                  architecture='wavlm') # or wav2vec2
 
     greedy, beam = evaluation()
