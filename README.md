@@ -46,7 +46,7 @@ The repository structure will be as shown below:
         │   ├── finetuning.py
         │   ├── lm_src
         │   │   └── build_lm.sh
-        │   ├── root              <--- the directory that will be generated when you execute the pipeline codes (initially don't have)
+        │   ├── root (don't have when cloned)   <--- the directory that will be generated when you execute the pipeline codes
         │   │   ├── lm
         │   │   │   └── <your generated language model in arpa format>
         │   │   ├── <your saved finetuned models for the dataset, checkpoint, processor and saved_model>
