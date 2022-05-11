@@ -90,10 +90,6 @@ df_train, path_train = librispeech_train_pkl()
 df_dev, path_dev = librispeech_dev_pkl()
 df_test, path_test = librispeech_test_pkl()
 
-print(path_train)
-print(path_dev)
-print(path_test)
-
 # declare a root folder so that the subfolders can be retained by clearml
 dataset.add_files(path=path_train, local_base_folder='root/')
 dataset.add_files(path=path_dev, local_base_folder='root/')
