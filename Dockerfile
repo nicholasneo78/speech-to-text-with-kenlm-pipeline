@@ -60,7 +60,7 @@ RUN pip install tensorboardX --no-cache-dir
 RUN pip install jupyterlab
 
 # declare port used by jupyterlab
-EXPOSE 8888
+EXPOSE 8889
 
 # set default command for jupyterlab
 CMD ["jupyter" ,"lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
