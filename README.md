@@ -22,7 +22,7 @@ The tasks in this pipeline are as follows:
 <br>  
 
 ## Project Organization  
-There are **some folders that needs to be created by the user to store the datasets (audio and annotations) and the base models used. The instructions will be shown below in the repository structure on what needs to be created by the user**. You can get the base [wav2vec 2.0](https://huggingface.co/facebook/wav2vec2-base/tree/main) and [wavLM](https://huggingface.co/microsoft/wavlm-base/tree/main) models from the HuggingFace website.
+There are **some folders that needs to be created by the user to store the datasets (audio and annotations) and the base models used. The instructions will be shown below in the repository structure on what needs to be created by the user**. You can get the base [wav2vec 2.0](https://huggingface.co/facebook/wav2vec2-base/tree/main) and [wavLM](https://huggingface.co/microsoft/wavlm-base/tree/main) models from the HuggingFace website. In this repository, librispeech data will be used as an example. You can get the librispeech dataset from [here](https://www.openslr.org/12).   
 
 The repository structure will be as shown below:  
 ```
