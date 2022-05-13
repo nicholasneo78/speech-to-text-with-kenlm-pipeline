@@ -340,7 +340,7 @@ class Finetuning:
         set up trainer class to proceed with finetuning
     '''
 
-    def __init__(self, train_pkl: str, dev_pkl: str, test_pkl: str, input_processor_path: str, input_checkpoint_path: str, input_pretrained_model_path: str, output_processor_path: str, output_checkpoint_path: str, output_saved_model_path: str, max_sample_length: int, batch_size: int, epochs: int, lr: float, weight_decay: float, warmup_steps: int, architecture: str, finetune_from_scratch: bool=False) -> None:
+    def __init__(self, train_pkl: str, dev_pkl: str, test_pkl: str, input_processor_path: str, input_checkpoint_path: str, input_pretrained_model_path: str, output_processor_path: str, output_checkpoint_path: str, output_saved_model_path: str, max_sample_length: int, batch_size: int, epochs: int, gradient_accumulation_steps: int, save_steps: int, eval_logging_steps: int, lr: float, weight_decay: float, warmup_steps: int, architecture: str, finetune_from_scratch: bool=False) -> None:
         '''
             train_pkl: file path of the train pickle file
             dev_pkl: file path of the dev pickle file
@@ -354,6 +354,9 @@ class Finetuning:
             max_sample_length: max audio sample length threshold
             batch_size: batch size used to finetune the model
             epochs: number of epochs used to finetune the model
+            gradient_accumulation_steps: how many steps it accumulates before updating the gradient
+            save_steps: the steps interval before saving the checkpoint
+            eval_logging_steps: the steps interval before evaluation with the dev set
             lr: learning rate used to finetune the model
             weight_decay: the weight decay of the learning rate
             warmup_steps: number of finetuning steps for warmup
@@ -376,6 +379,10 @@ class Finetuning:
         self.max_sample_length = max_sample_length
         self.batch_size = batch_size
         self.epochs = epochs
+        self.gradient_accumulation_steps = gradient_accumulation_steps
+        self.save_steps = save_steps
+        self.eval_logging_steps = eval_logging_steps
+
         self.lr = lr
         self.weight_decay = weight_decay
         self.warmup_steps = warmup_steps
@@ -466,9 +473,10 @@ class Finetuning:
             num_train_epochs=self.epochs,
             fp16=True,
             gradient_checkpointing=True,
-            save_steps=500,
-            eval_steps=50,
-            logging_steps=50,
+            gradient_accumulation_steps=self.gradient_accumulation_steps,
+            save_steps=self.save_steps,
+            eval_steps=self.eval_logging_steps,
+            logging_steps=self.eval_logging_steps,
             learning_rate=self.lr,
             weight_decay=self.weight_decay,
             warmup_steps=self.warmup_steps,
@@ -607,12 +615,7 @@ class Evaluation:
         results_dev = dataset["dev"].map(lambda x: self.map_to_result_gpu(x, model, processor), remove_columns=dataset["dev"].column_names)
         results_test = dataset["test"].map(lambda x: self.map_to_result_gpu(x, model, processor), remove_columns=dataset["test"].column_names)
 
-        # define evaluation metric
-        #wer_metric = load_metric("wer")
-
         # get the wer of the dev and the test set
-        # print("\nValidation WER: {:.5f}".format(wer_metric.compute(predictions=results_dev["pred_str"], references=results_dev["text"])))
-        # print("Test WER: {:.5f}".format(wer_metric.compute(predictions=results_test["pred_str"], references=results_test["text"])))
         get_wer_dev = WER(predictions=results_dev["pred_str"], references=results_dev["text"])
         get_wer_test = WER(predictions=results_test["pred_str"], references=results_test["text"])
         print("\nValidation WER: {:.5f}".format(get_wer_dev.compute()))
@@ -656,6 +659,9 @@ if __name__ == "__main__":
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=10,
+    #                             gradient_accumulation_steps=4,
+    #                             save_steps=500,
+    #                             eval_logging_steps=50,
     #                             lr=1e-4, 
     #                             weight_decay=0.005, 
     #                             warmup_steps=1000, 
@@ -680,6 +686,9 @@ if __name__ == "__main__":
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=15,
+    #                             gradient_accumulation_steps=4,
+    #                             save_steps=500,
+    #                             eval_logging_steps=50,
     #                             lr=1e-4, 
     #                             weight_decay=0.005, 
     #                             warmup_steps=1000, 
@@ -720,6 +729,9 @@ if __name__ == "__main__":
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=10,
+    #                             gradient_accumulation_steps=4,
+    #                             save_steps=500,
+    #                             eval_logging_steps=50,
     #                             lr=1e-4, 
     #                             weight_decay=0.005, 
     #                             warmup_steps=1000, 
@@ -744,6 +756,9 @@ if __name__ == "__main__":
     #                             max_sample_length=450000, 
     #                             batch_size=8, 
     #                             epochs=15,
+    #                             gradient_accumulation_steps=4,
+    #                             save_steps=500,
+    #                             eval_logging_steps=50,
     #                             lr=1e-4, 
     #                             weight_decay=0.005, 
     #                             warmup_steps=1000, 

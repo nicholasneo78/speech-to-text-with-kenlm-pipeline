@@ -33,6 +33,9 @@ def parse_args():
     parser.add_argument("--max_sample_length",            type=int, help="get the maximum sample length of the audio")
     parser.add_argument("--batch_size",                   type=int, help="batch size")
     parser.add_argument("--epochs",                       type=int, help="number of epochs")
+    parser.add_argument("--gradient_accumulation_steps",  type=int, help="how many steps it accumulates before updating the gradient")
+    parser.add_argument("--save_steps",                   type=int, help="the steps interval before saving the checkpoint")
+    parser.add_argument("--eval_logging_steps",           type=int, help="the steps interval before evaluation with the dev set")
     parser.add_argument("--lr",                           type=str, help="learning rate")
     parser.add_argument("--weight_decay",                 type=float, help="weight decay")
     parser.add_argument("--warmup_steps",                 type=int, help="number of steps for warmup")
@@ -57,33 +60,6 @@ task = Task.init(project_name=arg.project_name, task_name=arg.task_name, output_
 task.set_base_docker(
     docker_image=arg.docker_image,
 )
-
-# # get the args for data preprocessing
-# args = {
-#     'dataset_pkl_task_id': arg.dataset_pkl_task_id,
-#     'dataset_pretrained_task_id': arg.dataset_pretrained_task_id,
-
-#     'train_pkl': arg.train_pkl,
-#     'dev_pkl': arg.dev_pkl,
-#     'test_pkl': arg.test_pkl,
-
-#     'input_processor_path': arg.input_processor_path,
-#     'input_checkpoint_path': arg.input_checkpoint_path,
-#     'input_pretrained_model_path': arg.input_pretrained_model_path,
-
-#     'output_processor_path': arg.output_processor_path,
-#     'output_checkpoint_path': arg.output_checkpoint_path,
-#     'output_saved_model_path': arg.output_saved_model_path,
-
-#     'max_sample_length': arg.max_sample_length,
-#     'batch_size': arg.batch_size,
-#     'epochs': arg.epochs,
-#     'lr': arg.lr,
-#     'weight_decay': arg.weight_decay,
-#     'warmup_steps': arg.warmup_steps,
-#     'architecture': arg.architecture,
-#     'finetune_from_scratch': arg.finetune_from_scratch
-# }
 
 # execute clearml
 task.execute_remotely(queue_name=arg.queue, exit_process=True)
@@ -120,6 +96,9 @@ finetune_model = Finetuning(train_pkl=f'{dataset_pkl_path}/{arg.train_pkl}',
                             max_sample_length=arg.max_sample_length, 
                             batch_size=arg.batch_size, 
                             epochs=arg.epochs, 
+                            gradient_accumulation_steps=arg.gradient_accumulation_steps,
+                            save_steps=arg.save_steps,
+                            eval_logging_steps=arg.eval_logging_steps,
                             lr=float(arg.lr), 
                             weight_decay=arg.weight_decay, 
                             warmup_steps=arg.warmup_steps, 

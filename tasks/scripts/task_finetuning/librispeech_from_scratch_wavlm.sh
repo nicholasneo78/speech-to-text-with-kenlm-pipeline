@@ -21,6 +21,9 @@ python3 ../../task_finetuning.py \
     --max_sample_length 450000 \
     --batch_size 16 \
     --epochs 100 \
+    --gradient_accumulation_steps 4 \
+    --save_steps 500 \
+    --eval_logging_steps 50 \
     --lr 1e-4 \
     --weight_decay 0.01 \
     --warmup_steps 1500 \
