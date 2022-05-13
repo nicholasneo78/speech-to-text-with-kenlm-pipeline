@@ -261,7 +261,10 @@ The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. 
 - `output_saved_model_path`: (str) the path where the saved model is being output after the finetuning
 - `max_sample_length`: (int) the maximum audio sample length of the audio file that could be accepted before hitting an out-of-memory issue
 - `batch_size`: (int) the batch size used for the finetuning
-- `epochs`: (int) the number of epochs used for the finetuning
+- `epochs`: (int) the number of epochs used for the finetuning   
+- `gradient_accumulation_steps`: (int) how many steps it accumulates before updating the gradient
+- `save_steps`: (int) the steps interval before saving the checkpoint
+- `eval_logging_steps`: (int) the steps interval before evaluation with the dev set
 - `lr`: (float) learning rate used for the finetuning
 - `weight_decay`: (float) weight decay used for the finetuning
 - `warmup_steps`: (int) number of finetuning steps used with a lower learning rate for the model to adapt to finetuning
@@ -318,6 +321,9 @@ finetune_model = Finetuning(train_pkl='./root/pkl/<YOUR_FILENAME_OF_THE_TRAIN_PI
                             max_sample_length=<YOUR_MAX_AUDIO_SAMPLE_LENGTH_NUMBER>, 
                             batch_size=<BATCH_SIZE>, 
                             epochs=<NUMBER_OF_EPOCHS>,
+                            gradient_accumulation_steps=<NUMBER_OF_STEPS_TO_ACCUMULATE_BEFORE_UPDATING_GRADIENT>,
+                            save_steps=<STEPS_INTERVAL_TO_UPDATE_MODEL_CHECKPOINT>,
+                            eval_logging_steps=<STEPS_INTERVAL_FOR_EVALUATION_WITH_THE_DEV_SET>,
                             lr=<LEARNING_RATE>, 
                             weight_decay=<WEIGHT_DECAY>, 
                             warmup_steps=<WARMUP_STEPS>, 
@@ -563,6 +569,9 @@ The code to finetune the pretrained wav2vec2 and wavlm models from HuggingFace. 
 - `max_sample_length`: (int) get the maximum sample length of the audio   
 - `batch_size`: (int) batch size   
 - `epochs`: (int) epochs    
+- `gradient_accumulation_steps`: (int) how many steps it accumulates before updating the gradient
+- `save_steps`: (int) the steps interval before saving the checkpoint
+- `eval_logging_steps`: (int) the steps interval before evaluation with the dev set   
 - `lr`: (float) learning rate   
 - `weight_decay`: (float) weight decay   
 - `warmup_steps`: (int) number of steps for warmup   
@@ -601,6 +610,9 @@ python3 ../../task_finetuning.py \
     --max_sample_length <YOUR_MAX_AUDIO_SAMPLE_LENGTH_NUMBER> \
     --batch_size <BATCH_SIZE> \
     --epochs <NUMBER_OF_EPOCHS> \
+    --gradient_accumulation_steps <NUMBER_OF_STEPS_TO_ACCUMULATE_BEFORE_UPDATING_GRADIENT> \
+    --save_steps <STEPS_INTERVAL_TO_UPDATE_MODEL_CHECKPOINT> \
+    --eval_logging_steps <STEPS_INTERVAL_FOR_EVALUATION_WITH_THE_DEV_SET> \
     --lr <LEARNING_RATE> \
     --weight_decay <WEIGHT_DECAY> \
     --warmup_steps <WARMUP_STEPS> \
@@ -634,6 +646,9 @@ python3 ../../task_finetuning.py \
     --max_sample_length <YOUR_MAX_AUDIO_SAMPLE_LENGTH_NUMBER> \
     --batch_size <BATCH_SIZE> \
     --epochs <NUMBER_OF_EPOCHS> \
+    --gradient_accumulation_steps <NUMBER_OF_STEPS_TO_ACCUMULATE_BEFORE_UPDATING_GRADIENT> \
+    --save_steps <STEPS_INTERVAL_TO_UPDATE_MODEL_CHECKPOINT> \
+    --eval_logging_steps <STEPS_INTERVAL_FOR_EVALUATION_WITH_THE_DEV_SET> \
     --lr <LEARNING_RATE> \
     --weight_decay <WEIGHT_DECAY> \
     --warmup_steps <WARMUP_STEPS> \
