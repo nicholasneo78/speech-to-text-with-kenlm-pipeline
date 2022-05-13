@@ -14,8 +14,11 @@ class DataSampling:
         self.final_pkl_location = final_pkl_location
         self.random_state = random_state
         
-    # sampling the amount of data based on fixed proportion 
     def data_sampling_manual(self):
+        '''
+            sampling the amount of data based on fixed proportion 
+        '''
+
         # create the main dataframe to store the combined dataframe if there are more than 1 data
         df_main = pd.DataFrame()
 
@@ -38,8 +41,11 @@ class DataSampling:
 
         return self.final_pkl_location
 
-    # sampling amount of data based on the dataset with the least data entries
     def data_sampling_least(self):
+        '''
+            # sampling amount of data based on the dataset with the least data entries
+        '''
+        
         # create the main dataframe to store the combined dataframe if there are more than 1 data
         df_main = pd.DataFrame()
 
@@ -84,7 +90,7 @@ if __name__ == "__main__":
     
     # manual sampling
     df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': 0.5, 
-                                       './root/pkl/magister_data_v2_wav_16000_train.pkl' : 0.2}, 
+                                       './root/pkl/librispeech_train.pkl': 0.2},  # to simulate that there are more than 1 dataset
                             sampling_mode='manual', 
                             final_pkl_location='./root/pkl/combined_train.pkl', 
                             random_state=42)
@@ -93,7 +99,7 @@ if __name__ == "__main__":
 
     # # least sampling
     # df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': None, 
-    #                                    './root/pkl/magister_data_v2_wav_16000_train.pkl' : None}, 
+    #                                    './root/pkl/librispeech_train.pkl': None}, 
     #                         sampling_mode='least', 
     #                         final_pkl_location='./root/pkl/combined_train.pkl', 
     #                         random_state=42)
