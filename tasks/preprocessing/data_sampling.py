@@ -82,10 +82,19 @@ class DataSampling:
 
 if __name__ == "__main__":
     
-    # manual sampling
-    df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': 0.5, 
-                                       './root/pkl/magister_data_v2_wav_16000_train.pkl' : 0.2}, 
-                            sampling_mode='manual', 
+    # # manual sampling
+    # df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': 0.5, 
+    #                                    './root/pkl/magister_data_v2_wav_16000_train.pkl' : 0.2}, 
+    #                         sampling_mode='manual', 
+    #                         final_pkl_location='./root/pkl/combined_train.pkl', 
+    #                         random_state=42)
+
+    # _ = df_train()
+
+    # least sampling
+    df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': None, 
+                                       './root/pkl/magister_data_v2_wav_16000_train.pkl' : None}, 
+                            sampling_mode='least', 
                             final_pkl_location='./root/pkl/combined_train.pkl', 
                             random_state=42)
 
