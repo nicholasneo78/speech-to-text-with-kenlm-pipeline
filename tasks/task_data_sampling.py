@@ -106,5 +106,3 @@ dataset.upload(output_url=arg.output_url)
 dataset.finalize()
 
 print('Done')
-
-
