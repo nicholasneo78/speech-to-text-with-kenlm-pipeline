@@ -15,9 +15,10 @@ There will be two methods of executing the code in this pipeline, they are:
 ### Tasks in this pipeline   
 The tasks in this pipeline are as follows:  
 1. Data Preprocessing - [Local](#data-preprocessing-on-local-machine) | [ClearML](#data-preprocessing-on-clearml)   
-2. Building the language model using Kenlm - [Local](#building-the-language-model-using-kenlm-on-local-machine) | [ClearML](#building-the-language-model-using-kenlm-on-clearml)  
-3. Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace - [Local](#finetuning-the-pretrained-wav2vec2-and-wavlm-models-from-huggingface-on-local-machine) | [ClearML](#finetuning-the-pretrained-wav2vec2-and-wavlm-models-from-huggingface-on-clearml)  
-4. Evaluation of the finetuned model with the Kenlm language model built - [Local](#evaluation-of-the-finetuned-model-with-the-kenlm-language-model-built-on-local-machine) | [ClearML](#evaluation-of-the-finetuned-model-with-the-kenlm-language-model-built-on-clearml)   
+2. Data Sampling - [Local](#data-sampling-on-local-machine) | [ClearML](#data-sampling-on-clearml)    
+3. Building the language model using Kenlm - [Local](#building-the-language-model-using-kenlm-on-local-machine) | [ClearML](#building-the-language-model-using-kenlm-on-clearml)  
+4. Finetuning the pretrained wav2vec2 and wavlm models from HuggingFace - [Local](#finetuning-the-pretrained-wav2vec2-and-wavlm-models-from-huggingface-on-local-machine) | [ClearML](#finetuning-the-pretrained-wav2vec2-and-wavlm-models-from-huggingface-on-clearml)  
+5. Evaluation of the finetuned model with the Kenlm language model built - [Local](#evaluation-of-the-finetuned-model-with-the-kenlm-language-model-built-on-local-machine) | [ClearML](#evaluation-of-the-finetuned-model-with-the-kenlm-language-model-built-on-clearml)   
   
 <br>  
 
@@ -194,8 +195,56 @@ cd /stt-with-kenlm-pipeline/tasks/preprocessing
 python3 data_preprocessing.py
 ```
 <br>
+    
+## Data Sampling on Local Machine
+Samples the train data if it is too large and combines multiple datasets if there are more than 1 datasets used to build the dataset.    
+   
+#### Arguments  
+- `data_dict`: (dict) the path where the manifest file resides (".json" format)  
+- `sampling_mode`: (str) a choice to do manual proportional sampling or take the number from the dataset with the least entries, if multiple datasets are used 
+- `final_pkl_location`: (str) the directory where the preprocessed pickle data be located at  
+- `random_state`: (int) seed for the random number generator, put None if you want complete randomness  
 
+#### Return
+The directory where the preprocessed pickle data be located at   
+  
+#### Before executing the code
+Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/preprocessing/data_sampling.py`, go to the bottom of the code, after the `if __name__ == "__main__"` line, call the class, `DataSampling` to do the data sampling, here is a code snippet to illustrate the data sampling step:   
+   
+*Manual Sampling*  
+```python
+# manual sampling
+df_train = DataSampling(data_dict={'<PATH_TO_DATASET_1>': <PROPORTION_TO_SAMPLE>, 
+                                   '<PATH_TO_DATASET_2>': <PROPORTION_TO_SAMPLE>}, # can have more than 2 datasets too, just add on to the dictionary
+                        sampling_mode='manual', 
+                        final_pkl_location='<FINAL_PKL_DATASET_LOCATION>', 
+                        random_state=42)
 
+_ = df_train()
+```
+   
+*Least Sampling*   
+```python
+# least sampling
+df_train = DataSampling(data_dict={'<PATH_TO_DATASET_1>': None, 
+                                   '<PATH_TO_DATASET_2>': None}, # sample proportion is None here as it uses the least sampling method 
+                        sampling_mode='least', 
+                        final_pkl_location='<FINAL_PKL_DATASET_LOCATION>', 
+                        random_state=42)
+
+_ = df_train()
+```
+There will be an example of the code tested on the librispeech dataset in the python script.   
+   
+#### Executing the code
+To execute the data sampling code, on the terminal, go to this repository and enter into the docker image (refer above for the command), inside the docker container, type the following command:  
+```shell
+cd /stt-with-kenlm-pipeline/tasks/preprocessing
+python3 data_sampling.py
+```
+   
+<br>
+    
 ## Building the language model using Kenlm on Local Machine 
 To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
   
@@ -485,7 +534,66 @@ chmod 777 <YOUR_SCRIPT_FILE>.sh
 ./<YOUR_SCRIPT_FILE>.sh
 ```
 <br>
+   
+## Data Sampling on ClearML
+Samples the train data if it is too large and combines multiple datasets if there are more than 1 datasets used to build the dataset.    
+   
+#### Arguments   
+- `docker_image`: (str) the docker image used to load all the dependencies 
+- `project_name`: (str) the clearml project name   
+- `task_name`: (str) clearml task name     
+- `dataset_name`: (str) name of the output dataset produced    
+- `output_url`: (str) the clearml url that the task will be output at    
+- `dataset_project`: (str) the clearml path which the datasets resides  
+- `dataset_task_id`: (list) task ids list to retrieve the datasets, if there are multiple datasets     
+- `input_train_dict`: (dict) path to the input train pickle file   
+- `input_dev_dict`: (dict) path to the input dev pickle file 
+- `input_test_dict`: (dict) path to the input test pickle file   
+- `output_pkl_train`: (str) path to produce the sampled train pickle file    
+- `output_pkl_dev`: (str) path to produce the dev pickle file   
+- `output_pkl_test`: (str) path to produce the test pickle file    
+- `sampling_mode`: (str) a choice to do manual proportional sampling or take the number from the dataset with the least entries, if multiple datasets are used 
+- `random_state`: (int) seed for the random number generator, put None if you want complete randomness  
+- `queue`: (str) the queue name for clearml  
 
+#### Return
+The directory where the preprocessed pickle data be located at   
+  
+#### Before executing the code
+Before executing the code, check the script `speech-to-text-with-kenlm-pipeline/tasks/scripts/task_data_sampling/librispeech.sh`, go to the bottom of the code, after the `if __name__ == "__main__"` line, call the class, `DataSampling` to do the data sampling, here is a code snippet to illustrate the data sampling step:   
+   
+```shell
+#!/bin/bash
+
+python3 ../../task_data_sampling.py \
+    --docker_image "nicholasneo78/stt_with_kenlm_pipeline:latest" \
+    --project_name "<YOUR_PROJECT_NAME>" \
+    --task_name "<YOUR_TASK_NAME>" \
+    --dataset_name "<YOUR_DATASET_NAME>" \
+    --output_url "<OUTPUT_URL_TO_YOUR_S3_BUCKET>" \
+    --dataset_project "<PATH_TO_YOUR_CLEARML_DATASET>" \
+    --dataset_task_id ["<TASK_ID_1>", "<TASK_ID_2>"] \
+    --input_train_dict {"<INPUT_TRAIN_PKL_1>": <PROPORTION>, "<INPUT_TRAIN_PKL_2>": <PROPORTION>} \
+    --input_dev_dict {"<INPUT_DEV_PKL_1>": 1, "<INPUT_DEV_PKL_2>": 1} \
+    --input_test_dict {"<INPUT_TEST_PKL_1>": 1, "<INPUT_TEST_PKL_2>": 1} \
+    --output_pkl_train "<OUTPUT_COMBINED_SAMPLED_TRAIN_PKL_FILEPATH>" \
+    --output_pkl_dev "<OUTPUT_COMBINED_SAMPLED_DEV_PKL_FILEPATH>" \
+    --output_pkl_test "<OUTPUT_COMBINED_SAMPLED_TEST_PKL_FILEPATH>" \
+    --sampling_mode "<manual_or_least>" \
+    --random_state 42 \
+```
+   
+There will be an example of the code tested on the librispeech dataset in the bash script.   
+   
+#### Executing the code
+To execute the code, on the terminal, go to this repository and type the following command:  
+```shell
+cd tasks/scripts/task_data_sampling
+chmod 777 <YOUR_SCRIPT_FILE>.sh
+./<YOUR_SCRIPT_FILE>.sh
+```
+<br>
+   
 ## Building the language model using Kenlm on ClearML  
 To build a kenlm language model from the train and dev pickle files that were generated from the data preprocessing step. **Note: Do not pass in the test pickle file into building the language model as this will cause data leakage, causing inaccuracies in the evaluation phase.** The script will first load the train and dev pickle files, then will write all the annotations into a text file. It will then load the text file generated into the kenlm script to build the language model based on the train and dev dataset.  
 
