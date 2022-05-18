@@ -43,6 +43,7 @@ The repository structure will be as shown below:
         │   ├── build_lm.py             
         │   ├── build_lm.sh
         │   ├── data_preprocessing.py
+        │   ├── data_sampling.py
         │   ├── evaluation_with_lm.py
         │   ├── finetuning.py
         │   ├── lm_src
@@ -70,6 +71,8 @@ The repository structure will be as shown below:
         │   │   └── librispeech.sh
         │   ├── task_data_preprocessing
         │   │   └── librispeech.sh
+        │   ├── task_data_sampling
+        │   │   └── librispeech.sh
         │   ├── task_evaluation_with_lm
         │   │   ├── librispeech_wav2vec2.sh
         │   │   └── librispeech_wavlm.sh
@@ -80,6 +83,7 @@ The repository structure will be as shown below:
         │       └── librispeech_resume_wavlm.sh
         ├── task_build_lm.py
         ├── task_data_preprocessing.py
+        ├── task_data_sampling.py
         ├── task_evaluation_with_lm.py
         └── task_finetuning.py
 
