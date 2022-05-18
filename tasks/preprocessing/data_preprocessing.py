@@ -20,7 +20,7 @@ class GeneratePickleFromScratch:
         generates the pkl from scatch with all the data required to build the DatasetDict for the finetuning step
     '''
     
-    def __init__(self, root_folder: str, pkl_filename: str, audio_format: str, additional_preprocessing: str = 'general') -> None:
+    def __init__(self, root_folder: str, pkl_filename: str, audio_format: str, label: str, additional_preprocessing: str = 'general') -> None:
         '''
             root_folder: the root folder where the audio file with audio_format will be processed
             pkl_filename: the file path where the pickle data file will reside after preprocessing
@@ -31,6 +31,7 @@ class GeneratePickleFromScratch:
         self.pkl_filename = pkl_filename
         self.audio_format = audio_format
         self.additional_preprocessing = additional_preprocessing
+        self.label = label
 
     def create_new_dir(self, directory: str) -> None:
         '''
@@ -208,7 +209,8 @@ class GeneratePickleFromScratch:
                             'path': os.path.join(root, file), 
                             'sampling_rate': 16000
                         },
-                        'text': clean_text
+                        'text': clean_text,
+                        'label': self.label
                     }
                     
                     data_list.append(data)
@@ -233,7 +235,7 @@ class GeneratePickleFromManifest:
     '''
         generate the pkl from manifest with all the data required to build the DatasetDict for the finetuning step 
     '''
-    def __init__(self, manifest_path: str, pkl_filename: str, additional_preprocessing: str='general') -> None:
+    def __init__(self, manifest_path: str, pkl_filename: str, label: str, additional_preprocessing: str='general') -> None:
         '''
             manifest_path: the path to retrieve the manifest file with the information of the audio path and annotations
             pkl_filename: the file path where the pickle data file will reside after preprocessing
@@ -242,6 +244,7 @@ class GeneratePickleFromManifest:
         self.manifest_path = manifest_path
         self.pkl_filename = pkl_filename
         self.additional_preprocessing = additional_preprocessing
+        self.label=label
 
     def create_new_dir(self, directory: str) -> None:
         '''
@@ -381,7 +384,8 @@ class GeneratePickleFromManifest:
                         'path': f"{self.manifest_path.rsplit('/', 1)[0]}/{entries['audio_filepath']}",
                         'sampling_rate': 16000
                     },
-                    'text': clean_text
+                    'text': clean_text,
+                    'label': self.label
             }
 
             data_list.append(data)
@@ -408,13 +412,16 @@ if __name__ == "__main__":
 
     # librispeech dataset
     librispeech_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/train/train_manifest.json', 
-                                                       pkl_filename='./root/pkl/librispeech_train.pkl')
+                                                       pkl_filename='./root/pkl/librispeech_train.pkl',
+                                                       label='librispeech')
 
     librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/dev/dev_manifest.json', 
-                                                       pkl_filename='./root/pkl/librispeech_dev.pkl')
+                                                       pkl_filename='./root/pkl/librispeech_dev.pkl',
+                                                       label='librispeech')
 
     librispeech_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/librispeech_v2/test/test_manifest.json', 
-                                                       pkl_filename='./root/pkl/librispeech_test.pkl')
+                                                       pkl_filename='./root/pkl/librispeech_test.pkl',
+                                                       label='librispeech')
 
     df_train, _ = librispeech_train_pkl()
     df_dev, _ = librispeech_dev_pkl()

@@ -14,5 +14,6 @@ python3 ../../task_data_preprocessing.py \
     --pkl_dev "root/pkl/librispeech_dev.pkl" \
     --manifest_path_test "test/test_manifest.json" \
     --pkl_test "root/pkl/librispeech_test.pkl" \
+    --label "librispeech" \
     --additional_preprocessing "general" \
     --queue "compute"

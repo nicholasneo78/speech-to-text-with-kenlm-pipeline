@@ -24,6 +24,7 @@ def parse_args():
     parser.add_argument("--pkl_dev",                      type=str, help="path to produce the dev pickle file")
     parser.add_argument("--manifest_path_test",           type=str, help="path to retrieve the test manifest")
     parser.add_argument("--pkl_test",                     type=str, help="path to produce the test pickle file")
+    parser.add_argument("--label",                        type=str, help="data label")
     parser.add_argument("--additional_preprocessing",     type=str, help="any other special cases of text preprocessing needed based on the annotations")
 
     # queue name
@@ -76,14 +77,17 @@ dataset = Dataset.create(
 # process
 librispeech_train_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{arg.manifest_path_train}', 
                                                    pkl_filename=arg.pkl_train, 
+                                                   label=arg.label,
                                                    additional_preprocessing=arg.additional_preprocessing)
 
 librispeech_dev_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{arg.manifest_path_dev}', 
                                                  pkl_filename=arg.pkl_dev, 
+                                                 label=arg.label,
                                                  additional_preprocessing=arg.additional_preprocessing)
 
 librispeech_test_pkl = GeneratePickleFromManifest(manifest_path=f'{dataset_manifest_path}/{arg.manifest_path_test}', 
                                                   pkl_filename=arg.pkl_test, 
+                                                  label=arg.label,
                                                   additional_preprocessing=arg.additional_preprocessing)
 
 df_train, path_train = librispeech_train_pkl()
