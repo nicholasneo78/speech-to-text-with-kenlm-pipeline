@@ -90,12 +90,28 @@ if __name__ == "__main__":
     
     # manual sampling
     df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': 0.5, 
-                                       './root/pkl/librispeech_train.pkl': 0.2},  # to simulate that there are more than 1 dataset
+                                       './root/pkl/magister_train.pkl': 0.5}, 
                             sampling_mode='manual', 
                             final_pkl_location='./root/pkl/combined_train.pkl', 
                             random_state=42)
 
     _ = df_train()
+
+    df_dev = DataSampling(data_dict={'./root/pkl/librispeech_dev.pkl': 1, 
+                                       './root/pkl/magister_dev.pkl': 1}, 
+                            sampling_mode='manual', 
+                            final_pkl_location='./root/pkl/combined_dev.pkl', 
+                            random_state=42)
+
+    _ = df_dev()
+
+    df_test = DataSampling(data_dict={'./root/pkl/librispeech_test.pkl': 1, 
+                                       './root/pkl/magister_test.pkl': 1}, 
+                            sampling_mode='manual', 
+                            final_pkl_location='./root/pkl/combined_test.pkl', 
+                            random_state=42)
+
+    _ = df_test()
 
     # # least sampling
     # df_train = DataSampling(data_dict={'./root/pkl/librispeech_train.pkl': None, 

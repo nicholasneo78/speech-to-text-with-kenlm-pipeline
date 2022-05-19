@@ -128,12 +128,12 @@ class BuildLM:
 
 if __name__ == "__main__":
 
-    get_lm = BuildLM(df_train_filepath='./root/pkl/librispeech_train.pkl',
-                     df_dev_filepath='./root/pkl/librispeech_dev.pkl', 
+    get_lm = BuildLM(df_train_filepath='./root/pkl/combined_train.pkl',
+                     df_dev_filepath='./root/pkl/combined_dev.pkl', 
                      script_path="./build_lm.sh", 
                      root_path="/stt_with_kenlm_pipeline/kenlm", 
-                     txt_filepath="lm/librispeech_annotations.txt", 
+                     txt_filepath="lm/combined_annotations.txt", 
                      n_grams="5", 
-                     dataset_name="librispeech")
+                     dataset_name="combined")
 
     lm_path = get_lm()
