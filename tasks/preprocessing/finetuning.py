@@ -630,15 +630,15 @@ if __name__ == "__main__":
     
     ########## LIBRISPEECH: GET AUDIO LENGTH DISTRIBUTION ##########
 
-    print('Getting the audio length distribution of the train dataset\n')
-    distribution = FinetuningPreparation(train_pkl='./root/pkl/librispeech_train.pkl',
-                                         dev_pkl='./root/pkl/librispeech_dev.pkl', 
-                                         test_pkl='./root/pkl/librispeech_test.pkl',
-                                         processor_path='./root/wav2vec2/processor/', 
-                                         max_sample_length=None, 
-                                         mode='get_audio_length_distribution')
+    # print('Getting the audio length distribution of the train dataset\n')
+    # distribution = FinetuningPreparation(train_pkl='./root/pkl/librispeech_train.pkl',
+    #                                      dev_pkl='./root/pkl/librispeech_dev.pkl', 
+    #                                      test_pkl='./root/pkl/librispeech_test.pkl',
+    #                                      processor_path='./root/wav2vec2/processor/', 
+    #                                      max_sample_length=None, 
+    #                                      mode='get_audio_length_distribution')
 
-    distribution()
+    # distribution()
 
     ###################################################
 
@@ -780,3 +780,30 @@ if __name__ == "__main__":
     # evaluation()
 
     # ###################################################
+
+    ########## COMBINED: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
+
+    finetune_model = Finetuning(train_pkl='./root/pkl/combined_train.pkl', 
+                                dev_pkl='./root/pkl/combined_dev.pkl', 
+                                test_pkl='./root/pkl/combined_test.pkl', 
+                                input_processor_path='./root/librispeech/wav2vec2/processor/', 
+                                input_checkpoint_path='./root/librispeech/wav2vec2/ckpt/', 
+                                input_pretrained_model_path='./root_base_model/wav2vec2_base_model/',
+                                output_processor_path='./root/librispeech/wav2vec2/processor/', 
+                                output_checkpoint_path='./root/librispeech/wav2vec2/ckpt/', 
+                                output_saved_model_path='./root/librispeech/wav2vec2/saved_model/', 
+                                max_sample_length=450000, 
+                                batch_size=16, 
+                                epochs=10,
+                                gradient_accumulation_steps=4,
+                                save_steps=500,
+                                eval_logging_steps=50,
+                                lr=1e-4, 
+                                weight_decay=0.005, 
+                                warmup_steps=1000, 
+                                architecture='wav2vec2',
+                                finetune_from_scratch=True)
+
+    _, _, _, _ = finetune_model()
+
+    ##################################################
