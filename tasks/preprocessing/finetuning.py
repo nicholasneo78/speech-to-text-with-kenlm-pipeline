@@ -793,7 +793,7 @@ if __name__ == "__main__":
                                 output_checkpoint_path='./root/combined/wav2vec2/ckpt/', 
                                 output_saved_model_path='./root/combined/wav2vec2/saved_model/', 
                                 max_sample_length=450000, 
-                                batch_size=16, 
+                                batch_size=8, 
                                 epochs=10,
                                 gradient_accumulation_steps=4,
                                 save_steps=500,
