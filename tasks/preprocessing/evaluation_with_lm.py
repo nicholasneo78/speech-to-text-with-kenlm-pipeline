@@ -164,6 +164,14 @@ class EvaluationWithLM:
         wer_greedy_dict = {}
         wer_beam_dict = {}
 
+        print(pred_greedy_dict['all'])
+        print()
+        print()
+        print(pred_beam_dict['all'])
+        print()
+        print()
+        print(ground_truth_dict['all'])
+
         # TODO: define the evaluation metric for the individual datasets and also the combined values
         for label in list(main_dict.keys()):
             
@@ -194,11 +202,11 @@ class EvaluationWithLM:
 if __name__ == "__main__":
 
     # magister v2 wavlm
-    evaluation = EvaluationWithLM(finetuned_model_path='./root/librispeech/wavlm/saved_model/', # or './root/librispeech/wav2vec2/saved_model/'
-                                  processor_path='./root/librispeech/wavlm/processor/', # or './root/librispeech/wav2vec2/processor/'
-                                  lm_path='lm/5_gram_librispeech_v2.arpa', 
-                                  test_data_path='./root/pkl/librispeech_test.pkl', 
+    evaluation = EvaluationWithLM(finetuned_model_path='./root/combined/wav2vec2/saved_model/', # or './root/librispeech/wav2vec2/saved_model/'
+                                  processor_path='./root/combined/wav2vec2/processor/', # or './root/librispeech/wav2vec2/processor/'
+                                  lm_path='root/lm/5_gram_combined.arpa', 
+                                  test_data_path='./root/pkl/combined_test.pkl', 
                                   alpha=0.6, beta=1.0,
-                                  architecture='wavlm') # or wav2vec2
+                                  architecture='wav2vec2')
 
     greedy, beam = evaluation()

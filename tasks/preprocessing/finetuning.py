@@ -781,20 +781,47 @@ if __name__ == "__main__":
 
     # ###################################################
 
-    ########## COMBINED: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
+    # ########## COMBINED: FINETUNING (FROM SCRATCH) - WAV2VEC2 ##########
+
+    # finetune_model = Finetuning(train_pkl='./root/pkl/combined_train.pkl', 
+    #                             dev_pkl='./root/pkl/combined_dev.pkl', 
+    #                             test_pkl='./root/pkl/combined_test.pkl', 
+    #                             input_processor_path='./root/combined/wav2vec2/processor/', 
+    #                             input_checkpoint_path='./root/combined/wav2vec2/ckpt/', 
+    #                             input_pretrained_model_path='./root_base_model/wav2vec2_base_model/',
+    #                             output_processor_path='./root/combined/wav2vec2/processor/', 
+    #                             output_checkpoint_path='./root/combined/wav2vec2/ckpt/', 
+    #                             output_saved_model_path='./root/combined/wav2vec2/saved_model/', 
+    #                             max_sample_length=450000, 
+    #                             batch_size=8, 
+    #                             epochs=10,
+    #                             gradient_accumulation_steps=4,
+    #                             save_steps=500,
+    #                             eval_logging_steps=50,
+    #                             lr=1e-4, 
+    #                             weight_decay=1e-5, 
+    #                             warmup_steps=1000, 
+    #                             architecture='wav2vec2',
+    #                             finetune_from_scratch=True)
+
+    # _, _, _, _ = finetune_model()
+
+    # ##################################################
+
+    # ########## COMBINED: FINETUNING (RESUMING FROM CHECKPOINT) - WAV2VEC2 ##########
 
     finetune_model = Finetuning(train_pkl='./root/pkl/combined_train.pkl', 
                                 dev_pkl='./root/pkl/combined_dev.pkl', 
                                 test_pkl='./root/pkl/combined_test.pkl', 
                                 input_processor_path='./root/combined/wav2vec2/processor/', 
                                 input_checkpoint_path='./root/combined/wav2vec2/ckpt/', 
-                                input_pretrained_model_path='./root_base_model/wav2vec2_base_model/',
+                                input_pretrained_model_path='./root/combined/wav2vec2/saved_model/',
                                 output_processor_path='./root/combined/wav2vec2/processor/', 
                                 output_checkpoint_path='./root/combined/wav2vec2/ckpt/', 
                                 output_saved_model_path='./root/combined/wav2vec2/saved_model/', 
                                 max_sample_length=450000, 
                                 batch_size=8, 
-                                epochs=10,
+                                epochs=30,
                                 gradient_accumulation_steps=4,
                                 save_steps=500,
                                 eval_logging_steps=50,
@@ -802,8 +829,8 @@ if __name__ == "__main__":
                                 weight_decay=1e-5, 
                                 warmup_steps=1000, 
                                 architecture='wav2vec2',
-                                finetune_from_scratch=True)
+                                finetune_from_scratch=False)
 
     _, _, _, _ = finetune_model()
 
-    ##################################################
+    # ####################################################
