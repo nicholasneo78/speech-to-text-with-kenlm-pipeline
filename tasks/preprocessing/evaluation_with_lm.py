@@ -116,12 +116,30 @@ class EvaluationWithLM:
         pred_beam_search_list = []
         pred_greedy_search_list = []
 
+        # create dictionaries to separate the text into different dataset labels
+        main_dict = {}
+
+        # initialise the label (key) with an empty list (values)
+        for label in list(np.unique(np.array(data_test['label']))):
+            main_dict[label] = []
+        
+        # add another extra key value pair to get all the values to compute the overall WER
+        main_dict['all'] = []
+
+        # create copies for the different text annotatation
+        ground_truth_dict = main_dict.copy()
+        pred_beam_dict = main_dict.copy()
+        pred_greedy_dict = main_dict.copy()
+
         # append the text and predictions into lists
         for idx, entry in tqdm(enumerate(data_test)):
             # get logits
             audio_array = np.array(data_test[idx]['audio']['array'])
             input_values = asr_processor(audio_array, return_tensors="pt", sampling_rate=16000).input_values  
             logits = asr_model(input_values).logits.cpu().detach().numpy()[0]
+
+            # ground truth
+            ground_truth_text = data_test[idx]['text']
 
             # beam search decoding - can add hotwords and its weights too if needed
             beam_text = decoder.decode(logits)
@@ -130,18 +148,20 @@ class EvaluationWithLM:
             greedy_text = self.greedy_decode(logits, vocab)
             greedy_text = ("".join(c for c in greedy_text if c not in ["_"]))
 
-            # ground truth
-            ground_truth_text = data_test[idx]['text']
-            
-            # appending the data to the individual lists
-            ground_truth_list.append(ground_truth_text)
-            pred_beam_search_list.append(beam_text)
-            pred_greedy_search_list.append(greedy_text)
+            # store the ground truth and predicted annotations in dictionaries 
+            ground_truth_dict[data_test['label'][idx]].append(ground_truth_text)
+            pred_beam_dict[data_test['label'][idx]].append(beam_text)
+            pred_greedy_dict[data_test['label'][idx]].append(greedy_text)
 
-        # define evaluation metric
-        wer_greedy = WER(predictions=pred_greedy_search_list, references=ground_truth_list)
-        wer_beam = WER(predictions=pred_beam_search_list, references=ground_truth_list)
-        #wer_metric = load_metric("wer")
+            # append to main key where data entries of all labels are combined
+            ground_truth_dict['all'].append(ground_truth_text)
+            pred_beam_dict['all'].append(beam_text)
+            pred_greedy_dict['all'].append(greedy_text)
+
+            # # appending the data to the individual lists
+            # ground_truth_list.append(ground_truth_text)
+            # pred_beam_search_list.append(beam_text)
+            # pred_greedy_search_list.append(greedy_text)
 
         # regex to obtain the number of grams for the final print message
         try:
@@ -150,17 +170,33 @@ class EvaluationWithLM:
         except AttributeError:
             obtain_n = False
 
-        # print the final evaluation
-        if obtain_n:
-            print(f'\n{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_greedy.compute():.5f}')
-            print(f'{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_beam.compute():.5f}\n')
+        # store the WER values into lists
+        wer_greedy_dict = {}
+        wer_beam_dict = {}
 
-        else:
-            print(f'\nalpha = {self.alpha} | beta = {self.beta} | WER (greedy search): {wer_greedy.compute():.5f}')
-            print(f'alpha = {self.alpha} | beta = {self.beta} | WER (beam search): {wer_beam.compute():.5f}\n')
+        # TODO: define the evaluation metric for the individual datasets and also the combined values
+        for label in list(main_dict.keys()):
+            
+            # define evaluation metric
+            wer_greedy = WER(predictions=pred_greedy_dict[label], references=ground_truth_dict[label])
+            wer_beam = WER(predictions=pred_beam_dict[label], references=ground_truth_dict[label])
 
-        # return the values for debugging
-        return round(wer_greedy.compute(), 5), round(wer_beam.compute(), 5)
+            # print the final evaluation
+            if obtain_n:
+                print(f'\n{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | label: {label} | WER (greedy search): {wer_greedy.compute():.5f}')
+                print(f'{n_grams}-gram | alpha = {self.alpha} | beta = {self.beta} | label: {label} | WER (beam search): {wer_beam.compute():.5f}\n')
+
+            else:
+                print(f'\nalpha = {self.alpha} | beta = {self.beta} | label: {label} | WER (greedy search): {wer_greedy.compute():.5f}')
+                print(f'alpha = {self.alpha} | beta = {self.beta} | label: {label} | WER (beam search): {wer_beam.compute():.5f}\n')
+
+            # append the wer values into the dictionaries
+            wer_greedy_dict[label] = round(wer_greedy.compute(), 5)
+            wer_beam_dict[label] = round(wer_beam.compute(), 5)
+
+
+        # return the wer values for debugging
+        return wer_greedy_dict, wer_beam_dict
 
     def __call__(self):
         return self.get_wer()
