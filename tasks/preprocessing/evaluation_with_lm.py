@@ -111,11 +111,6 @@ class EvaluationWithLM:
         # convert the data into a huggingface Dataset object
         data_test = Dataset.from_pandas(df_test)
 
-        # get the list of annotations for the ground truth, predictions for beam search and predictions for greedy search
-        ground_truth_list = []
-        pred_beam_search_list = []
-        pred_greedy_search_list = []
-
         # create dictionaries to separate the text into different dataset labels
         main_dict = {}
 
@@ -157,11 +152,6 @@ class EvaluationWithLM:
             ground_truth_dict['all'].append(ground_truth_text)
             pred_beam_dict['all'].append(beam_text)
             pred_greedy_dict['all'].append(greedy_text)
-
-            # # appending the data to the individual lists
-            # ground_truth_list.append(ground_truth_text)
-            # pred_beam_search_list.append(beam_text)
-            # pred_greedy_search_list.append(greedy_text)
 
         # regex to obtain the number of grams for the final print message
         try:

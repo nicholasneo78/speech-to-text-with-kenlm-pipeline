@@ -423,6 +423,24 @@ if __name__ == "__main__":
                                                        pkl_filename='./root/pkl/librispeech_test.pkl',
                                                        label='librispeech')
 
+    # second dataset to do combine dataset training later
+    m_train_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/train_manifest.json', 
+                                             pkl_filename='./root/pkl/magister_train.pkl',
+                                             label='magister')
+
+    m_dev_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/dev_manifest.json', 
+                                           pkl_filename='./root/pkl/magister_dev.pkl',
+                                           label='magister')
+
+    m_test_pkl = GeneratePickleFromManifest(manifest_path='./datasets/magister_data_v2_wav_16000/test_manifest.json', 
+                                            pkl_filename='./root/pkl/magister_test.pkl',
+                                            label='magister')
+
+
     df_train, _ = librispeech_train_pkl()
     df_dev, _ = librispeech_dev_pkl()
     df_test, _ = librispeech_test_pkl()
+
+    _, _ = m_train_pkl()
+    _, _ = m_dev_pkl()
+    _, _ = m_test_pkl()
