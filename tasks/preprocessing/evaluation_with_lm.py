@@ -165,15 +165,7 @@ class EvaluationWithLM:
         wer_greedy_dict = {}
         wer_beam_dict = {}
 
-        print(pred_greedy_dict['all'])
-        print()
-        print()
-        print(pred_beam_dict['all'])
-        print()
-        print()
-        print(ground_truth_dict['all'])
-
-        # TODO: define the evaluation metric for the individual datasets and also the combined values
+        # define the evaluation metric for the individual datasets and also the combined values
         for label in list(main_dict.keys()):
             
             # define evaluation metric
