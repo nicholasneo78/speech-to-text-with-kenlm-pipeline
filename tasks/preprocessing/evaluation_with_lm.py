@@ -12,6 +12,7 @@ from jiwer import compute_measures
 import datasets
 from datasets import Dataset
 from tqdm import tqdm
+from copy import deepcopy
 
 device = 'cuda' if torch.cuda.is_available else 'cpu'
 print(f'Device: {device}\n')
@@ -122,9 +123,9 @@ class EvaluationWithLM:
         main_dict['all'] = []
 
         # create copies for the different text annotatation
-        ground_truth_dict = main_dict.copy()
-        pred_beam_dict = main_dict.copy()
-        pred_greedy_dict = main_dict.copy()
+        ground_truth_dict = deepcopy(main_dict)
+        pred_beam_dict = deepcopy(main_dict)
+        pred_greedy_dict = deepcopy(main_dict)
 
         # append the text and predictions into lists
         for idx, entry in tqdm(enumerate(data_test)):
