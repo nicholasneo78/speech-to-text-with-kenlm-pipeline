@@ -78,9 +78,9 @@ class EvaluationWithLM:
             prev_c = c
         return "".join(out)
 
-    def get_wer(self) -> float:
+    def get_wer(self) -> dict:
         '''
-            get the final WER for both the greedy decoding and beam search decoding
+            get the final WER for both the greedy decoding and beam search decoding, includes individual data's WER and the combined WER
         '''
         
         # load the finetuned model and the processor that is produced from finetuning.py script
