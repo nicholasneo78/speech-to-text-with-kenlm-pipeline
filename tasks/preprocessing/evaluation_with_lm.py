@@ -13,6 +13,7 @@ import datasets
 from datasets import Dataset
 from tqdm import tqdm
 from copy import deepcopy
+import json
 
 device = 'cuda' if torch.cuda.is_available else 'cpu'
 print(f'Device: {device}\n')
@@ -44,7 +45,7 @@ class EvaluationWithLM:
         perform evaluation of the finetuned model with the test set that incorporates language model
     '''
 
-    def __init__(self, finetuned_model_path: str, processor_path: str, lm_path: str, test_data_path: str, alpha: float, beta: float, architecture: str):
+    def __init__(self, finetuned_model_path: str, processor_path: str, lm_path: str, test_data_path: str, alpha: float, beta: float, architecture: str, manifest_filename: str) -> None:
         '''
             finetuned_model_path: path to get the finetuned model
             processor_path: path to get the processor
@@ -53,6 +54,7 @@ class EvaluationWithLM:
             alpha: for decoding using language model - weight associated with the LMs probabilities. A weight of 0 means the LM has no effect
             beta: for decoding using language model - weight associated with the number of words within the beam
             architecture: either pretrained from wav2vec2 model or the wavlm model
+            manifest_filename: filename of the generated manifest
         '''
 
         self.finetuned_model_path = finetuned_model_path
@@ -62,6 +64,23 @@ class EvaluationWithLM:
         self.alpha = alpha
         self.beta = beta
         self.architecture = architecture
+        self.manifest_filename = manifest_filename
+    
+    def create_new_dir(self, directory: str) -> None:
+        '''
+            create new directory and ignore already created ones
+
+            directory: the directory path that is being created
+        '''
+
+        try:
+            os.mkdir(directory)
+        except OSError as error:
+            pass # directory already exists!
+
+    # check if the json file name already existed (if existed, need to throw error or else the new json manifest will be appended to the old one, hence causing a file corruption)
+    def json_existence(self) -> None:
+        assert not os.path.isfile(f'{self.manifest_filename}'), "json filename exists! Please remove old json file!"
 
     def greedy_decode(self, logits: torch.Tensor, labels: str) -> str:
         '''
@@ -127,12 +146,21 @@ class EvaluationWithLM:
         pred_beam_dict = deepcopy(main_dict)
         pred_greedy_dict = deepcopy(main_dict)
 
+        # create new directory to store the manifest json file
+        self.create_new_dir('./root/')
+        
+        # check if the json filename have existed in the directory
+        self.json_existence()
+
         # append the text and predictions into lists
         for idx, entry in tqdm(enumerate(data_test)):
             # get logits
             audio_array = np.array(data_test[idx]['audio']['array'])
             input_values = asr_processor(audio_array, return_tensors="pt", sampling_rate=16000).input_values  
             logits = asr_model(input_values).logits.cpu().detach().numpy()[0]
+
+            # get the dataset path from the pkl file and then append to the dictionary as a manifest
+            filepath = data_test[idx]['file']
 
             # ground truth
             ground_truth_text = data_test[idx]['text']
@@ -143,6 +171,17 @@ class EvaluationWithLM:
             # greedy search decoding
             greedy_text = self.greedy_decode(logits, vocab)
             greedy_text = ("".join(c for c in greedy_text if c not in ["_"]))
+
+            # create a dictionary to store the values
+            data_manifest = {'filepath': filepath,
+                             'label': data_test['label'][idx],
+                             'ground_truth': ground_truth_text,
+                             'pred_greedy': greedy_text,
+                             'pred_beam': beam_text}
+
+            # append to the json file to get the manifest
+            with open(f'{self.manifest_filename}', 'a+', encoding='utf-8') as f:
+                f.write(json.dumps(data_manifest) + '\n')
 
             # store the ground truth and predicted annotations in dictionaries 
             ground_truth_dict[data_test['label'][idx]].append(ground_truth_text)
@@ -200,6 +239,7 @@ if __name__ == "__main__":
                                   lm_path='root/lm/5_gram_combined.arpa', 
                                   test_data_path='./root/pkl/combined_test.pkl', 
                                   alpha=0.6, beta=1.0,
-                                  architecture='wav2vec2')
+                                  architecture='wav2vec2',
+                                  manifest_filename='./root/manifest.json')
 
     greedy, beam = evaluation()

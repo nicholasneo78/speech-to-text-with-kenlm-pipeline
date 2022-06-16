@@ -18,3 +18,4 @@ pypi-kenlm
 soundfile
 pyyaml
 pandas
+seaborn
